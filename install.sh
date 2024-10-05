@@ -30,11 +30,7 @@ esac
 # Installing Python Module 
 pip3 install --editable . # add "--user" to this if you don't have access to your computer's system-wide python packages.
 
-# Initiallisng Submodules
-git submodule update --init 
-# Modifying configs to allow recursive pulling submodule
-git config submodule.recurse true 
-# Initiate git pull
+# git pull
 git pull
 
 
