@@ -58,6 +58,8 @@ class Sender(BaseSocket):
         if isinstance(destination,str):
             destination = ast.literal_eval(destination)
         self.destination = destination
+    def listen(self, duration: int = None) -> str | None:
+        raise NotImplementedError("Please Use Receiver")
 
 
 class Broadcast(Sender):
