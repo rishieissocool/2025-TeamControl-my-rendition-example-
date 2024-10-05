@@ -98,6 +98,8 @@ class World:
             new_frame (Frame): the new frame object to store data about this frame
             curret_frame (Frame): the Current Frame that you want to update the data in         
         """
+        print(self.max_cameras)
+
         # print(detection)
         #if current newest frame number is smaller than the new frame number received
         if self.cframe is None or (self.cframe + self.gap < detection.frame_number):
@@ -126,7 +128,6 @@ class World:
             current_frame.update(detection)
             #update frame object in list (frames)
             self.frames[-1] = current_frame
-        
         if not self.is_detection_updated and detection.camera_id == self.max_cameras-1:
             self.is_detection_updated = True
             # log.info(f"{self.cframe=} is updated")
@@ -329,15 +330,14 @@ Current list of Frame History : {len(self.frames)} frames avaialble, maximum : {
         
 
 
-if __name__ == "__main__":
-    from TeamControl.Network.Receiver import grSimVision,vision
-    from TeamControl.Model.world import World
-    world_model:World = World(isYellow= True, isPositive=True,max_cameras=1)
-    print(type(world_model))
-    recv = vision(world_model)
-    updated = False
-    while True:
-        updated = recv.listen()
-        print(updated)
-        if world_model.is_detection_updated is True:
-            print(world_model)
+# if __name__ == "__main__":
+#     from TeamControl.Model.world import World
+#     world_model:World = World(isYellow= True, isPositive=True,max_cameras=1)
+#     print(type(world_model))
+#     recv = vision(world_model)
+#     updated = False
+#     while True:
+#         updated = recv.listen()
+#         print(updated)
+#         if world_model.is_detection_updated is True:
+#             print(world_model)
