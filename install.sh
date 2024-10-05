@@ -6,7 +6,7 @@
 
 read -p"Do you want Virtual Environment [y/n] : " ans
 case $ans in 
-    y) echo "Begin installation in Virtual Environment";
+    y) echo "- - - Begin installation in Virtual Environment - - - ";
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     
             if ! command -v virtualenv &> /dev/null; then
@@ -28,11 +28,11 @@ case $ans in
     
 
 esac
-echo "Installing Python Module"
+echo " - - - Installing Python Module - - - "
 
 pip3 install --editable . # add "--user" to this if you don't have access to your computer's system-wide python packages.
 
-# git pull
+echo " - - - Pulling from Git - - - "
 git pull
 
 
