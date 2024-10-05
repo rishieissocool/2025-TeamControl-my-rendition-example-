@@ -1,9 +1,9 @@
 import time
-from TeamControl.shared.Action import Action
+from TeamControl.Coms.Action import Action
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *
 from TeamControl.Model.world import World as wm
-from TeamControl.SSL.grSimAction import grSim_Action
+from TeamControl.Coms.grSimAction import grSim_Action
 from TeamControl.RobotBehaviour import *
 import math
 import numpy as np

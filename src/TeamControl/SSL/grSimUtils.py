@@ -5,7 +5,7 @@ import time
 # from pynput.keyboard import Key, Listener
 
 from TeamControl.Model.world import World as wm
-from TeamControl.SSL.grSimAction import grSim_Action
+from TeamControl.Coms.grSimAction import grSim_Action
 from TeamControl.Network.Sender import grSimSender
 from TeamControl.Network.Receiver import grSimVision
 

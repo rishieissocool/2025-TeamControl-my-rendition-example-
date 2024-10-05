@@ -5,7 +5,7 @@ from TeamControl.shared.Action import Action
 from TeamControl.Model.world import World as wm
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *
-from TeamControl.SSL.grSimAction import grSim_Action
+from TeamControl.Coms.grSimAction import grSim_Action
 import math
 isYellow = False
 def main():

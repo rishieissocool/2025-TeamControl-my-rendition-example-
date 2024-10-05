@@ -15,9 +15,9 @@ import ast
 
 import logging
 
-from TeamControl.shared.Action import Action
-from TeamControl.SSL.grSimAction import grSim_Action
-from TeamControl.shared.RobotUDP import Sender,UDP
+from TeamControl.Coms.Action import Action
+from TeamControl.Coms.grSimAction import grSim_Action
+from TeamControl.Network.BaseUDP import *
 from TeamControl.Network.Robot import Robot
 
 class robotSender(Sender):

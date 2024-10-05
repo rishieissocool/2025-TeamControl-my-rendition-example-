@@ -60,7 +60,7 @@ def go_To_Target(target_pos: tuple[float,float], speed: int=1, stop_threshold:fl
 
 if __name__ == '__main__':
     from TeamControl.shared.Action import Action
-    from TeamControl.SSL.grSimAction import grSim_Action
+    from TeamControl.Coms.grSimAction import grSim_Action
 
     from TeamControl.Network.Receiver import grSimVision,vision
     from TeamControl.Network.Sender import robotSender,grSimSender
