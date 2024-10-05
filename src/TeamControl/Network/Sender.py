@@ -9,24 +9,25 @@ Sender is an Abstract Base Class (ABC) which includes :
 Raises:
     NotImplementedError: if user try to use an empty function
 """
-import socket
-import time
 import ast
 
 import logging
 
-from TeamControl.Coms.Action import Action
+from TeamControl.Coms.Action import BaseAction,RobotAction
 from TeamControl.Coms.grSimAction import grSim_Action
 from TeamControl.Network.BaseUDP import *
-from TeamControl.Network.Robot import Robot
+# from TeamControl.Network.Robot import Robot
 
-class robotSender(Sender):
-    def __init__(self, ip: str = None, port: int = 0) -> None:
-        
-        super().__init__( ip, port)
-        
-  
-    def send_action(self,action:Action,destination:tuple[str,int]) -> None:
+          
+class Sender(BaseSocket):
+    def __init__(self, ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP, binding=False) -> None:
+        if isinstance(ip,str):
+            self.destination = (ip,port)
+        else:
+            self.destination = ("127.0.0.1",port)
+        super().__init__(ip=None,port=port,sock_type=sock_type,binding=binding)
+    
+    def send_action(self,action:BaseAction,destination:tuple[str,int]) -> None:
         """
         Sending Action via UDP
 
@@ -39,35 +40,24 @@ class robotSender(Sender):
         Exceptions:
             TypeError : Only Action or byte objects allowed
         """
-        if not isinstance(action,Action):
-            raise TypeError("Only Action or byte objects allowed")
-        if isinstance(destination,str):
-            destination = ast.literal_eval(destination)
+        if not isinstance(action,issubclass(BaseAction)):
+            raise TypeError("Only Actions allowed")
+        
         encoded_action:bytes = action.encode()
                 # sends the action to destined address
         self.send(msg=encoded_action,destination=destination)
         logging.info(f"SENT : {action=} TO: {destination}")
 
+    def update_destination(self, destination:str|tuple[str,int]) -> None:
+        """Update Sending Socket's Destination
+        This is a static method, so when the send is trigger, will always send to this specific destination (ip,port)
 
-class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None:
-        self.addr = (ip,port)
-        super().__init__(ip, port)
-    
-    def create(self):
-        self.sock = self.init_sock(UDP.SOCK_UDP)
-
-    def send(self, message: str, d_addr: tuple[str, int]) -> None:
-        raise NotImplementedError("Nothing is here")
-    
-    def send_action(self, isYellow, action: grSim_Action|bytes) -> None:
-        if isinstance(action,grSim_Action):
-            action = action.encode()
-        if isinstance(action,Action):
-           new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
-           action = new_action.encode()
-        # sends packet to grsim
-        self.sock.sendto(action,self.addr)
+        Args:
+            destination (str | tuple[str,int]): Destination addr, can be in format string / tuple
+        """
+        if isinstance(destination,str):
+            destination = ast.literal_eval(destination)
+        self.destination = destination
 
 
 class Broadcast(Sender):
@@ -82,18 +72,5 @@ class Broadcast(Sender):
             ip (str) : Default broadcast. See python udp_broadcast for more information.
         """
         ip = '<broadcast>'
-
-        # ip = '10.0.0.0'
-        self.destination = (ip, port)
-        self.sock = self.init_sock(UDP.SOCK_BROADCAST_UDP)
+        super().__init__(ip=ip,port=port,sock_type=UDP.SOCK_BROADCAST_UDP,binding=True)
         
-def grSimSenderExample():
-    main_udp = grSimSender()
-    while True: 
-        packet = grSim_Action(isYellow=True,robot_id=1,vx=1,vy=2,w=1)
-        main_udp.send_action(packet)
-        logging.debug(f"Action :  is sent")
-
-
-if __name__ == "__main__":
-    grSimSenderExample()

@@ -4,7 +4,7 @@ import sys
 import time
 import random
 import os 
-import ast #converting str -> tuple
+import ast
 
 #enum
 import enum
@@ -18,13 +18,14 @@ log.setLevel(logging.NOTSET)
 class UDP(enum.IntEnum):
     SOCK_BROADCAST_UDP = auto()
     SOCK_UDP = auto()
+    SOCK_MULTICAST_UDP = auto()
 
 class BaseSocket(): 
     """
     base class of receiver and sender
     provides common base functions
     """
-    def __init__(self,ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP,binding=True):
+    def __init__(self,ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP,buffer_size: int=1024, binding=True):
         """BaseSocket - initials simple UDP socket as a base for receiver and sender class
 
         Args:
@@ -51,6 +52,10 @@ class BaseSocket():
             self.ready = self._bind_sock()
         else:
             self.isReady:bool = True
+        
+        self.buffer_size = buffer_size
+        self.source:tuple[str,int] = None
+        self.destination:tuple[str,int] = None
         
         log.debug(f"{self.__class__.__name__} socket is now active on {self.ip},{self.port}")
         
@@ -102,86 +107,8 @@ class BaseSocket():
                 log.debug("socket is binded : ",isBinded)
                 
         return isBinded # this can be either true or false
-                
-    def close(self):
-        """ Close the socket """
-        self.sock.close()  
-     
-    @staticmethod
-    def _setup_socket(type) -> socket.socket:
-        """ Initialise socket
-        Initailise socket for broadcasting in UDP
-        Arg = 
-        UDP.SOCK_BROADCAST_UDP = broadcast
-        UDP.SOCK_UDP = udp 
-
-        Returns:
-            socket.socket: returns the initailised socket
-        """
-        if type == UDP.SOCK_BROADCAST_UDP:
-            broadcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            return broadcast
-        elif type == UDP.SOCK_UDP: 
-            udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            return udp
-        
-    @staticmethod
-    def _obtain_sys_ip() -> str:
-        """
-        Obtaining system's ip address *This may not work in Arch linux
-        
-        Params:
-            os_system(sys.platform) =  current os_system.
-        
-        Raises:
-            ValueError: No matching os system, cannot obtain IP, will need to input manually.
-
-        Returns:
-            ip (str): system's ip address
-        """
-        os_system = sys.platform
-        match os_system:
-            case 'win32':
-                ip = socket.gethostbyname(socket.gethostname())
-            case 'linux':
-                ip = os.popen('hostname -I').read().strip().split(" ")[0]
-                print(os.popen('hostname -I').read().strip().split(" "))
-            case 'darwin':
-                ip = os.popen('ipconfig getifaddr en0').read().strip()
-            case _:
-                raise ValueError("Cannot Obtain IP, Please input ip address manually")       
-        return ip
     
-    @staticmethod
-    def _generate_port() -> int:
-        port = random.randint(5000, 9000)
-        log.debug(f"port generated : {port}")
-        return port
-
-        
     
-class Receiver(BaseSocket):
-    def __init__ (self,ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP,buffer_size: int=1024):
-        """Receiver - init
-        Initialising socket for receiving messages
-
-        Args:
-            ip (str, optional): ip of device generating receiver. Defaults to None. -> obtaining system ip
-            port (int, optional): prefered port number. Defaults to 0 -> auto-generated. 
-            sock_type (str, optional): type of socket. Defaults to 'u' - normal UDP socket | alternative  'b' - Broadcast, see init_sock()
-            buffer_size (int, optional): size for packet to be received. Defaults to 1024.
-        
-        Params:
-            source(tuple[str,int]) : default sender's address. Currently Not implemented.
-                * this should be implemented if we want to only listen from one device (or address)
-        """
-        super().__init__(ip=ip,port=port,sock_type=sock_type,binding=True)
-        self.buffer_size:int = buffer_size
-        self.source:tuple[str,int] = None
-        
-       
     def listen(self,duration: int=None)-> str|None:
         """Default Listen function
             Listening on Receiving Socket 
@@ -216,9 +143,10 @@ class Receiver(BaseSocket):
             data = None
         finally:
            if data is not None: # return anything that has a value
-                log.debug(f"Message Recieved from {addr=}, {self.decode(data)}")
-                return self._decode(data)
-
+                decoded_data = self._decode(data)
+                log.debug(f"Message Recieved from {addr=}, {decoded_data}")
+                return decoded_data
+            
     
     def _decode(self,data:bytes) ->str|bytes:
         """Default Decode Function (internal, not to be called)
@@ -235,37 +163,8 @@ class Receiver(BaseSocket):
             log.warning("cannot decode data, returning original. \n",ude)
             return data
         finally:
-            return decoded_data
-    
-    # getting address of this receiver 
-    def get_addr(self)->str:
-        """ Get Address (Callable function)
-        Get the Receiver socket's address
-
-        Returns:
-            str: address tuple in the format of string
-        """
-        addr:tuple = (self.ip,self.port)
-        return f"{addr}"
-    
-    def update_source(self,addr:str|tuple[str,int]):
-        """
-        Stores source (server or robot) sender address
-        Use for verification. 
-
-        Args:
-            addr (tuple[str,int]): _description_
-        """
-        if isinstance(addr, str):
-            addr = ast.literal_eval(addr)
-        self.recv_addr = addr
-
-                
-class Sender(BaseSocket):
-    def __init__(self, ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP, binding=False) -> None:
-        self.destination = None
-        super().__init__(ip=ip,port=port,sock_type=sock_type,binding=binding)
-    
+            return decoded_data        
+        
     
     def send(self, msg : bytes|str, duration : int=None, destination:tuple[str,int] = None)-> None:
         """
@@ -287,6 +186,8 @@ class Sender(BaseSocket):
             raise AttributeError(f"Destination : {self.destination=} | {destination=}")
         elif isinstance(destination,tuple):
             self.destination = destination
+        elif isinstance(destination,str):
+            destination = ast.literal_eval(destination)
             
         # if the message is a string, it encodes message
         if isinstance(msg,str):
@@ -317,15 +218,71 @@ class Sender(BaseSocket):
                 else:
                     sent = False # try again
         
-    def update_destination(self, destination:str|tuple[str,int]) -> None:
-        """Update Sending Socket's Destination
-        This is a static method, so when the send is trigger, will always send to this specific destination (ip,port)
+                
+    def close(self):
+        """ Close the socket """
+        self.sock.close()  
+     
+    @staticmethod
+    def _setup_socket(type) -> socket.socket:
+        """ Initialise socket
+        Initailise socket for broadcasting in UDP
+        Arg = 
+        UDP.SOCK_BROADCAST_UDP = broadcast
+        UDP.SOCK_UDP = udp 
+        UDP.SOCK_MULTICAST_UDP = multicast
 
-        Args:
-            destination (str | tuple[str,int]): Destination addr, can be in format string / tuple
+        Returns:
+            socket.socket: returns the initailised socket
         """
-        if isinstance(destination,str):
-            destination = ast.literal_eval(destination)
-        self.destination = destination
+        if type == UDP.SOCK_BROADCAST_UDP:
+            broadcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            broadcast.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            return broadcast
+        elif type == UDP.SOCK_UDP: 
+            udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            return udp
+        elif type == UDP.SOCK_MULTICAST_UDP:
+            multicast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            multicast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            multicast.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            
+            
+            
+        
+    @staticmethod
+    def _obtain_sys_ip() -> str:
+        """
+        Obtaining system's ip address *This may not work in Arch linux
+        
+        Params:
+            os_system(sys.platform) =  current os_system.
+        
+        Raises:
+            ValueError: No matching os system, cannot obtain IP, will need to input manually.
 
+        Returns:
+            ip (str): system's ip address
+        """
+        os_system = sys.platform
+        match os_system:
+            case 'win32':
+                ip = socket.gethostbyname(socket.gethostname())
+            case 'linux':
+                ip = os.popen('hostname -I').read().strip().split(" ")[0]
+                print(os.popen('hostname -I').read().strip().split(" "))
+            case 'darwin':
+                ip = os.popen('ipconfig getifaddr en0').read().strip()
+            case _:
+                raise ValueError("Cannot Obtain IP, Please input ip address manually")       
+        return ip
+    
+    @staticmethod
+    def _generate_port() -> int:
+        port = random.randint(5000, 9000)
+        log.debug(f"port generated : {port}")
+        return port
+
+  
     
