@@ -14,20 +14,22 @@ case $ans in
             fi 
             virtualenv . ;
             source ./bin/activate;
-        
-        # elif [[ "$OSTYPE" == "msys"* ]]; then 
-        #     pip3 install virtualenv
-        #     pip3 install virtualenvwrapper-win
-        #     mkvirtualenv .
+
+        elif [[ "$OSTYPE" == "msys"* ]]; then 
+            pip install virtualenv
+            python -m venv .venv
+            .venv\Scripts\activate
+            # make sure to click "swap to virtual env" at bottom right dialog box
+            # type "deactivate" in terminal to deactivate virtual env
         else
-            echo "Sorry virtual env only supported in Linux";
+            echo "Sorry virtual env only supported in Linux(ubuntu) and Microsoft Windows";
 
         fi
-        
+    
 
 esac
+echo "Installing Python Module"
 
-# Installing Python Module 
 pip3 install --editable . # add "--user" to this if you don't have access to your computer's system-wide python packages.
 
 # git pull
