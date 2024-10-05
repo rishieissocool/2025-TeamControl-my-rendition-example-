@@ -1,6 +1,5 @@
 import numpy as np
 import numpy.typing as npt
-from TeamControl.prm import *
 from TeamControl.VoronoiPlanner.Obstacle import Obstacle
 import logging
 

@@ -1,7 +1,6 @@
 # import time #we might want to have our own timer
 import numpy as np
 import numpy.typing as npt
-from TeamControl.prm import *
 from TeamControl.Model.field import *
 from TeamControl.Model.frame import *
 import TeamControl.Model as model
