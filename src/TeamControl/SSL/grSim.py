@@ -1,4 +1,4 @@
-from TeamControl.SSL.proto2 import *
+from TeamControl.Coms.proto2 import *
 from TeamControl.Model.world import World as wm
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *

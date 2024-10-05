@@ -7,8 +7,8 @@ from TeamControl.Model.world import World as wm
 from TeamControl.Model.GameState import State
 from TeamControl.shared.RobotUDP import Receiver,UDP
 
-from TeamControl.SSL.proto2 import ssl_vision_wrapper_pb2
-from TeamControl.SSL.proto2 import ssl_gc_referee_message_pb2
+from TeamControl.Coms.proto2 import ssl_vision_wrapper_pb2
+from TeamControl.Coms.proto2 import ssl_gc_referee_message_pb2
 
 import logging
 log = logging.getLogger()

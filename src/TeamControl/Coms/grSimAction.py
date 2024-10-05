@@ -5,17 +5,16 @@ This class is going to be replaced.
 import time
 
 from TeamControl.Model.world import World as wm
-from TeamControl.shared.Action import BaseAction 
-from TeamControl.SSL.proto2 import grSim_Packet_pb2
-from TeamControl.SSL.proto2 import grSim_Commands_pb2
-from TeamControl.SSL.proto2 import grSim_Replacement_pb2
-# from TeamControl.SSL.proto2 import ssl_vision_wrapper_pb2
-# from TeamControl.SSL.proto2 import grSim_Robotstatus_pb2 
+from TeamControl.Coms.proto2 import grSim_Packet_pb2
+from TeamControl.Coms.proto2 import grSim_Commands_pb2
+from TeamControl.Coms.proto2 import grSim_Replacement_pb2
+# from TeamControl.Coms.proto2 import ssl_vision_wrapper_pb2
+# from TeamControl.Coms.proto2 import grSim_Robotstatus_pb2 
 
 
 TIME = time.time()
 ### GR SIM ACTION ### 
-class grSim_Action(BaseAction):
+class grSim_Action():
     """grSim Action
     Class commands to generate action and send to grSim
 
