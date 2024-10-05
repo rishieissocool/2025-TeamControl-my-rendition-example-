@@ -13,7 +13,7 @@ from enum import auto
 # Log
 import logging
 log = logging.getLogger()
-log.setLevel(logging.NOTSET)
+log.setLevel(logging.DEBUG)
 
 class UDP(enum.IntEnum):
     SOCK_BROADCAST_UDP = auto()
@@ -46,8 +46,8 @@ class BaseSocket():
         else:
             log.critical(f"{port=} is not int, current type:{type(port)}")
         
-        if sock_type is UDP.SOCK_UDP or sock_type is UDP.SOCK_BROADCAST_UDP:
-            self.sock:socket.socket = self._setup_socket(sock_type)
+        self.sock:socket.socket = self._setup_socket(sock_type)
+        
         if binding:
             self.ready = self._bind_sock()
         else:
@@ -55,7 +55,6 @@ class BaseSocket():
         
         self.buffer_size = buffer_size
         self.source:tuple[str,int] = None
-        self.destination:tuple[str,int] = None
         
         log.debug(f"{self.__class__.__name__} socket is now active on {self.ip},{self.port}")
         
@@ -144,7 +143,7 @@ class BaseSocket():
         finally:
            if data is not None: # return anything that has a value
                 decoded_data = self._decode(data)
-                log.debug(f"Message Recieved from {addr=}, {decoded_data}")
+                # log.info(f"Message Recieved from {addr=}, {decoded_data}")
                 return decoded_data
             
     
@@ -247,7 +246,7 @@ class BaseSocket():
             multicast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             multicast.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             multicast.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            
+            return multicast
             
             
         

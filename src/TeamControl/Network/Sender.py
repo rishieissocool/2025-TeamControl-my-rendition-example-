@@ -62,7 +62,7 @@ class Sender(BaseSocket):
         raise NotImplementedError("Please Use Receiver")
 
 
-class Broadcast(Sender):
+class Broadcaster(Sender):
     def __init__(self,port: int = 12342) -> None:
         """
         UDP Broadcast sending channel

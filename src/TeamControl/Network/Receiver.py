@@ -14,7 +14,7 @@ from TeamControl.Coms.proto2 import ssl_gc_referee_message_pb2
 
 import logging
 log = logging.getLogger()
-log.setLevel(logging.NOTSET)
+log.setLevel(logging.DEBUG)
 
 class Receiver(BaseSocket):
     def __init__ (self,ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP, buffer_size: int=1024):
@@ -73,7 +73,8 @@ class Receiver(BaseSocket):
     def send(**kwargs):
         raise NotImplementedError("Please use a sending socket")
 
-class Broadcast(Receiver):
+class Broadcast_r(Receiver):
+    """reciever for broadcast"""
     def __init__(self, port: int = 0, buffer_size: int = 1024):
         sock_type=UDP.SOCK_BROADCAST_UDP
         ip = '<broadcast>'

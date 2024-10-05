@@ -88,7 +88,7 @@ class grSimSender(Sender):
     def send(**kwargs) -> None:
         raise NotImplementedError("Nothing is here")
     
-    def send_action(self, isYellow:bool, action: grSim_Action|bytes) -> None:
+    def send_action(self, isYellow:bool, action: BaseAction|bytes) -> None:
         if isinstance(action,grSim_Action):
             action = action.encode()
         if isinstance(action,RobotAction):
