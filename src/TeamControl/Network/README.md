@@ -2,26 +2,54 @@
 
 This directory includes the Server - Client Communication.
 
-Server Class includes the server as an object that establish a connection to the Robot Client
+For Communication Protocol please see [Coms]()
 
-## Server Class
+Base UDP is the default socket setup for both Receiver and Sender
 
-When the server has been initialed, the server will broadcast itself over the network.
+[SSL_Networking] includes the socket used for SSL_League softwares.
 
-The server will also have an active reciving UDP socket to allow the Robots to try to connect to the server.
 
-If there is an Incoming UDP message, the Server will first check if the robot has a "robot_id".
-
-If the robot sends the message without a "robot_id", we will assume that it is a new robot.
-
-Thus, it will continue onto an ID assignation proceedure *This might be updated in the future*
-
-After an ID has been assigned, the Server will then store all relevant data into a [RobotCli] Object. 
-
-Afterwards, The server will be then responsible for regularly requesting PING checks.
-
-As well as sending individual robot [Actions] and [Game Commands], etc.
-
+--- 
+DEFAULT IP AND PORTS : 
+game Controller broadcast 
+group : 224.5.23.1
+port : 10003
 
 ---
-PING Checks : Sending PING commands over then network and demand Robots to report back telemetry data.
+Vision in SSL - Vision 
+type : multicast UDP
+group : 224.5.23.2
+port : 10006
+
+---
+Vision in GRSim (Default) 
+type : multicast UDP
+group : 224.5.23.2
+port : 10020
+
+---
+Vision Tracker Multicast 
+group : 224.5.23.2 
+port : 10010
+
+Auto-Ref
+ip : local
+port : 10007
+trusted-keeys-dir : config/trusted_keys/auto_ref
+
+
+Team 
+ip: local
+port : 10008
+trusted-keys-dir: config/trusted_keys/team
+
+
+remote control 
+ip : local 
+port : 10011
+trusted-keys-dir: config/trusted_keys/remote-control
+
+
+game controller Continuous Integration (CI)
+ip : local
+port : 10009
