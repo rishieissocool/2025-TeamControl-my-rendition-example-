@@ -103,7 +103,7 @@ class BaseSocket():
                 raise Exception(f"Error encountered, aborting ... \n {e}")
                 
             finally:
-                log.debug("socket is binded : ",isBinded)
+                log.debug(f"socket is binded : {isBinded}")
                 
         return isBinded # this can be either true or false
     
