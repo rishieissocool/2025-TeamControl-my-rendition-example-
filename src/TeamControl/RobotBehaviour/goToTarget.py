@@ -45,7 +45,7 @@ def go_To_Target(target_pos: tuple[float,float], speed: int=1, stop_threshold:fl
     Returns:
         tuple[float,float]: velcocity x , velocity y
     """
-    if target is None:
+    if target_pos is None:
         return 0,0
     distance = math.sqrt(target_pos[0]**2 + target_pos[1]**2)
 
@@ -56,48 +56,3 @@ def go_To_Target(target_pos: tuple[float,float], speed: int=1, stop_threshold:fl
         return vx,vy
     else: 
         return 0,0
-
-
-if __name__ == '__main__':
-    from TeamControl.shared.Action import Action
-    from TeamControl.Coms.grSimAction import grSim_Action
-
-    from TeamControl.Network.Receiver import grSimVision,vision
-    from TeamControl.Network.Sender import robotSender,grSimSender
-    from TeamControl.Model.world import World as wm
-    print("is OUR Team Color YELLOW ? 1. YES 2. NO ")
-    i = int(input())
-    if i == 1 :
-        isYellow = True
-    else :
-        isYellow = False
-    world_model = wm(isYellow=isYellow,isPositive=isYellow)
-    print("Are you using grSim 1.YES 2.NO")
-    isgrSim = int(input())
-    
-    if isgrSim==1:
-        receiver = grSimVision(world_model)
-        sender = grSimSender()
-
-    else:
-        receiver = vision(world_model)
-        sender = robotSender()
-
-    while True:
-        updated = receiver.listen()
-        if updated is True :
-            # obtain target
-            target = world_model.get_ball()
-            robot_id = 1
-            pos = world_model.get_our_robot(robot_id)
-            tag = world2robot(pos, target)
-            print(f"{tag=}")
-            vx,vy = go_To_Target(tag)
-            w = turn_to_target(tag)
-            if isgrSim==1:
-                action = grSim_Action(isYellow,robot_id,vx,vy,w)
-            else:
-                action = Action(robot_id,vx,vy,w)
-            print(action)
-            # sends action to robot
-            sender.send_action(action)
