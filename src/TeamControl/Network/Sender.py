@@ -1,11 +1,8 @@
 """ SENDER
-Sender is an Abstract Base Class (ABC) which includes :
-    1. UDP              - UDP socket for server.
-    2. Broadcast        - UDP broadcast socket for server.
-    3. grSimCommand     - grSim UDP socket for sending Actions.
-    # 4. grSimReplacement - grSim UDP socket for sending replacement.
-    # 5. grSimTeams       - grSim UDP socket for teams control. 
-
+Sender includes :
+    1. Sender            - UDP socket for server.
+    2. Broadcaster       - UDP broadcast socket for server.
+    3. Multicaster       - UDP Multicast socket (Not Implemented)
 Raises:
     NotImplementedError: if user try to use an empty function
 """
@@ -58,6 +55,7 @@ class Sender(BaseSocket):
         if isinstance(destination,str):
             destination = ast.literal_eval(destination)
         self.destination = destination
+    
     def listen(self, duration: int = None) -> str | None:
         raise NotImplementedError("Please Use Receiver")
 
@@ -76,3 +74,6 @@ class Broadcaster(Sender):
         ip = '<broadcast>'
         super().__init__(ip=ip,port=port,sock_type=UDP.SOCK_BROADCAST_UDP,binding=True)
         
+        
+class Multicaster(Sender):
+    ...

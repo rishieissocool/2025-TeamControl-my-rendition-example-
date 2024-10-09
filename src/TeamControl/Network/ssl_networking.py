@@ -1,4 +1,4 @@
-"""Reciever - applications
+"""This is the file for all ssl sockets
 
 Raises:
     ValueError: cannot be decoded
@@ -81,7 +81,7 @@ class grSimVision(vision):
 ### Simulation Control ### 
 
 class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None:
+    def __init__(self, ip: str = "127.0.0.1", port : int = 20011) -> None: #please check and verify this port
         self.destination = (ip,port)
         super().__init__(ip=ip,port=port)
 

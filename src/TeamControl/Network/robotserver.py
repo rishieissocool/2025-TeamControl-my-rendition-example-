@@ -1,3 +1,6 @@
+"""
+    This class controls robot connections and communications
+"""
 import logging
 import time
 import numpy as np
@@ -9,9 +12,7 @@ from multiprocessing import Queue
 
 from TeamControl.Network.Robot import Robot
 from TeamControl.shared.Action import Action
-"""
-    This class controls robot connections and communications
-"""
+
 log = logging.INFO
 c = time.localtime()
 TIME = time.strftime("%H:%M:%S", c)

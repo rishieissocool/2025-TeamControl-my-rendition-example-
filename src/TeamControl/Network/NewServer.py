@@ -1,3 +1,7 @@
+"""
+This script is an archive
+"""
+
 import logging
 import time
 import numpy as np
@@ -10,10 +14,10 @@ from multiprocessing import Queue,freeze_support,Process,Manager
 from TeamControl.Network.Sender import robotSender,Broadcast
 from TeamControl.Network.Receiver import robotReceiver,vision,grSimVision,GameControl
 from TeamControl.Network.robotserver import robots
-from TeamControl.shared.Action import Action
+from TeamControl.Coms.Action import RobotAction as Action
 from TeamControl.Model.world import World as wm
-from TeamControl.Model.game3 import test
-from TeamControl.Model.game2 import tc
+# from TeamControl.Model.game3 import test
+# from TeamControl.Model.game2 import tc
 from TeamControl.Model.GameState import GameControllerCommand
 
 

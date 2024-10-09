@@ -1,4 +1,4 @@
-from TeamControl.Network.Robot import *
+# from TeamControl.Network.Robot import *
 from TeamControl.Network.robotserver import *
 from TeamControl.Network.Receiver import *   
 from TeamControl.Network.Sender import *

@@ -1,3 +1,9 @@
+""" Receiver - Socket
+This file includes : 
+1. Receiver - Basic UDP receiver w/ Recieving Functions (exc. sending)
+2. Broadcast - USP Broadcast receiver 
+3. Multicast - UDP Multicast receiver
+"""
 import socket
 import logging
 import struct
@@ -12,6 +18,7 @@ from TeamControl.Network.BaseUDP import BaseSocket,UDP
 from TeamControl.Coms.proto2 import ssl_vision_wrapper_pb2
 from TeamControl.Coms.proto2 import ssl_gc_referee_message_pb2
 
+#logging
 import logging
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
@@ -73,7 +80,7 @@ class Receiver(BaseSocket):
     def send(**kwargs):
         raise NotImplementedError("Please use a sending socket")
 
-class Broadcast_r(Receiver):
+class Broadcast(Receiver):
     """reciever for broadcast"""
     def __init__(self, port: int = 0, buffer_size: int = 1024):
         sock_type=UDP.SOCK_BROADCAST_UDP
@@ -94,6 +101,7 @@ class Multicast(Receiver):
                                 if wanted to connect externally, please type in ip string 
             port (int, optional): port of connection. Defaults to 0 -> auto generated.
             group (str, optional): Mulitcast group. Defaults to "224.5.0.0" -> nothing.
+            buffer_size (int, optional): buffer_size for listening. Defaults to 6000. 
 
         Raises:
             Exception: Needed decoder
