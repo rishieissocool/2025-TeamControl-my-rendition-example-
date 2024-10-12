@@ -1,11 +1,11 @@
-# import time #we might want to have our own timer
 import numpy as np
 import numpy.typing as npt
 from TeamControl.Model.field import *
 from TeamControl.Model.frame import *
 import TeamControl.Model as model
 import logging
-
+log = logging.getLogger()
+log.setLevel(logging.DEBUG)
 
 class World:
     """
@@ -48,10 +48,16 @@ class World:
 
         Args:
             isYellow (bool): Boolean for Is your Team YELLOW.
-            isYellow (bool): Boolean for Is your Team On RIGHT side.
+            isPositive (bool): Boolean for Is your Team On X positive side.
             gap (int, optional): Number of frames to skip. Defaults to 0.
             max_frames (int, optional): Number of max frames to store in history. Defaults to 5.
             max_cameras (int, optional): Number of active Cameras. Defaults to 4.
+        
+        Params : 
+            is_detection_updated (bool): variable used to identify whether the current model has a new frame fully updated. 
+                                         Should always set to false unless the frame has been fully updated.
+            frames (list): list of Frame objects.
+            field (Field): The field object for geometry of the map.
         """
         self.isYellow:bool = isYellow
         self.isPositive:bool = isPositive
@@ -60,8 +66,10 @@ class World:
         self.max_frames:int = max_frames
         self.max_cameras:int = max_cameras
         self.is_detection_updated:bool = False
-        self.frames:list = list()
-        self.field:Field = None # initialise when geometry has been updated
+        self.frames:list[Frame] = list() 
+        self.field:Field = None # geometry 
+        log.info(f"World Model has been initialized {str(self)}")
+
 ### --- UPDATE --- ###
     def update(self, data) -> bool | None:
         if data is None:
@@ -80,7 +88,7 @@ class World:
                 if self.field is None:
                     # updates our geometry
                     self.__update_geometry(data.geometry)
-                    log.info("Updating Geometry")
+                    log.info("Geometry has been set")
                     # otherwise leave it . 
         except ValueError:
             log.info("new data : \n" ,data)
@@ -98,8 +106,6 @@ class World:
             new_frame (Frame): the new frame object to store data about this frame
             curret_frame (Frame): the Current Frame that you want to update the data in         
         """
-        print(self.max_cameras)
-
         # print(detection)
         #if current newest frame number is smaller than the new frame number received
         if self.cframe is None or (self.cframe + self.gap < detection.frame_number):
@@ -298,6 +304,11 @@ class World:
             return None
 
     def __repr__(self):
+        """__repr__ in depth description of World Model
+
+        Returns:
+            str: log info of 99% of World Model
+        """
         return f'''
 World Model 
 Current Frame : {self.cframe}
@@ -320,24 +331,18 @@ BALL Located :
 {self.get_ball()}
 
 
-Current list of Frame History : {len(self.frames)} frames avaialble, maximum : {self.max_frames}
+Current list of Frame History : {len(self.frames)} frames available, maximum : {self.max_frames}
 
     '''
     
+    def __str__(self):
+        """__str__ Returns a simple Representation of World Model.
+
+        Returns:
+            str: simple form of output to check for the world model basics.
+        """
+        return f'is Our Team Yellow ? {self.isYellow} , field is Positive Half ? {self.isPositive}. World Model has {len(self.frames)} frames, has geometry been initialized ? {self.field!=None}'
+    
 # Field data : 
 # {self.field}
-    # {self.frames}
-        
-
-
-# if __name__ == "__main__":
-#     from TeamControl.Model.world import World
-#     world_model:World = World(isYellow= True, isPositive=True,max_cameras=1)
-#     print(type(world_model))
-#     recv = vision(world_model)
-#     updated = False
-#     while True:
-#         updated = recv.listen()
-#         print(updated)
-#         if world_model.is_detection_updated is True:
-#             print(world_model)
+# {self.frames}
