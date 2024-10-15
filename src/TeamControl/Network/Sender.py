@@ -10,7 +10,7 @@ import ast
 
 import logging
 
-from TeamControl.Coms.Action import BaseAction,RobotAction
+from TeamControl.Coms.Action import BaseAction,Action
 from TeamControl.Coms.grSimAction import grSim_Action
 from TeamControl.Network.BaseUDP import *
 # from TeamControl.Network.Robot import Robot

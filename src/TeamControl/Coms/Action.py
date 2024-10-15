@@ -10,7 +10,7 @@ log = logging.getLogger()
 log.setLevel(logging.NOTSET)
 
 
-class RobotAction(BaseAction):
+class Action(BaseAction):
     def __init__(self, robot_id:int, vx: float = 0.0, vy: float = 0.0, w: float = 0.0, kick: int = 0, dribble: int = 0):
         """Action
             Object for initialise action commands, encode / decode strings for UDP transportation.
@@ -66,7 +66,7 @@ class RobotAction(BaseAction):
         
         args = [int(robot_id), float(vx),float(vy),float(w),int(kick),int(dribble)]
         
-        return RobotAction(*args) 
+        return Action(*args) 
 
     def __repr__(self) -> str:
         """ this is a representation statement

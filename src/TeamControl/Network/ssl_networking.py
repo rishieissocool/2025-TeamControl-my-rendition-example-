@@ -91,7 +91,7 @@ class grSimSender(Sender):
     def send_action(self, isYellow:bool, action: BaseAction|bytes) -> None:
         if isinstance(action,grSim_Action):
             action = action.encode()
-        if isinstance(action,RobotAction):
+        if isinstance(action,Action):
            new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
            action = new_action.encode()
         # sends packet to grsim

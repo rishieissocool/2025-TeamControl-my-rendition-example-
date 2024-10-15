@@ -22,6 +22,7 @@ if __name__ == "__main__":
         g_sender = grSimSender(ip="127.0.0.1")
     
     if numRobotsActive > 0 : 
+        # interface show all active robots and where 
         print("expecting robots active :",numRobotsActive)
         sender = Sender(binding=True)
         b_sender = Broadcaster()
@@ -31,10 +32,11 @@ if __name__ == "__main__":
         list_action = list()
     
         isUpdated = vision_sock.listen()
+        
         if isUpdated:
             ball_pos = vision_sock.world_model.get_ball()
             print(f"{ball_pos=}")
-            action = RobotAction(robot_id=0,vx=1,vy=1)
+            action = Action(robot_id=0,vx=1,vy=1)
             if isGrSimActive:
                 g_sender.send_action(isYellow=isYellow,action=action)
             if numRobotsActive > 0:
