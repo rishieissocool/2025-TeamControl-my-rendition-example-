@@ -14,6 +14,7 @@ def pathplanning(planner:VoronoiPlanner,world_model:World,target_pos):
     This generates waypoints for all of our robots to target and returns as a list
 
     Args:
+        planner (VoroniPlanner): the initialised Planner.
         world_model (World): World Model from vision socket
         target_pos (tuple[float,float]): targeted location e.g. ball_pos 
 
