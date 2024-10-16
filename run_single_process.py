@@ -1,16 +1,17 @@
 from TeamControl.Network.ssl_networking import *
-from TeamControl.Model.world import World
+from TeamControl.Examples.GoToBall import go_to_ball
 
 if __name__ == "__main__":
     # VARIABLES 
-    isYellow = True
-    isPositive = True
+    us_yellow = True
+    id = 0
+    us_positive = True
     isGrSimActive = True
     isVisionActive = False
     UseGrSimVision = True
     numRobotsActive = 0
     
-    world_model = World(isYellow=isYellow,isPositive=isYellow)
+    world_model = World(isYellow=us_yellow,isPositive=us_positive)
     if UseGrSimVision:
         world_model.max_cameras = 4
         # logging.info(f"Cameras Active : {world_model.max_cameras}")
@@ -31,14 +32,14 @@ if __name__ == "__main__":
     while True: 
         list_action = list()
     
-        isUpdated = vision_sock.listen()
+        isUpdated = vision_sock.listen() # is the current detection frame updated ? 
         
-        if isUpdated:
-            ball_pos = vision_sock.world_model.get_ball()
-            print(f"{ball_pos=}")
-            action = Action(robot_id=0,vx=1,vy=1)
+        if isUpdated: # now the detection frame is fully updated
+            # do operations
+            action = go_to_ball(vision_sock.world_model,isYellow=us_yellow,robot_id=id)
+            
             if isGrSimActive:
-                g_sender.send_action(isYellow=isYellow,action=action)
+                g_sender.send_action(isYellow=us_yellow,action=action)
             if numRobotsActive > 0:
                 ...
     
