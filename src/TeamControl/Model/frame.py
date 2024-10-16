@@ -19,6 +19,7 @@ class Robot:
     CONFIDENCE = 3
     PIXEL = 4
     OBS = 5
+    XY = 6
     
     def __init__(self,robot_data,isYellow:bool) -> object:
         self.id : int = robot_data.robot_id
@@ -90,6 +91,11 @@ class Robot:
             case self.OBS:
                 return self.obs
             
+            case self.XY:
+                x: float = round(self.x, dp)
+                y: float = round(self.y, dp) 
+                return x,y
+            
     def get_position(self) -> tuple[float,float,float]:
         return self.get(format=self.CORDS)
     
@@ -136,6 +142,7 @@ class Ball:
                 px: float = round(self.px, dp)
                 py: float = round(self.py, dp) 
                 return px,py
+            
     
     def __repr__(self):
         return f"BALL \n Confidence : {self.c}\n POSITION : {self.x},{self.y} \n PIXEL : {self.px}, {self.py}\n"
