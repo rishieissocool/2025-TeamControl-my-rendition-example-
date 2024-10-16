@@ -1,5 +1,7 @@
 from TeamControl.Network.ssl_networking import *
-from TeamControl.Examples.GoToBall import go_to_ball
+from TeamControl.Examples.PathPlaner import pathplanning 
+from TeamControl.Model.world import World
+
 
 if __name__ == "__main__":
     # VARIABLES 
@@ -36,10 +38,11 @@ if __name__ == "__main__":
         
         if isUpdated: # now the detection frame is fully updated
             # do operations
-            action = go_to_ball(vision_sock.world_model,isYellow=us_yellow,robot_id=id)
+            ball_pos = vision_sock.world_model.get_ball()
+            points = pathplanning(vision_sock.world_model,ball_pos)
             
-            if isGrSimActive:
-                g_sender.send_action(isYellow=us_yellow,action=action)
+            # if isGrSimActive:
+            #     g_sender.send_action(isYellow=us_yellow,action=action)
             if numRobotsActive > 0:
                 ...
     

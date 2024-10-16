@@ -3,7 +3,6 @@ from TeamControl.VoronoiPlanner import *
 from TeamControl.VoronoiPlanner.VoronoiPlanner import *
 from TeamControl.Model.world import World as wm
 from TeamControl.Model.frame import * 
-from TeamControl.SSL.formationObs import *
 
 
 def main():
@@ -28,9 +27,6 @@ def main():
     print(all_obs)
     
     planner = VoronoiPlanner(x,y,all_obs)
-    
-    ## get target position (formation)
-    formation_cords
     
     planner.generate_waypoints(our_robots,)
     execution_time = time.time()-start_time
