@@ -1,7 +1,5 @@
 import math
-from TeamControl.Network.Robot import *
 from TeamControl.Model.transform_cords import *
-from TeamControl.Formation.relative_position import *
 
 class RobotMovement():
     

@@ -1,17 +1,21 @@
 from TeamControl.Network.ssl_networking import *
 from TeamControl.Examples.PathPlaner import pathplanning 
+from TeamControl.RobotBehaviour.behaviour import RobotMovement 
 from TeamControl.Model.world import World
+from TeamControl.Model.transform_cords import world2robot
+from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
 
 
 if __name__ == "__main__":
     # VARIABLES 
     us_yellow = True
-    id = 0
+    robot_id = 0
     us_positive = True
     isGrSimActive = True
     isVisionActive = False
     UseGrSimVision = True
     numRobotsActive = 0
+    planner = VoronoiPlanner(xsize=9000,ysize=6000)
     
     world_model = World(isYellow=us_yellow,isPositive=us_positive)
     if UseGrSimVision:
@@ -34,15 +38,23 @@ if __name__ == "__main__":
     while True: 
         list_action = list()
     
-        isUpdated = vision_sock.listen() # is the current detection frame updated ? 
-        
+        isUpdated = vision_sock.listen() # is the current detection frame updated ?
         if isUpdated: # now the detection frame is fully updated
             # do operations
             ball_pos = vision_sock.world_model.get_ball()
-            points = pathplanning(vision_sock.world_model,ball_pos)
-            
-            # if isGrSimActive:
-            #     g_sender.send_action(isYellow=us_yellow,action=action)
-            if numRobotsActive > 0:
-                ...
+            points = pathplanning(planner,vision_sock.world_model,ball_pos)
+            for robot_id in vision_sock.world_model.get_our_ids():
+                robot_pos = vision_sock.world_model.get_our_robot(robot_id=robot_id)
+                target = points[robot_id][1]
+                target_pos = world2robot(robot_position=robot_pos,target_position=target)
+                print(target)
+                vx,vy = RobotMovement.go_To_Target(target_pos=target)
+                w = RobotMovement.turn_to_target(target_pos,speed=2)
+        
+                action = Action(robot_id=robot_id,vx=vx,vy=vy,w=w)
+                print(action)   
+                if isGrSimActive:
+                    g_sender.send_action(isYellow=us_yellow,action=action)
+                if numRobotsActive > 0:
+                    ...
     
