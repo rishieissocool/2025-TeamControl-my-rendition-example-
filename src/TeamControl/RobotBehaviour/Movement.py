@@ -124,10 +124,3 @@ class RobotMovement():
         return robot_position
     
 
-
-if __name__ == "__main__":
-        
-    from TeamControl.Model.world import World as wm
-    from TeamControl.Network.Receiver import grSimVision,vision
-    from TeamControl.Network.Sender import grSimSender,robotSender
-    ...
