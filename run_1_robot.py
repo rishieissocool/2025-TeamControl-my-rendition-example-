@@ -2,7 +2,8 @@ from TeamControl.Network.Sender import Sender
 from TeamControl.Network.ssl_networking import *
 
 from TeamControl.Examples.PathPlaner import pathplanning 
-from TeamControl.Model import World, world2robot
+from TeamControl.Model.world import World
+from TeamControl.Model import world2robot
 from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
 
 from TeamControl.RobotBehaviour.Movement import RobotMovement
