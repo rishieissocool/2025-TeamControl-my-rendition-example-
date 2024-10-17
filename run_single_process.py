@@ -48,7 +48,7 @@ if __name__ == "__main__":
                 target = points[robot_id][1]
                 target_pos = world2robot(robot_position=robot_pos,target_position=target)
                 # print(target)
-                vx,vy = RobotMovement.go_To_Target(target_pos=target)
+                vx,vy = RobotMovement.go_To_Target(target_pos=target_pos)
                 w = RobotMovement.turn_to_target(target_pos,speed=2)
         
                 action = Action(robot_id=robot_id,vx=vx,vy=vy,w=w)
