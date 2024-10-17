@@ -1,4 +1,4 @@
-__all___ = [world2robot, robot2world, predict_trajectory]
+__all___ = ['World','world2robot', 'robot2world']
 
 from .transform_cords import world2robot, robot2world
-from .Trajectory import predict_trajectory
+from .world import World
