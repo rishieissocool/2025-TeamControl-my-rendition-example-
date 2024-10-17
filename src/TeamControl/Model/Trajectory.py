@@ -1,14 +1,6 @@
 import time
-from TeamControl.Coms.Action import Action
-from TeamControl.Network.Receiver import *
-from TeamControl.Network.Sender import *
-from TeamControl.Model.world import World as wm
-from TeamControl.Coms.grSimAction import grSim_Action
-from TeamControl.RobotBehaviour import *
 import math
 import numpy as np
-from TeamControl.Formation.relative_position import *
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
