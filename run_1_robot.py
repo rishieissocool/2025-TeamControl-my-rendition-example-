@@ -28,13 +28,18 @@ if __name__ == "__main__":
         if isUpdated: # now the detection frame is fully updated
             # do operations
             ball_pos = vision_sock.world_model.get_ball()
-            points = pathplanning(planner,vision_sock.world_model,ball_pos)
+            print(f"{ball_pos=}")
+            # points = pathplanning(planner,vision_sock.world_model,ball_pos)
             
             robot_pos = vision_sock.world_model.get_our_robot(robot_id=robot_id)
-            target = points[robot_id][1]
-            target_pos = world2robot(robot_position=robot_pos,target_position=target)
+            print(f"{robot_pos=}")
+            # target = points[robot_id][1]
+            
+            target_pos = world2robot(robot_position=robot_pos,target_position=ball_pos)
+            print("Relative Target : ", target_pos)
+            # target_pos = world2robot(robot_position=robot_pos,target_position=target)
             # print(target)
-            vx,vy = RobotMovement.go_To_Target(target_pos=target)
+            vx,vy = RobotMovement.go_To_Target(target_pos=target_pos)
             w = RobotMovement.turn_to_target(target_pos,speed=2)
     
             action = Action(robot_id=robot_id,vx=vx,vy=vy,w=w)
