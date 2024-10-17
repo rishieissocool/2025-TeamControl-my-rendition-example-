@@ -1,8 +1,7 @@
 from TeamControl.Network.ssl_networking import *
 from TeamControl.Examples.PathPlaner import pathplanning 
-from TeamControl.RobotBehaviour.behaviour import RobotMovement 
-from TeamControl.Model.world import World
-from TeamControl.Model.transform_cords import world2robot
+from TeamControl.RobotBehaviour.Movement import RobotMovement 
+from TeamControl.Model import World, world2robot
 from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
 
 
@@ -47,7 +46,7 @@ if __name__ == "__main__":
                 robot_pos = vision_sock.world_model.get_our_robot(robot_id=robot_id)
                 target = points[robot_id][1]
                 target_pos = world2robot(robot_position=robot_pos,target_position=target)
-                print(target)
+                # print(target)
                 vx,vy = RobotMovement.go_To_Target(target_pos=target)
                 w = RobotMovement.turn_to_target(target_pos,speed=2)
         
