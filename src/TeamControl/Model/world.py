@@ -126,7 +126,7 @@ class World:
             #     return self.is_detection_updated
 
                 
-        # if the current newest frame number is the frame number received
+        # irobotf the current newest frame number is the frame number received
         elif self.cframe == detection.frame_number:
             #retrieve current newest frame
             current_frame:Frame = self.frames[-1]
@@ -210,7 +210,7 @@ class World:
                         history.append(result)
                         log.info(f"result added robot:{robot_id}")
                 else:
-                    log.warning(f"No such robot @{frame=},team:{isYellow=}, robot: {robot_id=}")
+                    log.warning(f"No such robot @{frame.id=},team:{isYellow=}, robot: {robot_id=}")
             else:
                 log.warning(f"No Frame @ {frame=}")
                 

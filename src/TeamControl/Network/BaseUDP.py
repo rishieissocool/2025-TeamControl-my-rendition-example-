@@ -51,7 +51,7 @@ class BaseSocket():
         if binding:
             self.ready = self._bind_sock()
         else:
-            self.isReady:bool = True
+            self.ready:bool = True
         
         self.buffer_size = buffer_size
         self.source:tuple[str,int] = None

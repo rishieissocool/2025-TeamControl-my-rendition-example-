@@ -10,7 +10,7 @@ def transformation_matrix(p):
         output:
             transformation matrix (rotation and translation)
     '''
-    angle = p[2] 
+    angle = p[2] + np.pi
     c = np.cos(angle)
     s = np.sin(angle)
 

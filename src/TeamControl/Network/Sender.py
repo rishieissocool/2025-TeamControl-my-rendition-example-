@@ -37,8 +37,8 @@ class Sender(BaseSocket):
         Exceptions:
             TypeError : Only Action or byte objects allowed
         """
-        if not isinstance(action,issubclass(BaseAction)):
-            raise TypeError("Only Actions allowed")
+        # if not isinstance(action,issubclass(BaseAction)):
+        #     raise TypeError("Only Actions allowed")
         
         encoded_action:bytes = action.encode()
                 # sends the action to destined address
