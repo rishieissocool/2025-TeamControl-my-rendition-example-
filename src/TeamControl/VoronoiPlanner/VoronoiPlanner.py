@@ -38,7 +38,7 @@ class VoronoiPlanner:
         :param obstacles: List or array of new obstacle points.
         :param diameter: default robot diameter in mm (if not  in obstacles).
         """
-        self.obstacles = obstacles
+        self.obstacles:list[Obstacle] = obstacles
         self.radius = radius
         self.graph = None
         if obstacles is None:
@@ -120,7 +120,9 @@ class VoronoiPlanner:
             path = list(self.voronoi_vertices[path])
         except nx.NetworkXNoPath:
             path = []
-        
+        # except nx.NodeNotFound as nnf:
+        #     print(nnf)
+            # path = []
         return path
     
     def generate_waypoints(self, starts, goals, d0):
