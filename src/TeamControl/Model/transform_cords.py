@@ -10,7 +10,11 @@ def transformation_matrix(p):
         output:
             transformation matrix (rotation and translation)
     '''
-    angle = p[2] + np.pi
+    is_grsim = True
+    if is_grsim:
+        angle = p[2]
+    else:
+        angle = p[2] + np.pi
     c = np.cos(angle)
     s = np.sin(angle)
 
@@ -55,34 +59,3 @@ def robot2world(r, p):
     w = np.dot(trans_matrix, r)[:2]
 
     return w
-
-
-def example():
-    from TeamControl.Model.world import World as wm
-    from TeamControl.Network.Sender import grSimSender,robotSender
-    from TeamControl.Network.Receiver import grSimVision,vision
-    world_model = wm(True,True)
-    print("Are you using grSim 1.YES 2.NO")
-    isgrSim = int(input())
-    if isgrSim==1:
-        receiver = grSimVision(world_model)
-    else:
-        receiver = vision(world_model)
-    while True:
-        updated= receiver.listen()
-        if updated is True :
-            # obtain target
-            target = world_model.get_ball()
-            
-            robot_pos = world_model.get_our_robot(1)
-            print(f'{robot_pos=}')
-            target_pos = (target[0],target[1])
-            # print(matrix_pos)
-            # print(robot_pos)(Works)
-            print(f'{robot_pos[2]=}')
-            matrix = world2robot(r=robot_pos, w=target_pos)
-            print(f'{matrix=}')
-
-
-if __name__ == "__main__":
-    example()

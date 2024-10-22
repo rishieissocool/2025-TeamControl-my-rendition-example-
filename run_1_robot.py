@@ -27,7 +27,7 @@ if __name__ == "__main__":
         
     while True:     
         isUpdated = vision_sock.listen() # is the current detection frame updated ?
-        if isUpdated and time.time() >= start_time+0.05: # now the detection frame is fully updated
+        if isUpdated and time.time() >= start_time + 0.05: # now the detection frame is fully updated
         # if isUpdated:
             # do operations
             ball_pos = vision_sock.world_model.get_ball()

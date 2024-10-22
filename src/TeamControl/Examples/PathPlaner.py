@@ -23,8 +23,8 @@ def pathplanning(planner:VoronoiPlanner,world_model:World,target_pos):
     """
     # planner = VoronoiPlanner(xsize=x,ysize=y) # not recommended
 
-    CLEARANCE = 10
-    d0 = 10
+    CLEARANCE = 200
+    d0 = 250
     N = 100
     
     start:r = world_model.get_our_robot(robot_id=None,format=r.XY)
