@@ -243,4 +243,4 @@ if __name__ == "__main__":
     server.check_max()
     print(server)
     
-    print(f"{server.missing_robot=}")
+    print(f"{server.missing_robot=}") 
