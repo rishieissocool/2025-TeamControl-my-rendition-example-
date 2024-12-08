@@ -7,3 +7,5 @@ This year,  we want to focus on getting the robots moving, where we would start 
 We look forward to further utilise the SSL - Game Referee Protocols to simplify the Team controls and hopefully be able to perform basic tasks, movements and complete ball placement. 
 
 With adjustments made, hopefully 2025 - Team Control will be able to exceed our expectations and make our robots move with a more extensive feedback loop. 
+
+-- Emma
