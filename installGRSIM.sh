@@ -11,20 +11,20 @@ echo "Installing grSim please do not touch until you see the phrase - 'END'";
        
         echo " *** updating destination to /home/ssl.*** "
         cd 
+        ## Verifying default home
+        if [ -z "$HOME" ]; then
+            echo "HOME variable is not set. Exiting."
+            exit 1
+        fi
+
         SSL_DIR="$HOME/ssl"
-        if [ ! -d "$SSL_DIR"]; then
+        if [ ! -d "$SSL_DIR" ]; then
             echo "Directory : $SSL_DIR not found. Creating directory . . ."
             mkdir -p "$SSL_DIR" || { echo "Fail to create Directory $SSL_DIR"; exit 1; }
         fi
 
         cd "$SSL_DIR" || { echo "Failed to cd into $SSL_DIR"; exit 1;}
-        
-        if [ ! -d "$SSL_DIR/grSim" ]; then
-            echo "*** Cloning git GRSIM repository from https://github.com/RoboCup-SSL/grSim.git ***"
-            git clone https://github.com/RoboCup-SSL/grSim.git
-        else 
-            echo "GRSIM Already Cloned"
-        fi
+       
 
         echo "*** Updating System ***"
         sudo apt update
@@ -34,8 +34,14 @@ echo "Installing grSim please do not touch until you see the phrase - 'END'";
         sudo apt install -y git build-essential cmake pkg-config qtbase5-dev \
                    libqt5opengl5-dev libgl1-mesa-dev libglu1-mesa-dev \
                    libprotobuf-dev protobuf-compiler libode-dev libboost-dev || { echo "Dependency installation failed"; exit 1; }
-
-        
+ 
+        if [ ! -d "$SSL_DIR/grSim" ]; then
+            echo "*** Cloning git GRSIM repository from https://github.com/RoboCup-SSL/grSim.git ***"
+            git clone https://github.com/RoboCup-SSL/grSim.git
+        else 
+            echo "GRSIM Already Cloned"
+        fi
+        cd grSim || { echo "cannot goto grSim file, check git clone. Abandoning . . . "; exit 1; }
         mkdir -p build && cd build || { echo "Failed to create/navigate to build directory"; exit 1; }
 
         echo "*** Building and Installing ***"
