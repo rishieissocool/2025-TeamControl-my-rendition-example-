@@ -21,3 +21,10 @@ Then activate the install.sh file and install
 For linux (Ubuntu), and Windows User, you can use virtual environment in the script 
 
 
+--- working on Feature ---
+
+To install GRSIM on your Linux Device, please put the following in your Linux Terminal
+```shell
+chmod +x installGRSIM.sh
+sudo ./installGRSIM.sh
+```
