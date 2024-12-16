@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/bash
 
 # Check if virtual environment exists
 VENV_DIR=".venv"
