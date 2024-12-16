@@ -6,21 +6,32 @@ import time
 
 from TeamControl.Model.world import World as wm
 from TeamControl.Coms.grSimAction import grSim_Action
-from TeamControl.Network.Sender import grSimSender
-from TeamControl.Network.Receiver import grSimVision
+from TeamControl.Network.ssl_networking import grSimVision, grSimSender
 
 TIME = time.time()
 class grSimUtils():
     """This is the main / sandbox class for grSim Control
     This class has a world_model, receiver and sender
     """
-    def __init__(self,isYellow) -> None:
-        self.set_team_color(isYellow)
-        self.world_model = wm(isYellow=isYellow)
-        self.receiver = grSimVision(self.world_model,ip= None)
-        self.sender = grSimSender()
+    def __init__(self,isYellow:bool ,ip:str = '127.0.0.1', vision_port : int=10020, sender_port : int=20011) -> None:
+        """Initalising GRSIM Tools. 
+        This includes : 
+        GRSIM VISION
+        GRSIM Command Sender
+
+        Args:
+            isYellow (bool): Do you want your Team Color to be Yellow
+            ip (str): The IP of the device you trying to communicate to, the GRSIM Device IP
+            vision_port (int): GRSIM Vision port number.
+            sender_port (int): grSim Command listending Port Number.
+        """
         
-    def set_team_color(self,isYellow):
+        self.update_team_color(isYellow)
+        self.world_model = wm(isYellow=isYellow)
+        self.vision = grSimVision(self.world_model,port=vision_port)
+        self.sender = grSimSender(ip=ip, port=sender_port)
+        
+    def update_team_color(self,isYellow):
         self.ourTeam = isYellow
         self.enemyTeam = not(isYellow)    
         
@@ -35,23 +46,24 @@ class grSimUtils():
         
         
     # some simple functions
-    def robot_move(self,ourTeam: bool,robot_id:int,vx=0.0,vy=0.0,vw=0.0):
+    def make_robot_move(self,ourTeam: bool,robot_id:int,vx=0.0,vy=0.0,vw=0.0):
         isYellow = self.get_team_color(ourTeam)
         action = grSim_Action(isYellow=isYellow,robot_id=robot_id,vx=vx,vy=vy,w=vw)
         self.send_action(action)
       
     
-    def robot_kick(self, ourTeam:bool, robot_id:int, kickx = 1.0, kickz = 0.0):
+    def make_robot_kick(self, ourTeam:bool, robot_id:int, kickx = 1.0, kickz = 0.0):
         isYellow = self.get_team_color(ourTeam)
         action = grSim_Action(isYellow=isYellow,robot_id=robot_id,kx=kickx,kz=kickz)
         self.sender.send_action(action)
 
-    def robot_dribble(self,ourTeam:bool,robot_id:int, dribble: bool):
+    def make_robot_dribble(self,ourTeam:bool,robot_id:int, dribble: bool):
         isYellow = self.get_team_color(ourTeam)
         action = grSim_Action(isYellow=isYellow,robot_id=robot_id,d=dribble)
         self.sender.send_action(action)
 
-    def keyboardMovements(self):
+    def use_keyboard_movements(self):
+        ## this is a keyaboard controlling script, requires linux and additional module installation
         speed = 1
         accel = 2
         vx = 0
@@ -146,7 +158,7 @@ class grSimUtils():
         
         
             
-    def hi(self,robot_pos,target):
+    def world2Robot(self,robot_pos,target):
         import numpy as np
         pos = robot_pos # x, y, fd
         print(pos)
