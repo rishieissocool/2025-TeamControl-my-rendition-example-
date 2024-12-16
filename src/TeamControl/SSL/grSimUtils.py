@@ -13,7 +13,7 @@ class grSimUtils():
     """This is the main / sandbox class for grSim Control
     This class has a world_model, receiver and sender
     """
-    def __init__(self,isYellow:bool ,ip:str = '127.0.0.1', vision_port : int=10020, sender_port : int=20011) -> None:
+    def __init__(self,isYellow : bool, isPositive : bool ,ip:str = '127.0.0.1', vision_port : int=10020, sender_port : int=20011) -> None:
         """Initalising GRSIM Tools. 
         This includes : 
         GRSIM VISION
@@ -21,12 +21,13 @@ class grSimUtils():
 
         Args:
             isYellow (bool): Do you want your Team Color to be Yellow
+            isPositive (bool): Are you on the Positive half of the field
             ip (str): The IP of the device you trying to communicate to, the GRSIM Device IP
             vision_port (int): GRSIM Vision port number.
             sender_port (int): grSim Command listending Port Number.
         """
         
-        self.update_team_color(isYellow)
+        self.update_team_color(isYellow,isPositive)
         self.world_model = wm(isYellow=isYellow)
         self.vision = grSimVision(self.world_model,port=vision_port)
         self.sender = grSimSender(ip=ip, port=sender_port)
