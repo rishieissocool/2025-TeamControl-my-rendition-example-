@@ -17,10 +17,14 @@ git clone https://github.com/WSU-TurtleRabbit/2025-teamcontrol.git
 Then activate the install.sh file and install
 
 ```shell
-./install.sh
+chmod 777 installModule.py
+chmod 777 setup.sh
+python3 ./installModule.py
 ```
 
-For linux (Ubuntu), and Windows User, you can use virtual environment in the script 
+There are 2 options that you have to answer [Y/N] to:
+1. Installing virtual environment
+2. Activating Virtual Environment
 
 
 ### Install GRSIM
@@ -35,4 +39,4 @@ This will install grSim at the directory : Home/$$/ssl/grsim
 
 where $$ is your username.
 
-If got into any error, please screenshot and send it to emma, and await for reply. 
+If got into any error, please copy or screenshot text and send it to emma, and await for reply. 
