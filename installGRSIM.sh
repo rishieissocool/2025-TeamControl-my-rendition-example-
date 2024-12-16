@@ -1,8 +1,8 @@
+#! /usr/bin/bash 
+
 ## this installs grsim
 ## Please use chmod +x installGRSIM.sh before trying to run this script
 ## only works in Linux
-
-#! /usr/bin/bash 
 
 echo "Installing grSim please do not touch until you see the phrase - 'END'";
 
