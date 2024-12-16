@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 ## Python script to activate module and virtual env
 import os
 import subprocess

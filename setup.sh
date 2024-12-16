@@ -19,6 +19,7 @@ if [ -d "$VENV_DIR" ]; then
     echo "Virtual environment activated successfully!"
 
     # Provide user instructions to activate it manually if needed
+    echo "*** There is a chance that your environment did not activate automatically ***"
     echo -e "\nTo activate the virtual environment manually, run:"
     echo "    source $VENV_DIR/bin/activate  # for Linux/macOS"
     echo "    source $VENV_DIR/Scripts/activate  # for Git Bash on Windows"
@@ -27,11 +28,11 @@ fi
 
 
 
-echo " - - - Installing Python Module - - - "
+echo -e "\n - - - Installing Python Module - - - "
 
 pip3 install --editable . # add "--user" to this if you don't have access to your computer's system-wide python packages.
 
-echo " - - - Performing Git Pull - - - "
+echo -e "\n - - - Performing Git Pull - - - "
 git pull || { echo "Git pull failed"; exit 1; }
 
 
