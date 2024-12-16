@@ -8,4 +8,12 @@ To establish your connection to grSim, you will need to an Application : GRSIM t
 
 Then you will have to ensure that the ports that are using are the same between GRSIM and THIS COMPUTER (the one you are running this team control)
 
-Afterwards, you can run the GRSIM
+Afterwards, you can run the GRSIM.py in `TeamControl > SSL > grSim.py`. This is a tutorial that provides the basics.
+
+You can also replace the `make_robot_move()` function to other functions and test.
+
+It is recommended to not commit any changes unless it is critical to this file.
+
+If you have further questions, please consult Emma.
+
+Thank you.
