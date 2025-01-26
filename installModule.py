@@ -33,10 +33,21 @@ def create_virtual_env():
         print("Virtual environment already exists. Skipping creation.")
     
     print("Upgrading pip and installing dependencies...")
-    subprocess.check_call([os.path.join(venv_dir, "bin", "pip"), "install", "--upgrade", "pip"])
-    subprocess.check_call([os.path.join(venv_dir, "bin", "pip"), "install", "-U", "setuptools", "wheel"])
-    subprocess.check_call([os.path.join(venv_dir, "bin", "pip"), "install", "-e", "."])
+    try:
+        pip_path = get_pip_path(venv_dir)
+        subprocess.check_call([pip_path, "install", "--upgrade", "pip"])
+        subprocess.check_call([pip_path, "install", "-U", "setuptools", "wheel"])
+        subprocess.check_call([pip_path, "install", "-e", "."])
+    except subprocess.CalledProcessError as e:
+        print(f"error when installing dependencies. {e}")
 
+def get_pip_path(venv_dir):
+    """ Gets the pip Local Path"""
+    if os.name == "nt": #windows
+        return os.path.join(venv_dir, "Scripts", "pip.exe")
+    else: #Linux / Mac
+        return os.path.join(venv_dir, "bin", "pip")
+    
 def run_shell_script(script_name):
     """Run a shell script."""
     try:
@@ -54,7 +65,7 @@ def main():
 
     # Trigger the shell script to handle the virtual environment activation and git pull
     if prompt_yn("Would you like to activate the virtual environment and pull the latest changes from the Git repository?"):
-        run_shell_script("./setup.sh")
+        run_shell_script("setup.sh")
 
     print("Setup complete!")
 
