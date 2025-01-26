@@ -1,5 +1,7 @@
 #! /bin/bash
 
+### THIS SCRIPT REQUIRES (GIT) BASH TERMINAL ###
+
 # Check if virtual environment exists
 VENV_DIR=".venv"
 if [ -d "$VENV_DIR" ]; then

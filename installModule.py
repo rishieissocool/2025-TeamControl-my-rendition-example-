@@ -4,6 +4,12 @@
 import os
 import subprocess
 import sys
+import logging
+import traceback
+
+# Set up logging configuration
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 def check_python_version():
     """Check if the Python version is supported."""
@@ -51,10 +57,15 @@ def get_pip_path(venv_dir):
 def run_shell_script(script_name):
     """Run a shell script."""
     try:
-        subprocess.check_call([script_name], shell=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error running script {script_name}: {e}")
-        sys.exit(1)
+        print(f"Executing {script_name} . . .")
+        subprocess.check_call(["bash", script_name])
+
+    except Exception as e:
+        error_type = type(e).__name__
+        logging.error(f"{script_name} cannot be executed. TYPE : {error_type}, Please use a git bash Terminal IF YOU ARE ON WINDOWS")
+        logging.debug(f"TRACEBACK {error_type}",exc_info=True)
+        print("--- Skipping ---")
+        return
 
 def main():
     check_python_version()
