@@ -13,18 +13,24 @@ To install this module, do
 ```
 git clone https://github.com/WSU-TurtleRabbit/2025-teamcontrol.git
 ```
+Run the Python FILE : installModule.py
 
-Then activate the install.sh file and install
+IF you have encountered Permission Issues, do the following 
+(this should only happen to Linux or Mac Users)
 
 ```shell
-chmod 777 installModule.py
-chmod 777 setup.sh
+chmod 755 installModule.py
+chmod 755 setup.sh
 python3 ./installModule.py
 ```
 
 There are 2 options that you have to answer [Y/N] to:
 1. Installing virtual environment
-2. Activating Virtual Environment
+2. Activating Virtual Environment and Performing a GIT PULL
+
+If you have experienced an error at the second option, and you are using a windows, please manually open up a GIT BASH Terminal. 
+
+You might also experience an error with GIT if you have not logged in on VSCODE. Please seek help accordingly.
 
 
 ### Install GRSIM
@@ -32,11 +38,11 @@ To install GRSIM on your Linux Device, this repository also has a file to do it 
 
 Please put the following in your Linux Terminal
 ```shell
-chmod 777 installGRSIM.sh
+chmod 755 installGRSIM.sh
 sudo ./installGRSIM.sh
 ```
-This will install grSim at the directory : Home/$$/ssl/grsim
+This will install grSim at the directory : Home/`$$`/ssl/grsim
 
-where $$ is your username.
+where `$$` is your username.
 
-If got into any error, please copy or screenshot text and send it to emma, and await for reply. 
+If got into any error, please copy or screenshot text and post it in Mattermost Chat, and await for reply. 
