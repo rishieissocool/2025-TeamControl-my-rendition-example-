@@ -3,14 +3,12 @@ import logging
 import datetime
 import time
 
-from TeamControl.Coms.BaseAction import BaseAction
-
 
 log = logging.getLogger()
 log.setLevel(logging.NOTSET)
 
 
-class Action(BaseAction):
+class Action():
     def __init__(self, robot_id:int, vx: float = 0.0, vy: float = 0.0, w: float = 0.0, kick: int = 0, dribble: int = 0):
         """Action
             Object for initialise action commands, encode / decode strings for UDP transportation.
