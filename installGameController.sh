@@ -11,11 +11,12 @@ echo "Installing gameController please do not touch until you see the phrase - '
     NODEJS_VERSION="22.14.0"
     SSL_DIR="$HOME/ssl-software"
     GO_VERSION="1.24.1"
+    TIGERS_DIR="TIGERS"
 
 
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 
-        echo " *** updating destination to /home/ssl.*** "
+        echo " *** updating destination to $SSL_DIR. *** "
         cd 
         ## Verifying default home
         if [ -z "$HOME" ]; then
@@ -33,8 +34,11 @@ echo "Installing gameController please do not touch until you see the phrase - '
        
 
         echo "*** Updating System ***"
+        ## SELECT YOUR OWN UPGRADE
         sudo apt update
-        sudo apt upgrade -y
+        # sudo apt upgrade -y
+        # sudo apt-get dist-upgrade
+        sudo apt get full-upgrade
 
         echo "*** Installing Software Dependency ***"
 
@@ -124,16 +128,16 @@ echo "Installing gameController please do not touch until you see the phrase - '
         ## Activate make install
         sudo make install
 
-        echno "Locating folder - $SSL_DIR/TIGERS AutoRef "
-        if [ ! -d "$SSL_DIR/TIGERS AutoRef" ]; then ## IF the folder TIGERS that is used to store Tigers' AutoRef does not exist
-            mkdir TIGERS AutoRef
-            cd TIGERS AutoRef
+        echno "Locating folder - $SSL_DIR/$TIGERS_DIR "
+        if [ ! -d "$SSL_DIR/$TIGERS_DIR" ]; then ## IF the folder TIGERS that is used to store Tigers' AutoRef does not exist
+            mkdir $TIGERS_DIR
+            cd $TIGERS_DIR
             echo "*** Cloning Git Repository -> TIGERs's Autoref***"
             git clone https://github.com/TIGERs-Mannheim/AutoReferee.git 
                        
         else           
-            echo "TIGER's AutoRef Already Cloned"
-            cd TIGERS AutoRef
+            echo "TIGER's Autorefree Already Cloned"
+            cd $TIGERS_DIR
         fi
         cd AutoReferee # going into Tiger's AutoREferee Folder
         ./build.sh
