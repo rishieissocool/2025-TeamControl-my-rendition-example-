@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## This installs the game controller and it only runs on ubuntu linux at the moment.
 
 ## Function to compare versions 
@@ -41,7 +41,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         sudo apt update
         # sudo apt upgrade -y
         # sudo apt-get dist-upgrade
-        sudo apt get full-upgrade
+        sudo apt-get full-upgrade
 
         echo "*** Installing Software Dependency ***"
 
@@ -50,13 +50,17 @@ echo "Installing gameController please do not touch until you see the phrase - '
         if ! command -v nvm &>/dev/null; then
             echo "nvm is not installed. Installing now..."
             curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
+	    export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
         else
             source "$HOME/.nvm/nvm.sh"
         fi
+	exec $SHELL
+	nvm --version
+	npm --version
+
         if command -v node &>/dev/null; then
-            CURRENT_NODEJS=$(node -v | sed 's/v//')
+    	    CURRENT_NODEJS=$(node -v | sed 's/v//')
             echo "Installed Node.js version: $CURRENT_NODEJS"
         else
             CURRENT_NODEJS="none"
@@ -75,6 +79,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         else
             echo "Node.js is up to date. No update needed."
         fi
+
 
         # echo "- Installing NodeJS version 20"
         # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh 
@@ -118,7 +123,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
             echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 
             echo "Go has been updated to version $(go version)"
-        else
+   	else
             echo "Go is up to date. No update needed."
         fi
 
@@ -131,7 +136,8 @@ echo "Installing gameController please do not touch until you see the phrase - '
         fi
         cd $GC_DIR
         ## Activate make install
-        sudo make install
+        
+	make install
         cd $SSL_DIR
 
         echo "** Installing SSL-Status-Board**"
@@ -150,7 +156,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         sudo apt install openjdk-21-jdk -y
 
         echo "Locating folder - $SSL_DIR/$TIGERS_DIR "
-        if [ ! -d "$SSL_DIR/$TIGERS_DIR"]|| [! -d "$SSL_DIR/$TIGERS_DIR/AutoReferee" ]; then ## IF the folder TIGERS does not exist
+        if [ ! -d "$SSL_DIR/$TIGERS_DIR" ] || [ ! -d "$SSL_DIR/$TIGERS_DIR/AutoReferee" ]; then ## IF the folder TIGERS does not exist
             mkdir $TIGERS_DIR
             cd $TIGERS_DIR
             echo "*** Cloning Git Repository -> TIGERs's Autoref***"
@@ -166,7 +172,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
 
         echo " - Installing ERFORCE - AUTOREF"
         echo "Locating folder - $SSL_DIR/$ERFORCE_DIR "
-        if [ ! -d "$SSL_DIR/$ERFORCE_DIR"] || [! -d "$SSL_DIR/$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
+        if [ ! -d "$SSL_DIR/$ERFORCE_DIR" ] || [ ! -d "$SSL_DIR/$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
             mkdir $ERFORCE_DIR 
             cd $ERFORCE_DIR 
             git clone https://github.com/robotics-erlangen/autoref.git 
@@ -174,7 +180,8 @@ echo "Installing gameController please do not touch until you see the phrase - '
             echo "$ERFORCE_DIR exists."
         fi
 
-        cd $ERFORCE_DIR/autoref
+        cd $ERFORCE_DIR
+	cd autoref
         ## initialising Submodule
         echo "Initialising ERFORCE GitHub Submodule"
         git submodule update --init
@@ -185,7 +192,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         echo "Installing Dependencies"
         ./install_ubuntu_deps.sh 
         echo "Building ERFORCE AutoRef package"
-        ./buiild.sh
+        ./build.sh
 
         echo "-- Installation Completed , Returning to : $SSL_DIR"
         cd $SSL_DIR
@@ -193,4 +200,3 @@ echo "Installing gameController please do not touch until you see the phrase - '
         echo "*** - E N D - ***"
 
     fi
-
