@@ -38,7 +38,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
 
         echo "*** Updating System ***"
         ## SELECT YOUR OWN UPGRADE
-        sudo apt update
+        # sudo apt update
         # sudo apt upgrade -y
         # sudo apt-get dist-upgrade
         sudo apt-get full-upgrade
@@ -55,7 +55,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         else
             source "$HOME/.nvm/nvm.sh"
         fi
-	exec $SHELL
+	source ~/.bashrc #restart terminal for nvm, npm
 	nvm --version
 	npm --version
 
@@ -168,7 +168,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         fi
         cd AutoReferee # going into Tiger's AutoREferee Folder
         ./build.sh
-        cd ../..
+        cd $SSL_DIR
 
         echo " - Installing ERFORCE - AUTOREF"
         echo "Locating folder - $SSL_DIR/$ERFORCE_DIR "
