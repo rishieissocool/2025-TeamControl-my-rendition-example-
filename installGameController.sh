@@ -16,8 +16,6 @@ echo "Installing gameController please do not touch until you see the phrase - '
     
 
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-
-        echo " *** updating destination to $SSL_DIR. *** "
         cd 
         ## Verifying default home
         if [ -z "$HOME" ]; then
@@ -31,7 +29,6 @@ echo "Installing gameController please do not touch until you see the phrase - '
         TIGERS_DIR="$SSL_DIR/TIGERS"
         ERFORCE_DIR="$SSL_DIR/ERFORCE"
 
-        
         if [ ! -d "$SSL_DIR" ]; then
             echo "Directory : $SSL_DIR not found. Creating directory . . ."
             mkdir -p "$SSL_DIR" || { echo "Fail to create Directory $SSL_DIR"; exit 1; }
@@ -125,10 +122,10 @@ echo "Installing gameController please do not touch until you see the phrase - '
         ##########################################################################
         echo "*** Installing ssl-game-controller ***"
         
-        echo "*** Cloning Git Repository -> SSL - Game Controller ***"
+        echo "*** Cloning Git Repository -> $GC_DIR ***"
         ## IF the game controller folder does not exist
         if [ ! -d "$$GC_DIR" ]; then 
-            git clone https://github.com/RoboCup-SSL/ssl-game-controller.git
+            git clone https://github.com/RoboCup-SSL/ssl-game-controller.git || { echo "Git clone failed"; exit 1; }
         else
             echo "Game Controller already Exist"
         fi
@@ -142,9 +139,9 @@ echo "Installing gameController please do not touch until you see the phrase - '
         ##################################################################
 
         echo "*** Installing SSL-Status-Board ***"
-        echo "*** Cloning Git Repository -> SSL - Status Board ***"
+        echo "*** Cloning Git Repository -> $SB_DIR ***"
         if [ ! -d "$SB_DIR" ]; then ## IF the folder ssl-status-board does not exist
-            git clone https://github.com/RoboCup-SSL/ssl-status-board.git
+            git clone https://github.com/RoboCup-SSL/ssl-status-board.git || { echo "Git clone failed"; exit 1; }
         else
             echo "Status Board already Cloned from GitHub" 
         fi
@@ -159,7 +156,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         echo "*** Installing Java SDK for TIGER's AutoRef ***"
         sudo apt install openjdk-21-jdk -y
 
-        echo "*** Installing TIGER's AutoReferee ***"
+        echo "*** Installing TIGER's AutoReferee -> $TIGERS_DIR/AutoReferee ***"
         if [ ! -d "$TIGERS_DIR/AutoReferee" ]; then
             mkdir -p "$TIGERS_DIR"
             cd "$TIGERS_DIR" || { echo "Failed to cd into $TIGERS_PATH"; exit 1; }
@@ -179,7 +176,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         cd "$SSL_DIR" 
 
         ################################################################################
-        echo "*** Installing ERFORCE - AUTOREF ***"
+        echo "*** Installing ERFORCE - AUTOREF --> $ERFORCE_DIR/autoref ***"
         if [ ! -d "$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
             mkdir -p "$ERFORCE_DIR"|| { echo "Failed to create $ERFORCE_DIR"; exit 1; }
             cd "$ERFORCE_DIR" || { echo "Failed to cd into $ERFORCE_DIR"; exit 1; }
