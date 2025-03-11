@@ -124,16 +124,16 @@ echo "Installing gameController please do not touch until you see the phrase - '
         ## Activate make install
         sudo make install
 
-
-        if [ ! -d "$SSL_DIR/TOGERS" ]; then ## IF the folder TIGERS that is used to store Tigers' AutoRef does not exist
-            mkdir TIGERS
-            cd TIGERS
+        echno "Locating folder - $SSL_DIR/TIGERS AutoRef "
+        if [ ! -d "$SSL_DIR/TIGERS AutoRef" ]; then ## IF the folder TIGERS that is used to store Tigers' AutoRef does not exist
+            mkdir TIGERS AutoRef
+            cd TIGERS AutoRef
             echo "*** Cloning Git Repository -> TIGERs's Autoref***"
             git clone https://github.com/TIGERs-Mannheim/AutoReferee.git 
                        
         else           
             echo "TIGER's AutoRef Already Cloned"
-            cd TIGERS
+            cd TIGERS AutoRef
         fi
         cd AutoReferee # going into Tiger's AutoREferee Folder
         ./build.sh
