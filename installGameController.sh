@@ -150,7 +150,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         sudo apt install openjdk-21-jdk -y
 
         echo "Locating folder - $SSL_DIR/$TIGERS_DIR "
-        if [ ! -d "$SSL_DIR/$TIGERS_DIR" || ! -d "$SSL_DIR/$TIGERS_DIR/AutoReferee" ]; then ## IF the folder TIGERS does not exist
+        if [ ! -d "$SSL_DIR/$TIGERS_DIR"]|| [! -d "$SSL_DIR/$TIGERS_DIR/AutoReferee" ]; then ## IF the folder TIGERS does not exist
             mkdir $TIGERS_DIR
             cd $TIGERS_DIR
             echo "*** Cloning Git Repository -> TIGERs's Autoref***"
@@ -166,7 +166,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
 
         echo " - Installing ERFORCE - AUTOREF"
         echo "Locating folder - $SSL_DIR/$ERFORCE_DIR "
-        if [ ! -d "$SSL_DIR/$ERFORCE_DIR" || ! -d "$SSL_DIR/$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
+        if [ ! -d "$SSL_DIR/$ERFORCE_DIR"] || [! -d "$SSL_DIR/$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
             mkdir $ERFORCE_DIR 
             cd $ERFORCE_DIR 
             git clone https://github.com/robotics-erlangen/autoref.git 
