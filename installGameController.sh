@@ -12,7 +12,9 @@ echo "Installing gameController please do not touch until you see the phrase - '
     GO_VERSION="1.24.1"
     SSL_DIR="$HOME/ssl-software"
     GC_DIR="ssl-game-controller"
+    SB_DIR="ssl-status-board"
     TIGERS_DIR="TIGERS"
+    ERFORCE_DIR="ERFORCE"
 
 
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -130,13 +132,25 @@ echo "Installing gameController please do not touch until you see the phrase - '
         cd $GC_DIR
         ## Activate make install
         sudo make install
-        cd ..
+        cd $SSL_DIR
+
+        echo "** Installing SSL-Status-Board**"
+        echo "Locating folder - $SSL_DIR/$SB_DIR "
+        if [ ! -d "$SSL_DIR/$SB_DIR" ]; then ## IF the folder ssl-status-board does not exist
+            git clone https://github.com/RoboCup-SSL/ssl-status-board.git
+        else
+            echo "Status Board already Cloned from GitHub" 
+        fi
+        cd $SB_DIR
+        make install
+        cd $SSL_DIR
 
 
-        echo "- Installing Java SDK for Tiger's AutoRef"
+        echo "** Installing Java SDK for Tiger's AutoRef **"
         sudo apt install openjdk-21-jdk -y
-        echno "Locating folder - $SSL_DIR/$TIGERS_DIR "
-        if [ ! -d "$SSL_DIR/$TIGERS_DIR" ]; then ## IF the folder TIGERS that is used to store Tigers' AutoRef does not exist
+
+        echo "Locating folder - $SSL_DIR/$TIGERS_DIR "
+        if [ ! -d "$SSL_DIR/$TIGERS_DIR" || ! -d "$SSL_DIR/$TIGERS_DIR/AutoReferee" ]; then ## IF the folder TIGERS does not exist
             mkdir $TIGERS_DIR
             cd $TIGERS_DIR
             echo "*** Cloning Git Repository -> TIGERs's Autoref***"
@@ -148,5 +162,35 @@ echo "Installing gameController please do not touch until you see the phrase - '
         fi
         cd AutoReferee # going into Tiger's AutoREferee Folder
         ./build.sh
+        cd ../..
+
+        echo " - Installing ERFORCE - AUTOREF"
+        echo "Locating folder - $SSL_DIR/$ERFORCE_DIR "
+        if [ ! -d "$SSL_DIR/$ERFORCE_DIR" || ! -d "$SSL_DIR/$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
+            mkdir $ERFORCE_DIR 
+            cd $ERFORCE_DIR 
+            git clone https://github.com/robotics-erlangen/autoref.git 
+        else
+            echo "$ERFORCE_DIR exists."
+        fi
+
+        cd $ERFORCE_DIR/autoref
+        ## initialising Submodule
+        echo "Initialising ERFORCE GitHub Submodule"
+        git submodule update --init
+        ## Setting auto pull submodule
+        git config submodule.recurse true
+        ## Pulling Submodule
+        git pull
+        echo "Installing Dependencies"
+        ./install_ubuntu_deps.sh 
+        echo "Building ERFORCE AutoRef package"
+        ./buiild.sh
+
+        echo "-- Installation Completed , Returning to : $SSL_DIR"
+        cd $SSL_DIR
+
+        echo "*** - E N D - ***"
+
     fi
 
