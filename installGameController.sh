@@ -9,8 +9,9 @@ version_lt() {
 
 echo "Installing gameController please do not touch until you see the phrase - 'END'";
     NODEJS_VERSION="22.14.0"
-    SSL_DIR="$HOME/ssl-software"
     GO_VERSION="1.24.1"
+    SSL_DIR="$HOME/ssl-software"
+    GC_DIR="ssl-game-controller"
     TIGERS_DIR="TIGERS"
 
 
@@ -119,15 +120,21 @@ echo "Installing gameController please do not touch until you see the phrase - '
             echo "Go is up to date. No update needed."
         fi
 
-        echo "- Installing Java SDK for Tiger's AutoRef"
-        sudo apt install openjdk-21-jdk -y
-
-        echo "*** Cloning Git Repository -> SSL - Game Controller ***"
-        git clone https://github.com/RoboCup-SSL/ssl-game-controller.git
-
+    
+         if [ ! -d "$SSL_DIR/$GC_DIR" ]; then ## IF the game controller folder does not exist
+            echo "*** Cloning Git Repository -> SSL - Game Controller ***"
+            git clone https://github.com/RoboCup-SSL/ssl-game-controller.git
+        else
+            echo "Game Controller already Exist"
+        fi
+        cd $GC_DIR
         ## Activate make install
         sudo make install
+        cd ..
 
+
+        echo "- Installing Java SDK for Tiger's AutoRef"
+        sudo apt install openjdk-21-jdk -y
         echno "Locating folder - $SSL_DIR/$TIGERS_DIR "
         if [ ! -d "$SSL_DIR/$TIGERS_DIR" ]; then ## IF the folder TIGERS that is used to store Tigers' AutoRef does not exist
             mkdir $TIGERS_DIR
