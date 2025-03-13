@@ -16,7 +16,7 @@ log.setLevel(logging.INFO)
 
 class GC_Processor():
     def __init__(self,states:list ):
-        self._current_stage : Stage= None
+        self.current_stage : Stage= None
         self.last_gc_stage_transition = None
         self.states : list= states
         self.us_yellow : bool= None ## assuming that we are yellow until it is changed
@@ -24,8 +24,11 @@ class GC_Processor():
         self.team_info : TeamInfo= None
         self.command : GameControllerCommand= None
         self.next_command : GameControllerCommand= None
-        self._current_event : GameEventType= None
+        self.current_event : GameEventType= None
         self.proposed_event : GameEventProposalGroup= None
+        self.yellow_cards : int=0
+        self.red_cards : int=0
+        self.max_active : int=0
         
     def add_state(self,state:State):
         # if this is not State class, kill program
@@ -48,15 +51,15 @@ class GC_Processor():
         
         self._compare_stage(state.stage)
         self._compare_us_yellow_positive(state)
-        self._get_ourTeam_message(state)
-        self._get_command(state.command,state.nextCommand)
-        self._get_event(state.gameEvents,state.gameEventProposal)
+        self._update_ourTeam_message(state)
+        self._update_command(state.command,state.nextCommand)
+        self._update_event(state.gameEvents,state.gameEventProposal)
         
             
     def _compare_stage(self,stage):
-        if self._current_stage != stage:
-            self._current_stage = stage
-            log.info(f"New Stage : {self._current_stage}")
+        if self.current_stage != stage:
+            self.current_stage = stage
+            log.info(f"New Stage : {self.current_stage}")
     
     def _compare_us_yellow_positive(self,state):
         if state.yellow["name"] == "TurtleRabbit" and self.us_yellow is not True:
@@ -76,7 +79,7 @@ class GC_Processor():
             self.us_positive = new_us_positive
             log.info(f"Updated OurTeam to : isPositive={self.us_positive}")
     
-    def _get_ourTeam_message(self,state):
+    def _update_ourTeam_message(self,state):
         if self.us_yellow:
             team_info = state.yellow
         elif not(self.us_yellow):
@@ -84,21 +87,44 @@ class GC_Processor():
             
         if self.team_info != team_info:
             self.team_info = team_info
-            log.info(f"TeamInfo Updated{self.team_info}")
+            self.yellow_cards = self._check_cards(self.yellow_cards,team_info["yellowCards"],team_info["maxAllowedBots"])
+            self.red_cards = self._check_cards(self.red_cards,team_info["redCards"],team_info["maxAllowedBots"])
+            log.debug(f"TeamInfo Updated{self.team_info}")
     
-    def _get_command(self,command,next_command):
+    # I want to change this .. . .
+    def _check_cards(self,cards,gc_cards,max_allowed_robots):
+        if cards < gc_cards:
+            cards = gc_cards
+            log.info(f"Received Card, now we have: {cards}")
+            self.max_active = max_allowed_robots
+            log.info(f"Max active robots = {self.max_active}")
+            
+        elif cards > gc_cards:
+            cards = gc_cards
+            log.info(f"Cards has been reduced to : {cards}")
+        elif gc_cards == 0:
+            cards = gc_cards
+            log.info(f"Cards has been reset : {cards=}")
+
+        return cards
+        
+    def _update_command(self,command,next_command):
         if command is not None and self.command != command: 
             self.command = command
-            log.info(f"New Command : {command}")
-        if next_command is not None:
+            log.info(f"New Command : {self.command}")
+        if next_command is not None and self.next_command != next_command:
             self.next_command = next_command
-            log.info(f"The next command is : {next_command}")
+            log.info(f"The next command is : {self.next_command}")
 
-    def _get_event(self, event:GameEventType,event_proposal: GameEventProposalGroup):
-        if event is not None and self._current_event != event:
-            self._current_event = event
-        if event_proposal is not None and self.proposed_event != event_proposal:
+    def _update_event(self, event:GameEventType,event_proposal: GameEventProposalGroup):
+        if event is not None and len(event)>0 and self.current_event != event:
+            self.current_event = event
+            log.info(f"The event is : {self.current_event}")
+
+        if event_proposal is not None and len(event_proposal)>0 and self.proposed_event != event_proposal:
             self.proposed_event = event_proposal
+            log.info(f"Proposed event received : {self.proposed_event}")
+
             
 
 ## To begin : 
