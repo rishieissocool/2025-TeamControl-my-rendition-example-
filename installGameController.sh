@@ -28,6 +28,8 @@ echo "Installing gameController please do not touch until you see the phrase - '
         SB_DIR="$SSL_DIR/ssl-status-board"
         TIGERS_DIR="$SSL_DIR/TIGERS"
         ERFORCE_DIR="$SSL_DIR/ERFORCE"
+        export NVM_DIR="$HOME/.nvm"
+
 
         if [ ! -d "$SSL_DIR" ]; then
             echo "Directory : $SSL_DIR not found. Creating directory . . ."
@@ -43,21 +45,25 @@ echo "Installing gameController please do not touch until you see the phrase - '
         # sudo apt upgrade -y
         # sudo apt-get dist-upgrade
         sudo apt-get full-upgrade
+        sudo apt install curl -y
+
 
         echo "*** Installing Software Dependency ***"
 
         ## The game controller requires a node JS version above 20, so we will be using the following script.
         # Ensure nvm is installed
-        if ! command -v nvm &>/dev/null; then
+        echo "Checking for nvm . . ."
+        if [ -z "$NVM_DIR" ] || [ ! -s "$NVM_DIR/nvm.sh" ]; then
             echo "nvm is not installed. Installing now..."
-            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-	    export NVM_DIR="$HOME/.nvm"
+            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash 
+            export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
         else
+            echo "nvm found"
             source "$HOME/.nvm/nvm.sh"
         fi
         source ~/.bashrc #restart terminal for nvm, npm
-        echo "self-reload Terminal"
+        echo "self-reloading Terminal"
         ## checks the version of nvm and npm to see if they are installed
         echo "node : nvm version : $(nvm --version) and npm version : $(npm --version) is installed and active"
 
@@ -124,7 +130,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         
         echo "*** Cloning Git Repository -> $GC_DIR ***"
         ## IF the game controller folder does not exist
-        if [ ! -d "$$GC_DIR" ]; then 
+        if [ ! -d "$GC_DIR" ]; then 
             git clone https://github.com/RoboCup-SSL/ssl-game-controller.git || { echo "Git clone failed"; exit 1; }
         else
             echo "Game Controller already Exist"
@@ -167,7 +173,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
         fi
 
         ## Navigate into AutoReferee directory
-        cd "$TIGERS_PATH/AutoReferee" || { echo "Failed to cd into AutoReferee"; exit 1; }
+        cd "$TIGERS_DIR/AutoReferee" || { echo "Failed to cd into AutoReferee"; exit 1; }
 
         ## Try to build AutoReferee
         ./build.sh || { echo "ERROR during execution on Tiger's build.sh"; exit 1; }
