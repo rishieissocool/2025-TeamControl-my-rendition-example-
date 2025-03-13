@@ -95,15 +95,15 @@ class BaseSocket():
                 
             # if there is a socket error, probably something to do with binding, continue
             except socket.error as se:
-                log.debug(f"Uable to bind at port: {port}, trying again... \nfull message : '{se}'\n ")
+                log.debug(f"Uable to bind {self.__class__.__name__} socket at port: {port}, trying again... \nfull message : '{se}'\n ")
                 tries += 1 
             
             except Exception as e: 
-                log.error("Socket cannot be created, ",e)
+                log.error(f"{self.__class__.__name__} socket cannot be created, {e}")
                 raise Exception(f"Error encountered, aborting ... \n {e}")
                 
             finally:
-                log.debug(f"socket is binded : {isBinded}")
+                log.debug(f"{self.__class__.__name__} socket is binded : {isBinded}")
                 
         return isBinded # this can be either true or false
     

@@ -12,7 +12,7 @@ import ast #converting str -> tuple
 from google.protobuf import json_format
 
 from TeamControl.Model.world import World as wm
-from TeamControl.Model.GameState import State
+# from TeamControl.Model.GameState import State
 from TeamControl.Network.BaseUDP import BaseSocket,UDP
 
 from TeamControl.Coms.proto2 import ssl_vision_wrapper_pb2
@@ -21,7 +21,7 @@ from TeamControl.Coms.proto2 import ssl_gc_referee_message_pb2
 #logging
 import logging
 log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 class Receiver(BaseSocket):
     def __init__ (self,ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP, buffer_size: int=1024):
@@ -39,7 +39,6 @@ class Receiver(BaseSocket):
                 * this should be implemented if we want to only listen from one device (or address)
         """
         super().__init__(ip=ip, port=port, sock_type=sock_type, buffer_size=buffer_size, binding=True)
-        print(self)
         
        
     def listen(self, duration: int = None) -> str | None:
@@ -116,7 +115,7 @@ class Multicast(Receiver):
         self.decoder:object = decoder
         if self.ready:
             self.ready = self._add_group()
-        print(self)
+            
     
     def _add_group(self)-> None:
         """adds group to multicast socket"""

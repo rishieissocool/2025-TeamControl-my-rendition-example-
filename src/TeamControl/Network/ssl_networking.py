@@ -5,10 +5,10 @@ Raises:
 """
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *
+from TeamControl.Model.GameControllerState import State
 
 ### GC - Recv
 class GameControl(Multicast):
-    
     def __init__ (self, port : int=10003)-> None:
         """
         Initialising Multicast Vision SSL Socket
@@ -24,11 +24,12 @@ class GameControl(Multicast):
         # group : str = "GC.GlOBAL"
         super().__init__(port=port, group=group, decoder=decoder,buffer_size=buffer_size)
 
-    def listen(self, duration: int = None) -> State:
-        state_data = super().listen(duration)
-        state = json_format.MessageToDict(state_data)
+    def listen(self, duration: int = None) :
+        ref_msg = super().listen(duration)
+        state = json_format.MessageToDict(ref_msg)
         new_state = State(**state)
         return new_state
+
 
    
 # Classes of Vision Wolrd Receivers
