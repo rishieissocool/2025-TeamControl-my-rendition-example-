@@ -10,7 +10,7 @@ import ast
 
 import logging
 
-from TeamControl.Coms.Action import BaseAction,Action
+from TeamControl.Coms.Action import Action
 from TeamControl.Coms.grSimAction import grSim_Action
 from TeamControl.Network.BaseUDP import *
 # from TeamControl.Network.Robot import Robot
@@ -24,7 +24,7 @@ class Sender(BaseSocket):
             self.destination = ("127.0.0.1",port)
         super().__init__(ip=None,port=port,sock_type=sock_type,binding=binding)
     
-    def send_action(self,action:BaseAction,destination:tuple[str,int]) -> None:
+    def send_action(self,action,destination:tuple[str,int]) -> None:
         """
         Sending Action via UDP
 
