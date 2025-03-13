@@ -9,7 +9,7 @@ version_lt() {
   dpkg --compare-versions "$1" lt "$2"
 }
 
-echo "Installing gameController please do not touch until you see the phrase - 'END'";
+echo "Installing gameController please do not touch until you see the phrase - 'END'"
     ## Required Software Versions
     NODEJS_VERSION="22.14.0"
     GO_VERSION="1.24.1"
@@ -41,10 +41,10 @@ echo "Installing gameController please do not touch until you see the phrase - '
 
         echo "*** Updating System ***"
         ## SELECT YOUR OWN UPGRADE
-        # sudo apt update
+        sudo apt update
         # sudo apt upgrade -y
         # sudo apt-get dist-upgrade
-        sudo apt-get full-upgrade
+        sudo apt-get full-upgrade -y
         sudo apt install curl -y
 
 

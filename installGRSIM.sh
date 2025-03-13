@@ -24,7 +24,8 @@ echo "Installing grSim please do not touch until you see the phrase - 'END'";
        
 
         echo "*** Updating System ***"
-        sudo apt-get dist-upgrade
+        sudo apt update
+        sudo apt-get dist-upgrade -y
 
         echo "*** Installing GRSIM Software Dependency ***"
         sudo apt install -y git build-essential cmake pkg-config qtbase5-dev \
@@ -60,7 +61,7 @@ echo "Installing grSim please do not touch until you see the phrase - 'END'";
 
 
     else
-        echo "Sorry This installation only supports in Linux(ubuntu)";
+        echo "Sorry This installation only supports in Linux(ubuntu)"
 
     fi
 
