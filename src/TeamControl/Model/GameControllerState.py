@@ -88,8 +88,8 @@ class GC_Processor():
         #compares if there's new info that we need to be aware of
         if self.team_info != team_info:
             self.team_info = team_info #update if any
-            self.yellow_cards = team_info.yellow_cards
-            self.red_cards = team_info.red_cards 
+            self.yellow_cards = team_info.yellowCards
+            self.red_cards = team_info.redCards 
             log.debug(f"TeamInfo Updated{self.team_info}")
         
     def _update_command(self,command,next_command):
