@@ -194,3 +194,4 @@ if __name__ == "__main__":
     referee_l = GameControl()
     
     state = referee_l.listen()
+    print (state)
