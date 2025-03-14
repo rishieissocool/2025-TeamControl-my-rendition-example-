@@ -141,7 +141,7 @@ class GameEventProposalGroup :
     accepted: bool = None
 
 
-@dataclass #(frozen=True)
+@dataclass (order=True) #(frozen=True)
 class TeamInfo:
     name: str 
     score: int = None
@@ -161,7 +161,7 @@ class TeamInfo:
     botSubstitutionsLeft: Optional[int] = None
     botSubstitutionTimeLeft: Optional[int] = None
     
-@dataclass #(frozen=True)
+@dataclass (order=True) #(frozen=True)
 class State:
     packetTimestamp: int = None
     stage: Stage = None
@@ -176,12 +176,18 @@ class State:
     # game_event: GameEventType # Depeciated and reserved
     nextCommand: Optional[GameControllerCommand] = None
     gameEvents: List[GameEventType] = field(default_factory=list)
-    gameEventProposal: List[GameEventProposalGroup] = field(default_factory=list)
+    gameEventProposals: List[GameEventProposalGroup] = field(default_factory=list)
     currentActionTimeRemaining: Optional[int] = None
     status_message: Optional[str] = None
     sourceIdentifier: Optional[str] = None
     matchType: Optional[Match] = None
-    
+
+    def __post_init__(self):
+        y = self.yellow
+        self.yellow = TeamInfo(**y)
+        b = self.blue
+        self.blue = TeamInfo(**b)
+        print (type(self.yellow), self.yellow)
 
 if __name__ == "__main__":
     from TeamControl.Network.ssl_networking import GameControl
