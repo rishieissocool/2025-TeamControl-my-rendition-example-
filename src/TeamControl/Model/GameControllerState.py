@@ -16,9 +16,8 @@ log.setLevel(logging.INFO)
 
 class GC_Processor():
     def __init__(self,states:list ):
-        self.current_stage : Stage= None
-        self.last_gc_stage_transition = None
         self.states : list= states
+        self.current_stage : Stage= None
         self.us_yellow : bool= None ## assuming that we are yellow until it is changed
         self.us_positive : bool= None
         self.team_info : TeamInfo= None
@@ -130,3 +129,6 @@ if __name__ == '__main__':
     while True:
         state = referee_l.listen()
         gc.update(state)
+        if gc.us_yellow != world.isYellow or gc.us_positive != world.isPositive:
+            world.update_team_side(gc.us_yellow,gc.us_positive)
+        
