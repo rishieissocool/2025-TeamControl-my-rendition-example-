@@ -187,7 +187,6 @@ class State:
         self.yellow = TeamInfo(**y)
         b = self.blue
         self.blue = TeamInfo(**b)
-        print (type(self.yellow), self.yellow)
 
 if __name__ == "__main__":
     from TeamControl.Network.ssl_networking import GameControl
