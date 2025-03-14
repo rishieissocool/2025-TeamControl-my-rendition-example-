@@ -43,7 +43,7 @@ echo "Installing SSL Vision please do not touch until you see the phrase - 'END'
         ./InstallPackagesUbuntu.sh || { echo "Vision Dependencies installation failed"; exit 1; }
 
         ## installing v4l for usb camera
-        sudo apt install v4l-utils
+        sudo apt install -y v4l-utils wireshark
         
         echo " Building Vision base on using USB camera Input "
         ## Setting vision to work with USB camera
