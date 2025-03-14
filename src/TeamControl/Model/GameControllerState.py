@@ -53,7 +53,7 @@ class GC_Processor():
         self._compare_us_yellow_positive(state)
         self._update_ourTeam_message(state)
         self._update_command(state.command,state.nextCommand)
-        self._update_event(state.gameEvents,state.gameEventProposal)
+        self._update_event(state.gameEvents,state.gameEventProposals)
         
             
     def _compare_stage(self,stage):
@@ -62,11 +62,11 @@ class GC_Processor():
             log.info(f"New Stage : {self.current_stage}")
     
     def _compare_us_yellow_positive(self,state):
-        if state.yellow["name"] == "TurtleRabbit" and self.us_yellow is not True:
+        if state.yellow.name == "TurtleRabbit" and self.us_yellow is not True:
             self.us_yellow = True
             log.info(f"Updated OurTeam to : isYellow={self.us_yellow}")
 
-        elif state.blue["name"] == "TurtleRabbit"and self.us_yellow is not False:
+        elif state.blue.name == "TurtleRabbit"and self.us_yellow is not False:
             self.us_yellow = False
             log.info(f"Updated OurTeam to : isYellow={self.us_yellow}")
         
@@ -84,29 +84,13 @@ class GC_Processor():
             team_info = state.yellow
         elif not(self.us_yellow):
             team_info = state.blue
-            
+        
+        #compares if there's new info that we need to be aware of
         if self.team_info != team_info:
-            self.team_info = team_info
-            self.yellow_cards = self._check_cards(self.yellow_cards,team_info["yellowCards"],team_info["maxAllowedBots"])
-            self.red_cards = self._check_cards(self.red_cards,team_info["redCards"],team_info["maxAllowedBots"])
+            self.team_info = team_info #update if any
+            self.yellow_cards = team_info.yellow_cards
+            self.red_cards = team_info.red_cards 
             log.debug(f"TeamInfo Updated{self.team_info}")
-    
-    # I want to change this .. . .
-    def _check_cards(self,cards,gc_cards,max_allowed_robots):
-        if cards < gc_cards:
-            cards = gc_cards
-            log.info(f"Received Card, now we have: {cards}")
-            self.max_active = max_allowed_robots
-            log.info(f"Max active robots = {self.max_active}")
-            
-        elif cards > gc_cards:
-            cards = gc_cards
-            log.info(f"Cards has been reduced to : {cards}")
-        elif gc_cards == 0:
-            cards = gc_cards
-            log.info(f"Cards has been reset : {cards=}")
-
-        return cards
         
     def _update_command(self,command,next_command):
         if command is not None and self.command != command: 
