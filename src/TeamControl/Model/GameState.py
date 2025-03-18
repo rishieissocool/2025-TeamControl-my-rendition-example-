@@ -47,8 +47,8 @@ class GameEventType(enum.Enum):
 
     BOT_PUSHED_BOT = auto()
     BOT_HELD_BALL_DELIBERATELY = auto()
-    BOT_TRIPPED_OVER = auto()
-    BOT_DROPPED_PARTS = auto()
+    BOT_TIPPED_OVER = auto()
+    # BOT_DROPPED_PARTS = auto()
 
     ATTACKER_TOUCHED_BALL_IN_DEFENSE_AREA = auto()
     BOT_KICKED_BALL_TOO_FAST = auto()
@@ -58,7 +58,7 @@ class GameEventType(enum.Enum):
     DEFENDER_TOO_CLOSE_TO_KICK_POINT = auto()
     BOT_TOO_FAST_IN_STOP = auto()
     BOT_INTERFERED_PLACEMENT = auto()
-    EXCESSIVE_BOT_SUBSTITUTION = auto()
+    # EXCESSIVE_BOT_SUBSTITUTION = auto()
     
     POSSIBLE_GOAL = auto()
     GOAL = auto()
@@ -233,17 +233,17 @@ class Event:
         self.location = location
         self.distance = distance
 
-    def bot_tripped_over(self, by_team: Team, by_bot: int, location: Point, ball_location: Point) -> None:
+    def bot_tipped_over(self, by_team: Team, by_bot: int, location: Point, ball_location: Point) -> None:
         self.by_team = by_team
         self.by_bot = by_bot
         self.location = location
         self.ball_location = ball_location
 
-    def bot_dropped_parts(self, by_team: Team, by_bot: int, location: Point, ball_location: Point) -> None:
-        self.by_team = by_team
-        self.by_bot = by_bot
-        self.location = location
-        self.ball_location = ball_location
+    # def bot_dropped_parts(self, by_team: Team, by_bot: int, location: Point, ball_location: Point) -> None:
+    #     self.by_team = by_team
+    #     self.by_bot = by_bot
+    #     self.location = location
+    #     self.ball_location = ball_location
 
     def defender_in_defense_area_partially(self, by_team: Team, by_bot: int, location: Point, ball_location: Point) -> None:
         self.by_team = by_team
@@ -347,8 +347,8 @@ class Event:
     def bot_substitution(self, by_team: Team) -> None:
         self.by_team = by_team
 
-    def excessive_bot_substitution(self, by_team: Team) -> None:
-        self.by_team = by_team
+    # def excessive_bot_substitution(self, by_team: Team) -> None:
+    #     self.by_team = by_team
 
     def challenge_flag(self, by_team: Team):
         self.by_team = by_team
@@ -432,10 +432,10 @@ class EventFactory:
                     return event.bot_push_bot
                 case GameEventType.BOT_HELD_BALL_DELIBERATELY:
                     return event.bot_held_ball_deliberately
-                case GameEventType.BOT_TRIPPED_OVER:
-                    return event.bot_tripped_over
-                case GameEventType.BOT_DROPPED_PARTS:
-                    return event.bot_dropped_parts
+                case GameEventType.BOT_TIPPED_OVER:
+                    return event.bot_tipped_over
+                # case GameEventType.BOT_DROPPED_PARTS:
+                #     return event.bot_dropped_parts
                 case GameEventType.ATTACKER_TOUCHED_BALL_IN_DEFENSE_AREA:
                     return event.attacker_too_close_to_defense_area
                 case GameEventType.BOT_KICKED_BALL_TOO_FAST:
@@ -450,8 +450,8 @@ class EventFactory:
                     return event.bot_too_fast_in_stop
                 case GameEventType.BOT_INTERFERED_PLACEMENT:
                     return event.bot_interfered_placement
-                case GameEventType.EXCESSIVE_BOT_SUBSTITUTION:
-                    return event.excessive_bot_substitution
+                # case GameEventType.EXCESSIVE_BOT_SUBSTITUTION:
+                #     return event.excessive_bot_substitution
                 case GameEventType.POSSIBLE_GOAL:
                     return event.goal
                 case GameEventType.GOAL:
