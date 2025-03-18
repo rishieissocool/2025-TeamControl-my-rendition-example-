@@ -20,11 +20,10 @@ class GC_Processor():
         self.current_stage : Stage= None
         self.us_yellow : bool= None ## assuming that we are yellow until it is changed
         self.us_positive : bool= None
-        self.team_info : TeamInfo= None
+        self.team_info : TeamInformation= None
         self.command : GameControllerCommand= None
         self.next_command : GameControllerCommand= None
         self.current_event : GameEventType= None
-        self.proposed_event : GameEventProposalGroup= None
         self.yellow_cards : int=0
         self.red_cards : int=0
         self.max_active : int=0
@@ -99,15 +98,7 @@ class GC_Processor():
             self.next_command = next_command
             log.info(f"The next command is : {self.next_command}")
 
-    def _update_event(self, event:GameEventType,event_proposal: GameEventProposalGroup):
-        if event is not None and len(event)>0 and self.current_event != event:
-            self.current_event = event
-            log.info(f"The event is : {self.current_event}")
-
-        if event_proposal is not None and len(event_proposal)>0 and self.proposed_event != event_proposal:
-            self.proposed_event = event_proposal
-            log.info(f"Proposed event received : {self.proposed_event}")
-
+    
             
 
 ## To begin : 
