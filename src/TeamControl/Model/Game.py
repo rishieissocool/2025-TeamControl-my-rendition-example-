@@ -104,10 +104,10 @@ class RefereeMessage():
         ## repeated
         game_events = list()
         if getattr(referee,"game_events"):
-            ge = referee.game_events  
-            for e in enum(ge):
-                game_events.append(GameEvent(e[0]))
-                print(e.DESCRIPTOR)
+            events = referee.game_events  
+            for num,event in enumerate(events):
+                game_events.append(GameEvent(event))
+                
             
         game_event_proposals = referee.game_event_proposals if getattr(referee,"game_event_proposals") else list()
         
