@@ -23,23 +23,36 @@ class GameEvent():
         self.origin = game_event.origin
         self.created_timestamp = game_event.created_timestamp
 
+class YellowCard():
+    def __init__(self,YellowCard):
+        self.id = int(YellowCard.id) if getattr(YellowCard,"id") else None 
+        self.caused_by_game_event = GameEvent(YellowCard.caused_by_game_event) if getattr(YellowCard,"caused_by_game_event") else None
+        self.time_remaining = float(YellowCard.time_remaining) if getattr(YellowCard,"time_remaining") else None
+
 class TeamInfo():
     def __init__(self,team):
-        self.name = team.name
-        self.score = team.score
-        self.red_cards = team.red_cards
-        self.yellow_cards = team.yellow_cards
-        self.timeouts = team.timeouts
-        self.timeout_time = team.timeout_time
-        self.goalkeeper = team.goalkeeper
-        
+        # Required
+        self.name = str(team.name)
+        self.score = int(team.score)
+        self.red_cards = int(team.red_cards)
+        self.yellow_cards = int(team.yellow_cards)
+        self.timeouts = int(team.timeouts)
+        self.timeout_time = int(team.timeout_time)
+        self.goalkeeper = int(team.goalkeeper)
         
         ## Optional
-        self.foul_counter = team.foul_counter
-        self.ball_placement_failures = team.ball_placement_failures
+        self.foul_counter = int(team.foul_counter) if getattr(team,"foul_counter") else None
+        self.ball_placement_failures = int(team.ball_placement_failures) if getattr(team,"ball_placement_failures") else None
+        self.can_place_ball = bool(team.can_place_ball) if getattr(team,"can_place_ball") else None
+        self.max_allowed_bots = int(team.max_allowed_bots) if getattr(team,"max_allowed_bots") else None
+        self.bot_substitution_intent = bool(team.bot_substitution_intent) if getattr(team,"bot_substitution_intent") else None
+        self.ball_placement_failures_reached = bool(team.ball_placement_failures_reached) if getattr(team,"ball_placement_failures_reached") else None
+        self.bot_substitution_allowed = bool(team.bot_substitution_allowed) if getattr(team,"bot_substitution_allowed") else None
+        self.bot_substitution_left = int(team.bot_substitution_left) if getattr(team,"bot_substitution_left") else None
+        self.bot_substitution_time_left = int(team.bot_substitution_time_left) if getattr(team,"bot_substitution_time_left") else None
         
         ## repeated       
-        self.yellow_card_times = team.yellow_card_times
+        self.yellow_card_times = int(team.yellow_card_times) if getattr(team,"yellow_card_times") else None
     
     
 class RefereeMessage():
@@ -92,7 +105,7 @@ class RefereeMessage():
         game_events = list()
         if getattr(referee,"game_events"):
             ge = referee.game_events  
-            for e in ge:
+            for e in enum(ge):
                 game_events.append(GameEvent(e[0]))
                 print(e.DESCRIPTOR)
             
