@@ -40,7 +40,7 @@ class grSim_Action():
         Params:
             speed (int) : default kick speed : 10
         """
-        speed: int = 10
+        speed: int = 5
         self.isYellow  = isYellow
         self.robot_id = int(robot_id)
         self.vx = float(vx)
@@ -52,7 +52,7 @@ class grSim_Action():
             case 1:
                 kx, kz = speed,0
             case 2:
-                kx. kz = speed,speed
+                kx, kz = speed,speed
         
         self.kx = float(kx)
         self.kz = float(kz) 

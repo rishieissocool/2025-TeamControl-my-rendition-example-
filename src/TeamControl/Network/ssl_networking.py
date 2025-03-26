@@ -82,14 +82,14 @@ class grSimVision(vision):
 ### Simulation Control ### 
 
 class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20011) -> None: #please check and verify this port
+    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         self.destination = (ip,port)
         super().__init__(ip=ip,port=port)
 
     def send(**kwargs) -> None:
         raise NotImplementedError("please use send_action()")
     
-    def send_action(self, isYellow:bool, action: grSim_Action|Action) -> None:
+    def send_action(self, action: grSim_Action|Action, isYellow:bool=None) -> None:
         """send_action
         
         sending action over grsim command sender port
@@ -102,11 +102,13 @@ class grSimSender(Sender):
         """
         if isinstance(action,grSim_Action):
             action = action.encode()
-        if isinstance(action,Action):
-           new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
-           action = new_action.encode()
-        elif not isinstance(action, grSim_Action) or not isinstance(action, Action):
-            raise TypeError("Only Action or grSim_Action Message Objects allowed")
+        elif isinstance(action,Action):
+            if isYellow is None:
+                raise AttributeError("isYellow is required, please fill in isYellow=True/False")
+            new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
+            action = new_action.encode()
+        else:
+            return
         # sends packet to grsim
         self.sock.sendto(action,self.destination)
 
