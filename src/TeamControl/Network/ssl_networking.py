@@ -87,9 +87,17 @@ class grSimSender(Sender):
         super().__init__(ip=ip,port=port)
 
     def send(**kwargs) -> None:
-        raise NotImplementedError("Nothing is here")
+        raise NotImplementedError("please use send_action()")
     
-    def send_action(self, isYellow:bool, action: bytes) -> None:
+    def send_action(self, isYellow:bool, action: grSim_Action|Action|bytes) -> None:
+        """send_action
+        sending action over grsim command sender port
+        can parse in either GRSIM Action or Action message type
+
+        Args:
+            isYellow (bool): controlling team is yellow
+            action (grSim_Action|Action|bytes): action either 
+        """
         if isinstance(action,grSim_Action):
             action = action.encode()
         if isinstance(action,Action):
