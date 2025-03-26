@@ -27,8 +27,8 @@ class grSimUtils():
             sender_port (int): grSim Command listending Port Number.
         """
         
-        self.update_team_color(isYellow,isPositive)
-        self.world_model = wm(isYellow=isYellow)
+        self.update_team_color(isYellow= isYellow)
+        self.world_model = wm(isYellow=isYellow, isPositive=isPositive)
         self.vision = grSimVision(self.world_model,port=vision_port)
         self.sender = grSimSender(ip=ip, port=sender_port)
         
@@ -42,9 +42,11 @@ class grSimUtils():
         elif ourTeam is False:
             return self.enemyTeam
         
-    def send_action(self,action:grSim_Action):
-        self.sender.send_action(action)
-        
+    def send_action(self,action:grSim_Action, isYellow):
+        self.sender.send_action(isYellow=isYellow, action=action)
+    
+    def listener(self):
+        ...
         
     # some simple functions
     def make_robot_move(self,ourTeam: bool,robot_id:int,vx=0.0,vy=0.0,vw=0.0):
@@ -79,16 +81,16 @@ class grSimUtils():
             speed = speed*accel
             msg+= 'fast as f boi'
 
-        if keyboard.is_pressed('w'):
+        if keyboard.is_pressed('up'):
             msg+=' forward '
             vx = speed
-        elif keyboard.is_pressed('s'):
+        elif keyboard.is_pressed('down'):
             msg+=' backward '
             vx = -speed
-        if keyboard.is_pressed('a'):
+        if keyboard.is_pressed('left'):
             msg+= ' left '
             vy = speed
-        elif keyboard.is_pressed('d'):
+        elif keyboard.is_pressed('right'):
             msg += ' right '
             vy = -speed
             
@@ -185,8 +187,8 @@ class grSimUtils():
         robot_id = int(input("Enter the ID of Robot you want to control: "))
 
         while True:
-            updated= self.receiver.listen()
-            if updated is True :
+            # updated= self.receiver.listen()
+            # if updated is True :
                 # # obtain target
                 # target = self.world_model.get_ball()
                 # robot_pos = self.world_model.get_our_robot(1)
@@ -198,12 +200,12 @@ class grSimUtils():
                 
                 # action = self.robot_move(True,1,0,1,0)
                 # print(self.world_model.get_our_robot(1))
-                vx,vy,w,kx,d = self.keyboardMovements()
-                action = grSim_Action(isYellow=True,robot_id=robot_id,vx=vx,vy=vy,w=w,kx=kx,d=d)
+                vx,vy,w,kx,d = self.use_keyboard_movements()
+                action = grSim_Action(isYellow=True,robot_id=robot_id,vx=vx,vy=vy,w=w)
                 print(action)
                 # sends action to robot
-                self.send_action(action)
+                self.send_action(isYellow=True,action=action)
 
 if __name__ =="__main__" :
-    controller = grSimUtils(False)
+    controller = grSimUtils(isPositive=True, isYellow=False)
     controller.run()
