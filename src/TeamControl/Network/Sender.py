@@ -24,7 +24,7 @@ class Sender(BaseSocket):
             self.destination = ("127.0.0.1",port)
         super().__init__(ip=None,port=port,sock_type=sock_type,binding=binding)
     
-    def send_action(self,action,destination:tuple[str,int]) -> None:
+    def send_action(self,action) -> None:
         """
         Sending Action via UDP
 
@@ -37,13 +37,13 @@ class Sender(BaseSocket):
         Exceptions:
             TypeError : Only Action or byte objects allowed
         """
-        # if not isinstance(action,issubclass(BaseAction)):
-        #     raise TypeError("Only Actions allowed")
+        if not isinstance(action,Action):
+            raise TypeError("Only Actions allowed")
         
         encoded_action:bytes = action.encode()
                 # sends the action to destined address
-        self.send(msg=encoded_action,destination=destination)
-        logging.info(f"SENT : {action=} TO: {destination}")
+        self.send(msg=encoded_action,destination=self.destination)
+        logging.info(f"SENT : {action=} TO: {self.destination}")
 
     def update_destination(self, destination:str|tuple[str,int]) -> None:
         """Update Sending Socket's Destination
