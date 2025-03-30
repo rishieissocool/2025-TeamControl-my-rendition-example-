@@ -5,6 +5,7 @@ from TeamControl.Model.GameState import *
 import enum
 import typing
 from typing import Optional, List, Union
+import time
 
     
 class GameEventProposal():
@@ -17,7 +18,7 @@ class GameEventProposal():
 
 class GameEvent():
     def __init__(self,game_event):
-        # self.event = 
+        self.event = game_event.WhichOneof('event')
         self.id = game_event.id
         self.type:enum = GameEventType(game_event.type)
         self.origin = game_event.origin
@@ -48,7 +49,7 @@ class TeamInfo():
         self.bot_substitution_intent = bool(team.bot_substitution_intent) if getattr(team,"bot_substitution_intent") else None
         self.ball_placement_failures_reached = bool(team.ball_placement_failures_reached) if getattr(team,"ball_placement_failures_reached") else None
         self.bot_substitution_allowed = bool(team.bot_substitution_allowed) if getattr(team,"bot_substitution_allowed") else None
-        self.bot_substitution_left = int(team.bot_substitution_left) if getattr(team,"bot_substitution_left") else None
+        self.bot_substitutions_left = int(team.bot_substitutions_left) if getattr(team,"bot_substitutions_left") else None
         self.bot_substitution_time_left = int(team.bot_substitution_time_left) if getattr(team,"bot_substitution_time_left") else None
         
         ## repeated       
@@ -76,7 +77,7 @@ class RefereeMessage():
         self.designated_pos = designated_pos
         self.blue_on_positive_half = blue_on_positive_half
         self.next_cmd = next_cmd
-        self.game_events = GameEvent(game_events)
+        self.game_events = game_events
         self.game_events_proposal = GameEventProposal(game_events_proposal)
         self.current_action_time_remaining:int = current_action_time_remaining
         self.status_message = status_message
@@ -90,7 +91,7 @@ class RefereeMessage():
         command_ts = referee.command_timestamp
         yellow = TeamInfo(referee.yellow)
         blue = TeamInfo(referee.blue)
-        print(yellow.name)
+        # print(yellow.name)
         ## optional
         match_type = MatchType(referee.match_type) if getattr(referee,"match_type") else None        
         source_id = referee.source_identifier if getattr(referee,"source_identifier") else None
@@ -104,15 +105,17 @@ class RefereeMessage():
         ## repeated
         game_events = list()
         if getattr(referee,"game_events"):
-            events = referee.game_events  
+            events = referee.game_events
             for num,event in enumerate(events):
                 game_events.append(GameEvent(event))
+
+        
                 
             
         game_event_proposals = referee.game_event_proposals if getattr(referee,"game_event_proposals") else list()
         
         
-        RefereeMessage(packet_timestamp=packet_timestamp,stage=stage,
+        return RefereeMessage(packet_timestamp=packet_timestamp,stage=stage,
                     cmd=command, cmd_counter=command_cnt,cmd_timestamp=command_ts,
                     yellow=yellow, blue=blue, 
                     source_id=source_id,match_type=match_type,stage_time_left=stage_time_left,
@@ -128,3 +131,6 @@ if __name__ == "__main__":
     while True:
         ref_msg = gc_recv.listen()
         new_ref_msg = RefereeMessage.set(ref_msg)
+        print(ref_msg)
+
+        print(f"{time.time()}\t{new_ref_msg.game_events[0].event}\t{(new_ref_msg.game_events[0].type)}\n")

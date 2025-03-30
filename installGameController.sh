@@ -110,8 +110,8 @@ echo "Installing gameController please do not touch until you see the phrase - '
 
             # Download and install the latest GO version
             wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
-            sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-arm64.tar.gz
-            rm go${GO_VERSION}.linux-arm64.tar.gz
+            sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+            rm go${GO_VERSION}.linux-amd64.tar.gz
 
             # Add Go to PATH
             export PATH=$PATH:/usr/local/go/bin
