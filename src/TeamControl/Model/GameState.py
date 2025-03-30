@@ -6,28 +6,27 @@ from typing import Optional, Union, List
 
 class Command(enum.Enum):
     HALT = 0
-    STOP = auto()
-    NORMAL_START = auto()
-    FORCE_START = auto()
-    PREPARE_KICKOFF_YELLOW = auto()
-    PREPARE_KICKOFF_BLUE = auto()
-    PREPARE_PENALTY_YELLOW = auto()
-    PREPARE_PENALTY_BLUE = auto()
-    DIRECT_FREE_YELLOW = auto() 
-    DIRECT_FREE_BLUE = auto()
-    INDIRECT_FREE_YELLOW = auto() #depeciated
-    INDIRECT_FREE_BLUE = auto() #depeciated
-    TIMEOUT_YELLOW = auto()
-    TIMEOUT_BLUE = auto()
-    GOAL_YELLOW = auto() #depeciated
-    GOAL_BLUE = auto() #depeciated
-    BALL_PLACEMENT_YELLOW = auto()
-    BALL_PLACEMENT_BLUE = auto()
-    UNKNOWN_COMMAND = auto()
+    STOP = 1
+    NORMAL_START = 2
+    FORCE_START = 3
+    PREPARE_KICKOFF_YELLOW = 4
+    PREPARE_KICKOFF_BLUE = 5
+    PREPARE_PENALTY_YELLOW = 6
+    PREPARE_PENALTY_BLUE = 7
+    DIRECT_FREE_YELLOW = 8
+    DIRECT_FREE_BLUE = 9
+    INDIRECT_FREE_YELLOW = 10
+    INDIRECT_FREE_BLUE = 11
+    TIMEOUT_YELLOW = 12
+    TIMEOUT_BLUE = 13
+    GOAL_YELLOW = 14
+    GOAL_BLUE = 15
+    BALL_PLACEMENT_YELLOW = 16
+    BALL_PLACEMENT_BLUE = 17
 
 class Team(enum.Enum):
     BLUE = 0
-    YELLOW = auto()
+    YELLOW = 1
     
 class GameEventType(enum.Enum):
     UNKNOWN_GAME_EVENT_TYPE = 0
@@ -80,22 +79,22 @@ class GameEventType(enum.Enum):
 
 class Stage(enum.IntEnum):
     NORMAL_FIRST_HALF_PRE = 0
-    NORMAL_FIRST_HALF = auto()
-    NORMAL_HALF_TIME = auto()
-    NORMAL_SECOND_HALF_PRE = auto()
-    NORMAL_SECOND_HALF = auto()
-    EXTRA_TIME_BREAK = auto()
-    EXTRA_FIRST_HALF_PRE = auto()
-    EXTRA_FIRST_HALF = auto()
-    EXTRA_HALF_TIME = auto()
-    EXTRA_SECOND_HALF_PRE = auto()
-    EXTRA_SECOND_HALF = auto()
-    PENALTY_SHOOTOUT_BREAK = auto()
-    PENALTY_SHOOTOUT = auto()
-    POST_GAME = auto()
+    NORMAL_FIRST_HALF = 1
+    NORMAL_HALF_TIME = 2
+    NORMAL_SECOND_HALF_PRE = 3
+    NORMAL_SECOND_HALF = 4
+    EXTRA_TIME_BREAK = 5
+    EXTRA_FIRST_HALF_PRE = 6
+    EXTRA_FIRST_HALF = 7
+    EXTRA_HALF_TIME = 8
+    EXTRA_SECOND_HALF_PRE = 9
+    EXTRA_SECOND_HALF = 10
+    PENALTY_SHOOTOUT_BREAK = 11
+    PENALTY_SHOOTOUT = 12
+    POST_GAME = 13
 
 class MatchType(enum.Enum):
     UNKNOWN_MATCH = 0
-    GROUP_PHASE = auto()
-    ELIMINATION_PHASE = auto()
-    FRIENDLY = auto()
+    GROUP_PHASE = 1
+    ELIMINATION_PHASE = 2
+    FRIENDLY = 3
