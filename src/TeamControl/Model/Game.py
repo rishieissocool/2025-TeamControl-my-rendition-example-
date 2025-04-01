@@ -7,12 +7,6 @@ import typing
 from typing import Optional, List, Union
 import time
 
-class Point():
-    def __init__(self,point):
-        # required
-       self.x = float(point.x)
-       self.y = float(point.y)
-
 
 class GameEventProposal():
     def __init__(self,game_event_proposal):
@@ -20,28 +14,8 @@ class GameEventProposal():
             self.id:str = str(game_event_proposal.id) if getattr(game_event_proposal,"id") else None 
             self.accepted:bool = bool(game_event_proposal.accepted) if getattr(game_event_proposal,"accepted") else None 
             # repeated
-            self.game_events:List = list()
-            if getattr(game_event_proposal,"game_events"):
-                game_events = game_event_proposal.game_events
-                for game_event in game_events:
-                    self.game_events.append(GameEvent(game_event))
-        
-class GameEvent():
-    def __init__(self,game_event):
-        #Oneof
-        self.event = game_event.WhichOneof('event') 
-        #optional
-        self.id = game_event.id if getattr(game_event,"id") else None 
-        self.type:enum = GameEventType(game_event.type) if getattr(game_event,"type") else None 
-        self.created_timestamp = game_event.created_timestamp if getattr(game_event,"created_timestamp") else None 
-        #repeated
-        self.origin:List =list()
-        if getattr(game_event,"origin") :
-            origins = game_event.origin 
-            for origin in origins:
-                self.origin.append(str(origin))
-
-
+            self.game_events = [GameEvent(game_event) for game_event in getattr(game_event_proposal, "game_events", [])]
+ 
 class TeamInfo():
     def __init__(self,team):
         # Required
@@ -65,12 +39,8 @@ class TeamInfo():
         self.bot_substitution_time_left = int(team.bot_substitution_time_left) if getattr(team,"bot_substitution_time_left") else None
         
         ## repeated       
+        self.yellow_card_times = [int(yellow_card_time) for yellow_card_time in getattr(team, "yellow_card_times", [])]
 
-        self.yellow_card_times = list()
-        if getattr(team,"yellow_card_times"):
-            ycts = team.yellow_card_times
-            for yct in ycts:
-                self.yellow_card_times.append(int(yct))    
     
 class RefereeMessage():
     def __init__(self,referee):
@@ -92,17 +62,8 @@ class RefereeMessage():
         self.status_message = str(referee.status_message) if getattr(referee,"status_message") else None
         
         ## repeated
-        self.game_events = list()
-        if getattr(referee,"game_events"):
-            events = referee.game_events
-            for num,event in enumerate(events):
-                self.game_events.append(GameEvent(event))
-            
-        self.game_event_proposals = list()
-        if getattr(referee,"game_event_proposals"):
-           eps = referee.game_event_proposals  
-           for ep in eps:
-               self.game_event_proposals.append(GameEventProposal(ep))
+        self.game_events = [GameEvent(game_event) for game_event in getattr(referee, "game_events", [])]
+        self.game_event_proposals = [GameEventProposal(game_event_proposal) for game_event_proposal in getattr(referee, "game_event_proposal", [])]
 
         
         
@@ -114,7 +75,10 @@ if __name__ == "__main__":
     
     while True:
         ref_msg = gc_recv.listen()
+        start_time = time.time()
         new_ref_msg = RefereeMessage(referee=ref_msg)
         print(ref_msg)
-
-        print(f"{time.time()}\t{new_ref_msg.game_events[0].event}\t{(new_ref_msg.game_events[0].type)}\n")
+        print(f"internal process time :{time.time()-start_time}\t\n"+
+              f"recv + process time :{time.time()-new_ref_msg.packet_timestamp/1000000}\t\n"+
+              f"{(new_ref_msg.game_events[0].by_team)}\t  {type(new_ref_msg.game_events[0].type)}\n"
+              )

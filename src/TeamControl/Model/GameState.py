@@ -4,6 +4,14 @@ from enum import auto, unique
 from typing import Optional, Union, List
 
 
+class Point():
+    def __init__(self,point):
+        # required
+       self.x = float(point.x)
+       self.y = float(point.y)
+       self.vector = [self.x, self.y]
+    
+
 class Command(enum.Enum):
     HALT = 0
     STOP = 1
@@ -25,8 +33,9 @@ class Command(enum.Enum):
     BALL_PLACEMENT_BLUE = 17
 
 class Team(enum.Enum):
-    BLUE = 0
+    UNKNOWN = 0
     YELLOW = 1
+    BLUE = 2
     
 class GameEventType(enum.Enum):
     UNKNOWN_GAME_EVENT_TYPE = 0
@@ -98,3 +107,311 @@ class MatchType(enum.Enum):
     GROUP_PHASE = 1
     ELIMINATION_PHASE = 2
     FRIENDLY = 3
+           
+class GameEvent():
+    def __init__(self,game_event):
+        #Oneof
+        self.event_name = game_event.WhichOneof('event')#this will give you a string
+        # self.event = eval(self.event_name)(game_event)
+        #optional
+        self.id = game_event.id if getattr(game_event,"id") else None 
+        self.type:enum = GameEventType(game_event.type) if getattr(game_event,"type") else None 
+        self.created_timestamp = game_event.created_timestamp if getattr(game_event,"created_timestamp") else None 
+        #repeated
+        self.origin = [str(origin) for origin in getattr(game_event, "origin", [])]
+        self.match_event(game_event)
+        
+    def ball_left_field(self, event) -> None:
+        self.by_team = Team(event.by_team)
+        self.by_bot =int(event.by_bot)
+        self.location = event.location
+
+    def aimless_kick(self, event) -> None:
+        self.by_team = Team(event.by_team)
+        self.by_bot =int(event.by_bot)
+        self.location = event.location
+        self.kick_location = event.kick_location
+
+    def goal(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.kicking_team = Team(event.kicking_team)
+        self.location = Point(event.location)
+        self.kick_location = event.kick_location
+        self.max_ball_height = event.max_ball_height
+        self.num_robots_by_team = int(event.num_robots_by_team)
+        self.last_touch_by_team = event.last_touch_by_team
+        self.message = event.message
+
+    def indirect_goal(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = event.location 
+        self.kick_location = event.kick_location
+
+    def chipped_goal(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = event.location
+        self.kick_location = event.kick_location
+        self.max_ball_height = event.max_ball_height
+
+    def bot_too_fast_in_stop(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = event.location
+        self.speed = event.speed
+
+    def defender_too_close_to_kick_point(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = Point(event.location)
+        self.distance = float(event.distance)
+
+    def bot_crash_drawn(self,event):
+        self.bot_yellow = int(event.bot_yellow)
+        self.bot_blue = int(event.bot_blue)
+        self.location = Point(event.location)
+        self.crash_speed = float(event.crash_speed)
+        self.speed_diff = float(event.speed_diff)
+        self.crash_angle = float(event.crash_angle)
+
+    
+    def bot_crash_unique(self,event): 
+        self.by_team =Team(event.by_team)
+        self.violator = int(event.violator)
+        self.victim = int(event.victim)
+        self.location = Point(event.location)
+        self.crash_speed = float(event.crash_speed)
+        self.speed_diff = float(event.speed_diff)
+        self.crash_angle = float(event.crash_angle)
+
+    def bot_pushed_bot(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.violator = int(event.violator)
+        self.victim = int(event.victim)
+        self.location = Point(event.location)
+        self.distance = float(event.distance)
+
+    def bot_tipped_over(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = Point(event.location)
+        self.ball_location = Point(event.ball_location)
+
+    def bot_dropped_parts(self,event):
+        self.by_team = Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = Point(event.location)
+        self.ball_location = Point(event.ball_location)
+
+    def defender_in_defense_area_partially(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot = int(event.by_bot)
+        self.location = Point(event.location)
+        self.ball_location = Point(event.ball_location)
+
+    def attacker_touched_ball_in_defense_area(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot)
+        self.location =Point(event.location)
+        self.distance = float(event.distance)
+
+    def bot_kicked_ball_too_fast(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot)
+        self.location =Point(event.location)
+        self.initial_ball_speed = float(event.initial_ball_speed)
+        self.chipped = bool(event.chipped)
+
+    def bot_dribbled_ball_too_far(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot) #o
+        self.start = Point(event.start) #o
+        self.end = Point(event.end) #o
+
+    def attacker_touched_opponent_in_defense_area(self,event):
+        self.by_team = Team(event.by_team)
+        self.by_bot = int(event.by_bot) #o
+        self.victim = int(event.victim) #o
+        self.location = Point(event.location) #o
+
+    def attacker_double_touched_ball(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot) #o
+        self.location =Point(event.location) #o
+
+    def attacker_too_close_to_defense_area(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot) #o
+        self.distance = float(event.distance) #o
+        self.ball_location = Point(event.ball_location) #o
+
+    def bot_held_ball_deliberately(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot) #o
+        self.distance = float(event.distance) #o
+        self.duration = float(event.duration) #o
+
+    def bot_interfered_placement(self,event):
+        self.by_team =Team(event.by_team)
+        self.by_bot =int(event.by_bot) #o
+        self.location =Point(event.location) #o
+
+    def multiple_cards(self, event) -> None:
+        self.by_team : Team = Team(event.by_team)
+
+    def multiple_fouls(self,event):
+        self.by_team =Team(event.by_team)
+        #repeated
+        self.caused_game_events = [GameEvent(caused_game_event) for caused_game_event in getattr(event, "caused_game_events", [])]
+ 
+    def multiple_placement_failure(self, event) -> None:
+        self.by_team : Team= Team(event.by_team)
+
+    def multiple_placement_failure(self,event):
+        self.by_team =Team(event.by_team)
+        self.location =Point(event.location)
+        self.time = float(event.time)
+
+    def no_progress_in_game(self,event) -> None:
+        self.location: Point  = Point(event.location) if getattr(event,"location") else None
+        self.time: float = float(event.time) if getattr(event,"time") else None
+
+    def placement_failure(self, event) -> None:
+        self.by_team:Team = Team(event.by_team)
+        self.remaining_distance:float = float(event.remaining_distance) if getattr(event,"nearest_own_bot_distance") else None
+        self.nearest_own_bot_distance :float = float(event.nearest_own_bot_distance) if getattr(event,"nearest_own_bot_distance") else None
+
+    def unsporting_behavior_minor(self,event) -> None:
+        self.by_team :Team = Team(event.by_team)
+        self.reason:str = str(event.reason)
+
+    def unsporting_behavior_major(self,event) -> None:
+        #required
+        self.by_team :Team = Team(event.by_team)
+        self.reason :str = str(event.reason)
+
+    def keeper_held_ball(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.location = Point(event.location)
+        self.duration = float(event.duration)
+
+    def placement_succeeded(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.time_taken = event.time_taken
+        self.precision = event.precision
+        self.distance = event.distance
+
+    def prepared(self, event) -> None:
+        self.time_taken = event.time_taken
+
+    def bot_substitution(self,event) -> None:
+        self.by_team =Team(event.by_team)
+
+    def excessive_bot_substitution(self,event) -> None:
+        self.by_team =Team(event.by_team)
+
+    def challenge_flag(self,event):
+        self.by_team =Team(event.by_team)
+
+    def challenge_flag_handled(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.accepted = event.accepted
+
+    def emergency_stop(self,event) -> None:
+        self.by_team =Team(event.by_team)
+
+    def too_many_robots(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.num_robots_allowed = event.num_robots_allowed
+        self.num_robots_on_field = event.num_robots_on_field
+        self.ball_location = event.ball_location
+
+    def boundary_crossing(self,event) -> None:
+        self.by_team =Team(event.by_team)
+        self.location = Point(event.location)
+
+    def penalty_kick_failed(self,event):
+        self.by_team =Team(event.by_team)
+        self.location = Point(event.location)
+        self.reason = str(event.reason) 
+        
+    
+    def match_event(self,game_event):
+        ## access the corresponding event attribute
+        event = getattr(game_event,self.event_name) 
+        match self.type:
+            case GameEventType.BALL_LEFT_FIELD_TOUCH_LINE:
+                return self.ball_left_field(event)
+            case GameEventType.BALL_LEFT_FIELD_GOAL_LINE:
+                return self.ball_left_field(event)
+            case GameEventType.AIMLESS_KICK:
+                return self.aimless_kick(event)
+            case GameEventType.ATTACKER_TOO_CLOSE_TO_DEFENSE_AREA:
+                return self.attacker_touched_ball_in_defense_area(event)
+            case GameEventType.DEFENDER_IN_DEFENSE_AREA:
+                return self.defender_in_defense_area_partially(event)
+            case GameEventType.BOUNDARY_CROSSING:
+                return self.boundary_crossing(event)
+            case GameEventType.KEEPER_HELD_BALL:
+                return self.keeper_held_ball(event)
+            case GameEventType.BOT_DRIBBLED_BALL_TOO_FAR:
+                return self.bot_dribbled_ball_too_far(event)
+            case GameEventType.BOT_PUSHED_BOT:
+                return self.bot_push_bot(event)
+            case GameEventType.BOT_HELD_BALL_DELIBERATELY:
+                return self.bot_held_ball_deliberately(event)
+            case GameEventType.BOT_TIPPED_OVER:
+                return self.bot_tipped_over(event)
+            case GameEventType.BOT_DROPPED_PARTS:
+                return self.bot_dropped_parts(event)
+            case GameEventType.ATTACKER_TOUCHED_BALL_IN_DEFENSE_AREA:
+                return self.attacker_too_close_to_defense_area(event)
+            case GameEventType.BOT_KICKED_BALL_TOO_FAST:
+                return self.bot_kicked_ball_too_fast(event)
+            case GameEventType.BOT_CRASH_UNIQUE:
+                return self.bot_crash_unique(event)
+            case GameEventType.BOT_CRASH_DRAWN:
+                return self.bot_crash_drawn(event)
+            case GameEventType.DEFENDER_TOO_CLOSE_TO_KICK_POINT:
+                return self.defender_too_close_to_kick_point(event)
+            case GameEventType.BOT_TOO_FAST_IN_STOP:
+                return self.bot_too_fast_in_stop(event)
+            case GameEventType.BOT_INTERFERED_PLACEMENT:
+                return self.bot_interfered_placement(event)
+            case GameEventType.EXCESSIVE_BOT_SUBSTITUTION:
+                return self.excessive_bot_substitution(event)
+            case GameEventType.POSSIBLE_GOAL:
+                return self.goal(event)
+            case GameEventType.GOAL:
+                return self.goal(event)
+            case GameEventType.INVALID_GOAL:
+                return self.goal(event)
+            case GameEventType.ATTACKER_DOUBLE_TOUCHED_BALL:
+                return self.attacker_double_touched_ball(event)
+            case GameEventType.PLACEMENT_SUCCEEDED:
+                return self.placement_succeeded(event)
+            case GameEventType.PENALTY_KICK_FAILED:
+                return self.penalty_kick_failed(event)
+            case GameEventType.NO_PROGRESS_IN_GAME:
+                return self.no_progress_in_game(event)
+            case GameEventType.PLACEMENT_FAILED:
+                return self.placement_failure(event)
+            case GameEventType.MULTIPLE_CARDS:
+                return self.multiple_cards(event)
+            case GameEventType.MULTIPLE_FOULS:
+                return self.multiple_fouls(event)
+            case GameEventType.BOT_SUBSTITUTION:
+                return self.bot_substitution(event)
+            case GameEventType.TOO_MANY_ROBOTS:
+                return self.too_many_robots(event)
+            case GameEventType.CHALLENGE_FLAG:
+                return self.challenge_flag(event)
+            case GameEventType.CHALLENGE_FLAG_HANDLED:
+                return self.challenge_flag_handled(event)
+            case GameEventType.EMERGENCY_STOP:
+                return self.emergency_stop(event)
+            case GameEventType.UNSPORTING_BEHAVIOR_MINOR:
+                return self.unsporting_behavior_minor(event)
+            case GameEventType.UNSPORTING_BEHAVIOR_MAJOR:
+                return self.unsporting_behavior_major(event)
