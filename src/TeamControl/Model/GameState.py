@@ -120,108 +120,109 @@ class GameEvent():
         #repeated
         self.origin = [str(origin) for origin in getattr(game_event, "origin", [])]
         self.match_event(game_event)
+
         
     def ball_left_field(self, event) -> None:
         self.by_team = Team(event.by_team)
-        self.by_bot =int(event.by_bot)
-        self.location = event.location
+        self.by_bot =int(event.by_bot) #o
+        self.location = Point(event.location) #o
 
     def aimless_kick(self, event) -> None:
         self.by_team = Team(event.by_team)
-        self.by_bot =int(event.by_bot)
-        self.location = event.location
-        self.kick_location = event.kick_location
+        self.by_bot =int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.kick_location = Point(event.kick_location) #o
 
     def goal(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.kicking_team = Team(event.kicking_team)
-        self.location = Point(event.location)
-        self.kick_location = event.kick_location
-        self.max_ball_height = event.max_ball_height
-        self.num_robots_by_team = int(event.num_robots_by_team)
-        self.last_touch_by_team = event.last_touch_by_team
-        self.message = event.message
+        self.kicking_team = Team(event.kicking_team) #o
+        self.location = Point(event.location) #o
+        self.kick_location = Point(event.kick_location) #o
+        self.max_ball_height = float(event.max_ball_height) #o
+        self.num_robots_by_team = int(event.num_robots_by_team) #o
+        self.last_touch_by_team = int(event.last_touch_by_team) #o
+        self.message = str(event.message) #o
 
     def indirect_goal(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = event.location 
-        self.kick_location = event.kick_location
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.kick_location = Point(event.kick_location) #o
 
     def chipped_goal(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = event.location
-        self.kick_location = event.kick_location
-        self.max_ball_height = event.max_ball_height
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.kick_location = Point(event.kick_location) #o
+        self.max_ball_height = float(event.max_ball_height) #o
 
     def bot_too_fast_in_stop(self,event):
         self.by_team =Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = event.location
-        self.speed = event.speed
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.speed = float(event.speed) #o
 
     def defender_too_close_to_kick_point(self,event):
         self.by_team =Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = Point(event.location)
-        self.distance = float(event.distance)
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.distance = float(event.distance) #o
 
     def bot_crash_drawn(self,event):
-        self.bot_yellow = int(event.bot_yellow)
-        self.bot_blue = int(event.bot_blue)
-        self.location = Point(event.location)
-        self.crash_speed = float(event.crash_speed)
-        self.speed_diff = float(event.speed_diff)
-        self.crash_angle = float(event.crash_angle)
+        self.bot_yellow = int(event.bot_yellow) #o
+        self.bot_blue = int(event.bot_blue) #o
+        self.location = Point(event.location) #o
+        self.crash_speed = float(event.crash_speed) #o
+        self.speed_diff = float(event.speed_diff) #o
+        self.crash_angle = float(event.crash_angle) #o
 
     
     def bot_crash_unique(self,event): 
         self.by_team =Team(event.by_team)
-        self.violator = int(event.violator)
-        self.victim = int(event.victim)
-        self.location = Point(event.location)
-        self.crash_speed = float(event.crash_speed)
-        self.speed_diff = float(event.speed_diff)
-        self.crash_angle = float(event.crash_angle)
+        self.violator = int(event.violator) #o
+        self.victim = int(event.victim) #o
+        self.location = Point(event.location) #o
+        self.crash_speed = float(event.crash_speed) #o
+        self.speed_diff = float(event.speed_diff) #o
+        self.crash_angle = float(event.crash_angle) #o
 
     def bot_pushed_bot(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.violator = int(event.violator)
-        self.victim = int(event.victim)
-        self.location = Point(event.location)
-        self.distance = float(event.distance)
+        self.violator = int(event.violator) #o
+        self.victim = int(event.victim) #o
+        self.location = Point(event.location) #o
+        self.distance = float(event.distance) #o
 
     def bot_tipped_over(self,event):
         self.by_team =Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = Point(event.location)
-        self.ball_location = Point(event.ball_location)
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.ball_location = Point(event.ball_location) #o
 
     def bot_dropped_parts(self,event):
         self.by_team = Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = Point(event.location)
-        self.ball_location = Point(event.ball_location)
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.ball_location = Point(event.ball_location) #o
 
     def defender_in_defense_area_partially(self,event):
         self.by_team =Team(event.by_team)
-        self.by_bot = int(event.by_bot)
-        self.location = Point(event.location)
-        self.ball_location = Point(event.ball_location)
+        self.by_bot = int(event.by_bot) #o
+        self.location = Point(event.location) #o
+        self.ball_location = Point(event.ball_location) #o
 
     def attacker_touched_ball_in_defense_area(self,event):
         self.by_team =Team(event.by_team)
-        self.by_bot =int(event.by_bot)
-        self.location =Point(event.location)
-        self.distance = float(event.distance)
+        self.by_bot =int(event.by_bot) #o
+        self.location =Point(event.location) #o
+        self.distance = float(event.distance) #o
 
     def bot_kicked_ball_too_fast(self,event):
         self.by_team =Team(event.by_team)
-        self.by_bot =int(event.by_bot)
-        self.location =Point(event.location)
-        self.initial_ball_speed = float(event.initial_ball_speed)
-        self.chipped = bool(event.chipped)
+        self.by_bot =int(event.by_bot) #o
+        self.location =Point(event.location) #o
+        self.initial_ball_speed = float(event.initial_ball_speed) #o
+        self.chipped = bool(event.chipped) #o
 
     def bot_dribbled_ball_too_far(self,event):
         self.by_team =Team(event.by_team)
@@ -293,17 +294,17 @@ class GameEvent():
 
     def keeper_held_ball(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.location = Point(event.location)
-        self.duration = float(event.duration)
+        self.location = Point(event.location) #O
+        self.duration = float(event.duration) #o
 
     def placement_succeeded(self,event) -> None:
-        self.by_team =Team(event.by_team)
-        self.time_taken = event.time_taken
-        self.precision = event.precision
-        self.distance = event.distance
+        self.by_team = Team(event.by_team)
+        self.time_taken = float(event.time_taken) #o
+        self.precision = float(event.precision) #o
+        self.distance = float(event.distance) #o
 
     def prepared(self, event) -> None:
-        self.time_taken = event.time_taken
+        self.time_taken = float(event.time_taken) #o
 
     def bot_substitution(self,event) -> None:
         self.by_team =Team(event.by_team)
@@ -316,25 +317,25 @@ class GameEvent():
 
     def challenge_flag_handled(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.accepted = event.accepted
+        self.accepted = bool(event.accepted) 
 
     def emergency_stop(self,event) -> None:
         self.by_team =Team(event.by_team)
 
     def too_many_robots(self,event) -> None:
         self.by_team =Team(event.by_team)
-        self.num_robots_allowed = event.num_robots_allowed
-        self.num_robots_on_field = event.num_robots_on_field
-        self.ball_location = event.ball_location
+        self.num_robots_allowed = int(event.num_robots_allowed) #o
+        self.num_robots_on_field = int(event.num_robots_on_field) #o
+        self.ball_location = Point(event.ball_location) #o
 
     def boundary_crossing(self,event) -> None:
-        self.by_team =Team(event.by_team)
-        self.location = Point(event.location)
+        self.by_team =Team(event.by_team) 
+        self.location = Point(event.location) #o
 
     def penalty_kick_failed(self,event):
         self.by_team =Team(event.by_team)
-        self.location = Point(event.location)
-        self.reason = str(event.reason) 
+        self.location = Point(event.location) #o
+        self.reason = str(event.reason)  #o
         
     
     def match_event(self,game_event):
