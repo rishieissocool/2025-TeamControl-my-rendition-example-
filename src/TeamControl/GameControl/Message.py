@@ -1,4 +1,15 @@
-import logging
+""" Message.py  
+Contributors : Jason, Emma, Ali
+This file contains classes (in python) to be parsed from SSL-Game-Controller (protobuf message)
+
+Potential Known Error : 
+Some fields within GAME EVENT > EVENT might be optional (noted by "#o").
+This will give out an error known as : attribute "xyz" not found. 
+Please replace the "#o" with the following :  
+`if getattr(event,"xyz") else None`
+
+"""
+
 import enum
 from enum import auto, unique
 from typing import Optional, Union, List
@@ -452,6 +463,9 @@ class TeamInfo():
 
     
 class RefereeMessage():
+    """
+    This is the main class !!! 
+    """
     def __init__(self,referee):
         self.packet_timestamp = int(referee.packet_timestamp)
         self.stage = Stage(referee.stage)
