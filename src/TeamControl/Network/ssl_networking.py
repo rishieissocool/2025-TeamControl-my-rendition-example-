@@ -5,7 +5,6 @@ Raises:
 """
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *
-from TeamControl.Model.GameControllerState import State
 
 ### GC - Recv
 class GameControl(Multicast):
@@ -26,9 +25,8 @@ class GameControl(Multicast):
 
     def listen(self, duration: int = None) :
         ref_msg = super().listen(duration)
-        state = json_format.MessageToDict(ref_msg)
-        new_state = State(**state)
-        return new_state
+        return ref_msg
+
 
 
    

@@ -153,6 +153,7 @@ class World:
     def update_team_side(self,isYellow:bool,isPositive:bool):
         self.isYellow : bool = isYellow
         self.isPositive : bool = isPositive
+        logging.info(f"World Model Team :{self.isYellow=} {self.isPositive=}")
 
 ### --- Get --- ###
     def get_last_frame(self, i=0) -> Frame:
