@@ -5,7 +5,6 @@ Raises:
 """
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *
-# from TeamControl.Model.GameControllerState import State
 
 ### GC - Recv
 class GameControl(Multicast):
@@ -27,6 +26,7 @@ class GameControl(Multicast):
     def listen(self, duration: int = None) :
         ref_msg = super().listen(duration)
         return ref_msg
+
 
 
    
@@ -80,19 +80,33 @@ class grSimVision(vision):
 ### Simulation Control ### 
 
 class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20011) -> None: #please check and verify this port
+    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         self.destination = (ip,port)
         super().__init__(ip=ip,port=port)
 
     def send(**kwargs) -> None:
-        raise NotImplementedError("Nothing is here")
+        raise NotImplementedError("please use send_action()")
     
-    def send_action(self, isYellow:bool, action: bytes) -> None:
+    def send_action(self, action: grSim_Action|Action, isYellow:bool=None) -> None:
+        """send_action
+        
+        sending action over grsim command sender port
+        
+        can parse in either GRSIM Action or Action message type
+
+        Args:
+            isYellow (bool): controlling team is yellow
+            action (grSim_Action|Action|bytes): either an Action or grSim Action Message Class
+        """
         if isinstance(action,grSim_Action):
             action = action.encode()
-        if isinstance(action,Action):
-           new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
-           action = new_action.encode()
+        elif isinstance(action,Action):
+            if isYellow is None:
+                raise AttributeError("isYellow is required, please fill in isYellow=True/False")
+            new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
+            action = new_action.encode()
+        else:
+            return
         # sends packet to grsim
         self.sock.sendto(action,self.destination)
 
@@ -106,7 +120,7 @@ class grSimControl(BaseSocket):
 
         Args:
             ip (str, optional): Ip of Simulation Device. Defaults to None -> self obtain.
-            port (int, optional): _description_. Defaults to 10300.
+            port (int, optional): simulation control port. Defaults to 10300.
         """
         buffer_size = 1024
         self.decoder = None
