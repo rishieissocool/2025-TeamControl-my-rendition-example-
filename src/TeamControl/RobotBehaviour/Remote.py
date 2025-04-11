@@ -1,11 +1,11 @@
 import pygame
 
 from TeamControl.Network.Sender import Sender
-from TeamControl.Coms.Action import Action
+from TeamControl.Coms.RobotCommand import RobotCommand
 
 class Remote_robot():
     def __init__(self):
-        robot_ip = "172.20.10.3"
+        robot_ip = ""
         self.sender = Sender(ip=robot_ip,port=50514)
         
         self.us_yellow = True 
@@ -62,7 +62,7 @@ class Remote_robot():
                 d = 1
             
                                             
-            action = Action(robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            action = RobotCommand(robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             vx,vy,vw,k,d = 0,0,0,0,0
             self.sender.send_action(action)
 

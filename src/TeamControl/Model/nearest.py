@@ -1,5 +1,5 @@
 import math
-from TeamControl.Model.frame import Robot
+from TeamControl.Vision.frame import Robot
 import logging
 import numpy as np
 import numpy.typing as npt

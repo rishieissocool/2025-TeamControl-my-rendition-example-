@@ -1,6 +1,6 @@
 from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
 from TeamControl.Model.world import World
-from TeamControl.Model.frame import Robot as r
+from TeamControl.Vision.frame import Robot as r
 
 import time
 import numpy as np

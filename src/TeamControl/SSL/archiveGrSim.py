@@ -2,12 +2,12 @@ from TeamControl.Coms.proto2 import *
 from TeamControl.Model.world import World as wm
 from TeamControl.Network.Receiver import *
 from TeamControl.Network.Sender import *
-from TeamControl.Model.frame import Robot as r
+from TeamControl.Vision.frame import Robot as r
 from TeamControl.RobotBehaviour.goToTarget import *
 from TeamControl.Model.transform_cords import *
 from sklearn.linear_model import LinearRegression
 from TeamControl.Model.world import World as wm
-from TeamControl.Coms.grSimAction import grSim_Action
+from TeamControl.Coms.grSimRobotCommands import grSim_Action
 from TeamControl.Network.ssl_networking import grSimVision, grSimSender
 from TeamControl.RobotBehaviour.Movement import *
 class grSimServer():
