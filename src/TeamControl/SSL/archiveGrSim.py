@@ -7,7 +7,7 @@ from TeamControl.RobotBehaviour.goToTarget import *
 from TeamControl.Model.transform_cords import *
 from sklearn.linear_model import LinearRegression
 from TeamControl.Model.world import World as wm
-from TeamControl.Coms.grSimRobotCommands import grSim_Action
+from TeamControl.Coms.grSimRobotCommands import grSimRobotCommand
 from TeamControl.Network.ssl_networking import grSimVision, grSimSender
 from TeamControl.RobotBehaviour.Movement import *
 class grSimServer():

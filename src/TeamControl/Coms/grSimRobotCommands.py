@@ -8,10 +8,10 @@ from TeamControl.Coms.proto2 import grSim_Commands_pb2
 
 
 TIME = time.time()
-### GR SIM ACTION ### 
+### GR SIM Command ### 
 class grSimRobotCommand():
-    """grSim Action
-    Class commands to generate action and send to grSim
+    """grSim Command
+    Class commands to generate Command and send to grSim
 
     Args:
         Packet (grSimPacket): the packet to be sent to grSim
@@ -21,7 +21,7 @@ class grSimRobotCommand():
                  vx=0.0, vy=0.0, w=0.0, 
                  kick=0, dribble=0
                  ) -> None:
-        """initiating Action Object
+        """initiating Command Object
 
         Args:
             isYellow (bool): is your team color Yellow?
@@ -60,9 +60,9 @@ class grSimRobotCommand():
                                          spinner=self.d)
         commands = self.command(isteamyellow=self.isYellow,
                                         robot_commands=[cmd]) 
-        action = self.packet(commands)
-        encoded_action = action.SerializeToString()
-        return encoded_action
+        command = self.packet(commands)
+        encoded_command = command.SerializeToString()
+        return encoded_command
     
     
     def decode(self):

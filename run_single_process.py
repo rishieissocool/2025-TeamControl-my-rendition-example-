@@ -36,7 +36,7 @@ if __name__ == "__main__":
         ...
         
     while True: 
-        list_action = list()
+        list_command = list()
     
         isUpdated = vision_sock.listen() # is the current detection frame updated ?
         if isUpdated: # now the detection frame is fully updated
@@ -51,10 +51,10 @@ if __name__ == "__main__":
                 vx,vy = RobotMovement.go_To_Target(target_pos=target_pos)
                 w = RobotMovement.turn_to_target(target_pos,speed=2)
         
-                action = Action(robot_id=robot_id,vx=vx,vy=vy,w=w)
-                print(action)   
+                Command = Command(robot_id=robot_id,vx=vx,vy=vy,w=w)
+                print(Command)   
                 if isGrSimActive:
-                    g_sender.send_action(isYellow=us_yellow,action=action)
+                    g_sender.send_command(isYellow=us_yellow,Command=Command)
                 if numRobotsActive > 0:
                     ...
     

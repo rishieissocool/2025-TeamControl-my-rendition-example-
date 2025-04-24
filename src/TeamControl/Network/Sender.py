@@ -10,9 +10,8 @@ import ast
 
 import logging
 
-from TeamControl.Coms.Action import Action
-from TeamControl.Coms.Action import Action
-from TeamControl.Coms.grSimAction import grSim_Action
+from TeamControl.Coms.RobotCommand import RobotCommand
+from TeamControl.Coms.grSimRobotCommands import grSimRobotCommand
 from TeamControl.Network.BaseUDP import *
 # from TeamControl.Network.Robot import Robot
 
@@ -25,26 +24,26 @@ class Sender(BaseSocket):
             self.destination = ("127.0.0.1",port)
         super().__init__(ip=None,port=port,sock_type=sock_type,binding=binding)
     
-    def send_action(self,action) -> None:
+    def send_command(self,command:RobotCommand) -> None:
         """
-        Sending Action via UDP
+        Sending command via UDP
 
         Args:
-            action (Action): Action that wants to be sent
+            command (RobotCommand): Command that wants to be sent
             d_addr (tuple[str,int]): destination address to be delivered to 
             
         Params: 
-            encoded_action(bytes): see Action.encode
+            encoded_Command(bytes): see Command.encode
         Exceptions:
-            TypeError : Only Action or byte objects allowed
+            TypeError : Only Command or byte objects allowed
         """
-        if not isinstance(action,Action):
-            raise TypeError("Only Actions allowed")
+        if not isinstance(command,RobotCommand):
+            raise TypeError("Only RobotCommands allowed")
         
-        encoded_action:bytes = action.encode()
-                # sends the action to destined address
-        self.send(msg=encoded_action,destination=self.destination)
-        logging.info(f"SENT : {action=} TO: {self.destination}")
+        encoded_command:bytes = command.encode()
+                # sends the command to destined address
+        self.send(msg=encoded_command, destination=self.destination)
+        logging.info(f"SENT : {command=} TO: {self.destination}")
 
     def update_destination(self, destination:str|tuple[str,int]) -> None:
         """Update Sending Socket's Destination

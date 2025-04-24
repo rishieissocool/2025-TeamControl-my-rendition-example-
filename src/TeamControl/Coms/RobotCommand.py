@@ -1,4 +1,4 @@
-# Robot Actions
+# Robot Commands
 import logging
 import datetime
 import time
@@ -10,7 +10,7 @@ log.setLevel(logging.NOTSET)
 
 class RobotCommand():
     def __init__(self, robot_id : int, vx : float=0.0, vy: float=0.0, w : float=0.0, kick : int=0, dribble : int=0, time_origin : float= 0.0):
-        """Robot Command (Previously know as Action)
+        """Robot Command (Previously know as Command)
             Object for initialise commands, encode / decode strings for UDP transportation.
         Args:
             robot_id (int) : wanted Robot ID
@@ -56,7 +56,7 @@ class RobotCommand():
         
     def encode(self) -> bytes:
         """encode
-            Encodes action object into bytes
+            Encodes Command object into bytes
             
         Returns:
             bytes: byte data for sending
@@ -68,7 +68,7 @@ class RobotCommand():
     @classmethod
     def decode(cls,command_msg:str|bytes) -> object:
         """decode
-            decode and stores the action to an object *This needs to be a class method
+            decode and stores the Command to an object *This needs to be a class method
         Args:
             command_msg (str|bytes): message received upon UDP (in the form of string or bytes)
             

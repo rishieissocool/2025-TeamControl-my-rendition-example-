@@ -5,7 +5,7 @@ import time
 # from pynput.keyboard import Key, Listener
 
 from TeamControl.Model.world import World as wm
-from TeamControl.Coms.grSimRobotCommands import grSim_Action
+from TeamControl.Coms.grSimRobotCommands import grSimRobotCommand
 from TeamControl.Network.ssl_networking import grSimVision, grSimSender
 from TeamControl.RobotBehaviour.goToTarget import *
 from TeamControl.Model.transform_cords import *
@@ -46,19 +46,19 @@ class grSimUtils():
     # some simple functions
     def make_robot_move(self,ourTeam: bool,robot_id:int,vx=0.0,vy=0.0,vw=0.0):
         isYellow = self.get_team_color(ourTeam)
-        action = grSim_Action(isYellow=isYellow,robot_id=robot_id,vx=vx,vy=vy,w=vw)
-        self.sender.send_action(action)
+        command = grSimRobotCommand(isYellow=isYellow,robot_id=robot_id,vx=vx,vy=vy,w=vw)
+        self.sender.send_command(command)
       
     
     def make_robot_kick(self, ourTeam:bool, robot_id:int, kickx = 1.0, kickz = 0.0):
         isYellow = self.get_team_color(ourTeam)
-        action = grSim_Action(isYellow=isYellow,robot_id=robot_id,kx=kickx,kz=kickz)
-        self.sender.send_action(action)
+        command = grSimRobotCommand(isYellow=isYellow,robot_id=robot_id,kx=kickx,kz=kickz)
+        self.sender.send_command(command)
 
     def make_robot_dribble(self,ourTeam:bool,robot_id:int, dribble: bool):
         isYellow = self.get_team_color(ourTeam)
-        action = grSim_Action(isYellow=isYellow,robot_id=robot_id,d=dribble)
-        self.sender.send_action(action)
+        command = grSimRobotCommand(isYellow=isYellow,robot_id=robot_id,d=dribble)
+        self.sender.send_command(command)
         
     def run_remote_control(self):
         robot_id = int(input("Enter the ID of Robot you want to control: "))
@@ -113,12 +113,12 @@ class grSimUtils():
                 d = 1
             
                                             
-            action = grSim_Action(isYellow=self.us_yellow, robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            command = grSimRobotCommand(isYellow=self.us_yellow, robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             vx,vy,vw,k,d = 0,0,0,0,0
-            self.sender.send_action(action)
+            self.sender.send_command(command)
     
     def run_code(self):
-        action_list = list()
+        command_list = list()
         robot_id = int(input("Enter the ID of Robot you want to control: "))
         while True:
             
@@ -132,12 +132,12 @@ class grSimUtils():
                 print(f'{translated_point=}')
                 vx,vy = go_To_Target(translated_point)
                 w = turn_to_target(translated_point)
-                action = self.make_robot_move(ourTeam=True,robot_id=robot_id,vx=vx,vy=vy,vw=w)
-                action_list.append(action)
+                command = self.make_robot_move(ourTeam=True,robot_id=robot_id,vx=vx,vy=vy,vw=w)
+                command_list.append(command)
     
-            if len(action_list) > 0:
-                a = action_list.pop(0)
-                self.sender.send_action(isYellow=self.ourTeam,action=a)
+            if len(command_list) > 0:
+                a = command_list.pop(0)
+                self.sender.send_command(isYellow=self.ourTeam,command=a)
     
 
 if __name__ =="__main__" :

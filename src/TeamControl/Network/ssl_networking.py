@@ -85,30 +85,30 @@ class grSimSender(Sender):
         super().__init__(ip=ip,port=port)
 
     def send(**kwargs) -> None:
-        raise NotImplementedError("please use send_action()")
+        raise NotImplementedError("please use send_command()")
     
-    def send_action(self, action: grSim_Action|Action, isYellow:bool=None) -> None:
-        """send_action
+    def send_command(self, Command: grSimRobotCommand|RobotCommand, isYellow:bool=None) -> None:
+        """send_command
         
-        sending action over grsim command sender port
+        sending Command over grsim command sender port
         
-        can parse in either GRSIM Action or Action message type
+        can parse in either GRSIM Command or RobotCommand message type
 
         Args:
             isYellow (bool): controlling team is yellow
-            action (grSim_Action|Action|bytes): either an Action or grSim Action Message Class
+            Command (grSimRobotCommand|Command|bytes): either a RobotCommand or grSimRobotCommand Message Class
         """
-        if isinstance(action,grSim_Action):
-            action = action.encode()
-        elif isinstance(action,Action):
+        if isinstance(Command,grSimRobotCommand):
+            Command = Command.encode()
+        elif isinstance(Command,RobotCommand):
             if isYellow is None:
                 raise AttributeError("isYellow is required, please fill in isYellow=True/False")
-            new_action =grSim_Action(isYellow=isYellow,robot_id=action.robot_id,vx=action.vx,vy=action.vy,w=action.w,kick=action.kick,dribble=action.dribble)
-            action = new_action.encode()
+            new_Command =grSimRobotCommand(isYellow=isYellow,robot_id=Command.robot_id,vx=Command.vx,vy=Command.vy,w=Command.w,kick=Command.kick,dribble=Command.dribble)
+            Command = new_Command.encode()
         else:
             return
         # sends packet to grsim
-        self.sock.sendto(action,self.destination)
+        self.sock.sendto(Command,self.destination)
 
 
 

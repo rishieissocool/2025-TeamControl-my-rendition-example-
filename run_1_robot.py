@@ -46,9 +46,9 @@ if __name__ == "__main__":
             # w = RobotMovement.turn_to_target(target_pos)
             # w = 0 
     
-            action = Action(robot_id=robot_id,vx=vx*20,vy=vy*20)
-            # print(action)   
-            sender.send_action(action=action,destination=(robot_ip,robot_port))
+            cmd = RobotCommand(robot_id=robot_id,vx=vx*20,vy=vy*20)
+            # print(Command)   
+            sender.send_command(Command=cmd,destination=(robot_ip,robot_port))
             
             start_time = time.time()
     

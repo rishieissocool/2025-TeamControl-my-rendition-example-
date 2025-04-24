@@ -62,9 +62,9 @@ class Remote_robot():
                 d = 1
             
                                             
-            action = RobotCommand(robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            Command = RobotCommand(robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             vx,vy,vw,k,d = 0,0,0,0,0
-            self.sender.send_action(action)
+            self.sender.send_command(Command)
 
 if __name__ == "__main__":
     rc = Remote_robot()
