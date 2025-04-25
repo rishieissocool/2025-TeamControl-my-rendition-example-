@@ -13,44 +13,37 @@ To install this module, do
 ```
 git clone https://github.com/WSU-TurtleRabbit/2025-teamcontrol.git
 ```
-Run the Python FILE : installModule.py
-
-IF you have encountered Permission Issues, do the following 
-(this should only happen to Linux or Mac Users)
-
-```shell
-chmod 755 installModule.py
-chmod 755 setup.sh
-python3 ./installModule.py
+Then we will have to create a virtual environment. 
+In Linux : 
+```bash
+python3 -m venv .venv
+```
+Then we will have to install the pip packages and our development project. 
+To do so, you will first have to activate the environment.
+In Linux: 
+```bash 
+source .venv/bin/activate
+```
+Then install the modules and this project as *Editable* project
+```bash 
+pip install -e . 
 ```
 
-There are 2 options that you have to answer [Y/N] to:
-1. Installing virtual environment
-2. Activating Virtual Environment and Performing a GIT PULL
+Now you should be able to run and start coding without any problem ! 
 
-If you have experienced an error at the second option, and you are using a windows, please manually open up a GIT BASH Terminal. 
-
-You might also experience an error with GIT if you have not logged in on VSCODE. Please seek help accordingly.
-
-
-### Install GRSIM
-To install GRSIM on your Linux Device, this repository also has a file to do it automatically for you. 
-
-Please put the following in your Linux Terminal
-```shell
-chmod 755 installGRSIM.sh
-sudo ./installGRSIM.sh
+If you want to know what was installed (and what version), you can do :
+```bash
+pip list
 ```
-This will install grSim at your Home directory in the folder "ssl-software"
-
-### Installing Game Controller
-To install Game Controller on your Ubuntu Linux, you can download the file and do the following :
-
-```shell
-chmod 777 installGameController.sh
-./installGameController.sh
+or you can get a file called `requirement.txt` as a backup for the current modules and stuff.
+To do so, in Linux : 
+```bash
+pip freeze > requirement.txt
 ```
-
-This will then install ssl-game-controller, ssl-status-board, TIGERS AutoRef, ERFORCE AutoRef onto your Home Directory, within the folder : "ssl-software"
+afterwards, you can do : 
+```bash
+pip install -r requirement.txt
+```
+This is then the modules install using `requirement.txt` (which is another way to do it). To learn more, see [how to setup a python project](https://github.com/WSU-TurtleRabbit/how-to/blob/b2daf710f8d522aca7eadc72b78dd3002f60de95/Code/PythonProjectSetup.md)
 
 If got into any error, please copy or screenshot text and post it in Mattermost Chat, and await for reply. 
