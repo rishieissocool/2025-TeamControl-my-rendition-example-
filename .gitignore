@@ -1,5 +1,6 @@
 .saves
 *_samples.png
+.vscode
 
 bin/
 lib/
