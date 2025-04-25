@@ -1,7 +1,7 @@
 import pygame
 
-from TeamControl.Network.Sender import Sender
-from TeamControl.Coms.RobotCommand import RobotCommand
+from TeamControl.Network.sender import Sender
+from TeamControl.Network.robotCommand import RobotCommand
 
 class Remote_robot():
     def __init__(self):

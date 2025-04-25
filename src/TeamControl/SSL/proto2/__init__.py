@@ -1,4 +1,3 @@
-# __all__ = ["grSim__Commands__pb2",]
 
 # from .grSim_Commands_pb2 import *
 # from .grSim_Packet_pb2 import *

@@ -1,15 +1,11 @@
 import time
 
-from TeamControl.Coms.proto2 import grSim_Packet_pb2
-from TeamControl.Coms.proto2 import grSim_Commands_pb2
-# from TeamControl.Coms.proto2 import grSim_Replacement_pb2
-# from TeamControl.Coms.proto2 import ssl_vision_wrapper_pb2
-# from TeamControl.Coms.proto2 import grSim_Robotstatus_pb2 
-
+from TeamControl.SSL.proto2 import grSim_Packet_pb2
+from TeamControl.SSL.proto2 import grSim_Commands_pb2
 
 TIME = time.time()
 ### GR SIM Command ### 
-class grSimRobotCommand():
+class GSRobotCommand():
     """grSim Command
     Class commands to generate Command and send to grSim
 
@@ -80,7 +76,7 @@ class grSimRobotCommand():
             wheel3=wheel3, wheel4=wheel4
         )
     @staticmethod
-    def command(isteamyellow, robot_commands) -> grSim_Commands_pb2.grSimCommands:
+    def command(isteamyellow, robot_commands) ->grSim_Commands_pb2.grSim_Robot_Command:
         timestamp = 0.0
         return grSim_Commands_pb2.grSim_Commands(
             timestamp=timestamp, isteamyellow=isteamyellow, robot_commands=robot_commands

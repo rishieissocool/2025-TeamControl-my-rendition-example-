@@ -492,7 +492,7 @@ class RefereeMessage():
         
        
 if __name__ == "__main__":
-    from TeamControl.Network.ssl_networking import GameControl
+    from TeamControl.SSL.GameControl.Receiver import GameControl
     import time
     
     gc_recv = GameControl()

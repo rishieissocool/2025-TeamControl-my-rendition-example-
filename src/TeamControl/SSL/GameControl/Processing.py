@@ -6,7 +6,7 @@ This file is an extension of Message.py, in which compares and stores static ver
 working in progress
 """
 
-from TeamControl.GameControl.Message import *
+from TeamControl.SSL.GameControl.Message import *
 import logging
 
 log = logging.getLogger()
@@ -29,8 +29,8 @@ class Processing():
         if self.command != cmd:
             log.info(f"Command has been updated from : {self.command} to : {cmd}")
             self.command = cmd
-        if self.command.name == Command.HALT:
-            ... 
+        # if self.command.name == Command.HALT:
+        #     ... 
             
             
 
@@ -58,17 +58,19 @@ class Processing():
     #     ...
         
 
-if __name__ == "__main__":
-    from TeamControl.Network.ssl_networking import GameControl
-    import time
+# if __name__ == "__main__":
+#     from TeamControl.SSL.GameControl.Receiver import GameControl
     
-    gc_recv = GameControl()
-    gc_processing = Processing()
+#     import time
     
-    while True:
-        ref_msg = gc_recv.listen()
-        start_time = time.time()
-        message = RefereeMessage(referee=ref_msg)
-        gc_processing.update(message)
-        log.debug(f"Internal Processing Time : {time.time() - start_time} \n")
+#     gc_recv = GameControl()
+#     gc_processing = Processing()
+    
+#     while True:
+#         ref_msg = gc_recv.listen()
+#         start_time = time.time()
+#         message = RefereeMessage(referee=ref_msg)
+#         gc_processing.update(message)
+        
+#         log.debug(f"Internal Processing Time : {time.time() - start_time} \n")
         

@@ -1,12 +1,10 @@
 # NETWORK
 
-This directory includes the Server - Client Communication.
+This files covers the default ports for major SSL communications
 
-For Communication Protocol please see [Coms]()
+For Detail Protobuf files please see [proto2](/src/TeamControl/SSL/proto2/)
 
-Base UDP is the default socket setup for both Receiver and Sender
-
-[SSL_Networking] includes the socket used for SSL_League softwares.
+[SSL Folder](/src/TeamControl/SSL/) includes the different SSL software unique classes and sockets
 
 
 --- 

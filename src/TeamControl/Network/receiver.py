@@ -9,14 +9,9 @@ import logging
 import struct
 import ast #converting str -> tuple
 
-from google.protobuf import json_format
-
-from TeamControl.Model.world import World as wm
+from TeamControl.SSL.Vision import World
 # from TeamControl.Model.GameState import State
-from TeamControl.Network.BaseUDP import BaseSocket,UDP
-
-from TeamControl.Coms.proto2 import ssl_vision_wrapper_pb2
-from TeamControl.Coms.proto2 import ssl_gc_referee_message_pb2
+from TeamControl.Network.baseUDP import BaseSocket,UDP
 
 #logging
 import logging

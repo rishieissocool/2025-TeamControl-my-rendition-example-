@@ -1,4 +1,4 @@
-from TeamControl.SSL.grSimUtils import grSimUtils
+from grSimUtils import grSimUtils
 
 def run():
     ## Establish GRSIM Connection

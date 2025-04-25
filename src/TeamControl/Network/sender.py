@@ -10,10 +10,9 @@ import ast
 
 import logging
 
-from TeamControl.Coms.RobotCommand import RobotCommand
-from TeamControl.Coms.grSimRobotCommands import grSimRobotCommand
-from TeamControl.Network.BaseUDP import *
-# from TeamControl.Network.Robot import Robot
+from TeamControl.Network.robotCommand import RobotCommand
+from TeamControl.Network.baseUDP import BaseSocket,UDP
+
 
           
 class Sender(BaseSocket):

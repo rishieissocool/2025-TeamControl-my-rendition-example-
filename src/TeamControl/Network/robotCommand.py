@@ -34,7 +34,7 @@ class RobotCommand():
         self.time_origin: float = float(time_origin)
     
     def __str__(self) -> str:
-        return f"{self.id} {self.vx} {self.vy} {self.w} {self.kick} {self.dribble} {self.time_set}"
+        return f"{self.robot_id} {self.vx} {self.vy} {self.w} {self.kick} {self.dribble} {self.time_set}"
 
     def __repr__(self):
         """repr 

@@ -1,8 +1,9 @@
 import numpy as np
 import numpy.typing as npt
-from TeamControl.Model.field import *
-from TeamControl.Model.frame import *
-import TeamControl.Model as model
+
+from TeamControl.SSL.Vision.frame import Frame,Robot,Ball
+from TeamControl.SSL.Vision.field import *
+
 import logging
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)

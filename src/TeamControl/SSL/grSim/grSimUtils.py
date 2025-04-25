@@ -2,11 +2,10 @@
 This class is going to be replaced. 
 """
 import time
-# from pynput.keyboard import Key, Listener
 
-from TeamControl.Model.world import World as wm
-from TeamControl.Coms.grSimRobotCommands import grSimRobotCommand
-from TeamControl.Network.ssl_networking import grSimVision, grSimSender
+from TeamControl.SSL.Vision.world import World as wm
+from TeamControl.SSL.grSim.Sockets import grSimVision, grSimSender
+from TeamControl.SSL.grSim.grSimRobotCommand import GSRobotCommand as RobotCommand
 from TeamControl.RobotBehaviour.goToTarget import *
 from TeamControl.Model.transform_cords import *
 
@@ -15,7 +14,7 @@ class grSimUtils():
     """This is the main / sandbox class for grSim Control
     This class has a world_model, receiver and sender
     """
-    def __init__(self,isYellow : bool, isPositive : bool ,ip:str = '127.0.0.1', vision_port : int=10020, sender_port : int=20011) -> None:
+    def __init__(self,isYellow : bool, isPositive : bool ,ip:str = '127.0.0.1', vision_port : int=10020, sender_port : int=20010) -> None:
         """Initalising GRSIM Tools. 
         This includes : 
         GRSIM VISION
@@ -46,18 +45,18 @@ class grSimUtils():
     # some simple functions
     def make_robot_move(self,ourTeam: bool,robot_id:int,vx=0.0,vy=0.0,vw=0.0):
         isYellow = self.get_team_color(ourTeam)
-        command = grSimRobotCommand(isYellow=isYellow,robot_id=robot_id,vx=vx,vy=vy,w=vw)
+        command = RobotCommand(isYellow=isYellow,robot_id=robot_id,vx=vx,vy=vy,w=vw)
         self.sender.send_command(command)
       
     
     def make_robot_kick(self, ourTeam:bool, robot_id:int, kickx = 1.0, kickz = 0.0):
         isYellow = self.get_team_color(ourTeam)
-        command = grSimRobotCommand(isYellow=isYellow,robot_id=robot_id,kx=kickx,kz=kickz)
+        command = RobotCommand(isYellow=isYellow,robot_id=robot_id,kx=kickx,kz=kickz)
         self.sender.send_command(command)
 
     def make_robot_dribble(self,ourTeam:bool,robot_id:int, dribble: bool):
         isYellow = self.get_team_color(ourTeam)
-        command = grSimRobotCommand(isYellow=isYellow,robot_id=robot_id,d=dribble)
+        command = RobotCommand(isYellow=isYellow,robot_id=robot_id,d=dribble)
         self.sender.send_command(command)
         
     def run_remote_control(self):
@@ -113,7 +112,7 @@ class grSimUtils():
                 d = 1
             
                                             
-            command = grSimRobotCommand(isYellow=self.us_yellow, robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            command = RobotCommand(isYellow=self.us_yellow, robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             vx,vy,vw,k,d = 0,0,0,0,0
             self.sender.send_command(command)
     
