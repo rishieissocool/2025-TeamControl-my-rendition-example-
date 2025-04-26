@@ -24,9 +24,10 @@ import numpy
           
 class YamlSender(BaseSocket):
     def __init__(self):
-        file = open("../utils/ipconfig.yaml", "r")
+        file = open("src/TeamControl/utils/ipconfig.yaml", "r")
         self.robot = yaml.load(file, Loader)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        super().__init__()
 
         
     
@@ -45,8 +46,15 @@ class YamlSender(BaseSocket):
         """
 
         for command in command_list:
-            robot_id = command.id
+            robot_id = str(command.robot_id)
             destination = self.robot[robot_id]["ip"]
             port = self.robot[robot_id]["port"]
+            print(robot_id,destination,port, command)
             enocded_command:bytes = command.encode()
-            self.sock.sendto(enocded_command, [destination, port])
+            self.sock.sendto(enocded_command, (destination, port))
+            
+
+if __name__ == "__main__" :
+    s = YamlSender()
+    list_cmd = [RobotCommand(1),RobotCommand(2),RobotCommand(3),RobotCommand(4)]
+    s.send_command(list_cmd)
