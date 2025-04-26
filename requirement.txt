@@ -9,11 +9,13 @@ numpy==2.2.5
 packaging==25.0
 pillow==11.2.1
 protobuf==6.30.2
+pygame==2.6.1
 pyparsing==3.2.3
 python-dateutil==2.9.0.post0
+PyYAML==6.0.2
 scikit-learn==1.6.1
 scipy==1.15.2
 shapely==2.1.0
 six==1.17.0
--e git+https://github.com/WSU-TurtleRabbit/2025-TeamControl.git@1574dae45c019528538716e67128c6e153172a4b#egg=TeamControl
+-e git+https://github.com/WSU-TurtleRabbit/2025-TeamControl.git@0fd72e5d83d9744a97bf1f066f724be8e9217da1#egg=TeamControl
 threadpoolctl==3.6.0

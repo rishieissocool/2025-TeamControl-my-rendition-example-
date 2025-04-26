@@ -11,7 +11,8 @@ dependencies = [
     "protobuf",
     "Shapely",
     "scikit-learn",
-    "networkx"
+    "networkx",
+    "PyYAML"
 ]
 
 dynamic = [
