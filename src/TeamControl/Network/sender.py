@@ -18,8 +18,10 @@ from TeamControl.Network.baseUDP import BaseSocket, SocketType
 class Sender(BaseSocket):
     def __init__(self, ip: str='127.0.0.1', port: int=0, type=SocketType.SOCK_UDP, binding=False) -> None:
         device_ip = None 
+        device_port = self._generate_port()
         self.destination_ip = ip 
-        super().__init__(ip=device_ip,port=port,type=type,binding=binding)
+        self.destination_port = port
+        super().__init__(ip=device_ip,port=device_port,type=type,binding=binding)
     
     @property
     def destination_ip(self):
@@ -33,7 +35,7 @@ class Sender(BaseSocket):
         
     @property
     def destination(self):
-        return (self.destination_ip,self.port)
+        return (self.destination_ip,self.destination_port)
     
     
     def send(self, msg, ip:str=None, port:int=None):
@@ -41,12 +43,13 @@ class Sender(BaseSocket):
         addr = tuple(ip,port) if isinstance(ip,str) and isinstance(port,int) else self.destination
         if not isinstance(msg,bytes):
             try:
-                msg = msg.encode()
+                encoded_msg = msg.encode()
             except Exception as e:
                 raise(e, "Error with encoding")
-        print(self.destination)
-        self.sock.sendto(msg,addr)
-        log.debug(f"sending {msg.decode()} to {addr}")
+        # print(self.destination)
+        self.sock.sendto(encoded_msg,addr)
+        
+        print(f"sending {msg} to {addr}")
 
             
     
@@ -84,5 +87,9 @@ class Multicaster(Sender):
     ...
 
 if __name__ == "__main__":
-    sender = Broadcaster()
-    sender.send("1")
+    import time
+    sender = Sender(ip='', port=50514)
+    while True:
+        # time.sleep(2)
+        for i in range (500):
+            sender.send(str(i))

@@ -6,6 +6,7 @@ This file includes :
 """
 import socket
 import struct
+import time
 
 from TeamControl.Network.baseUDP import BaseSocket,SocketType
 
@@ -25,18 +26,31 @@ class Receiver(BaseSocket):
         return f"{self.__class__.__name__} - recv @ {self.addr}, available = {self.is_ready}, {self.timeout=}"
     
     
-    def listen(self) -> tuple[str, tuple[str, int]] | None:
+    def listen(self,duration:float = 0.) -> tuple[str, tuple[str, int]] | None:
         """
         Listens for incoming UDP messages. Returns the message and sender address.
         """
         assert self.is_ready, "Socket is not initialized. try another port ?"
-        try:
-            message, addr = self.sock.recvfrom(self.buffer_size)
-            self.last_message = self._decode(message)
-            self.last_addr = addr
-            return self.last_message, self.last_addr
-        except socket.timeout:
-            return None
+        active = True
+        result = '', 0
+        if duration !=0 : 
+            endTime = time.time() + duration
+        else:
+            endTime = time.time()     
+        while active:
+            try:
+                message, addr = self.sock.recvfrom(self.buffer_size)
+                self.last_message = self._decode(message)
+                self.last_addr = addr
+                result = self.last_message, self.last_addr
+                active = False
+            except socket.timeout:
+                print("timeout")
+                continue
+            
+            if time.time() >= endTime:
+                return result
+                
 
     def _decode(self,data:bytes):
         try:
@@ -56,7 +70,7 @@ class Broadcast(Receiver):
 
 # Multicast Receiver
 class Multicast(Receiver):
-    def __init__(self,port: int, group:str, decoder:object, buffer_size: int = 6000,timeout:int=1) -> None:
+    def __init__(self,port: int, group:str, decoder:object, buffer_size: int = 6000,timeout:int=0.5) -> None:
         """
         Initialising Multicast socket
 
@@ -105,13 +119,14 @@ class Multicast(Receiver):
     
 
 if __name__ == "__main__":
-    recv = Receiver()
+    recv = Receiver(port = 50514)
     b_recv = Broadcast()
     m_recv = Multicast(10006, "224.24.5.3", '')
     while True:
         print("receiver is listening")
-        recv.listen()
-        print("broadcast is listening")
-        b_recv.listen()
-        print("multicast is listening")
-        m_recv.listen()
+        msg,_ = recv.listen()
+        print(msg)
+        # print("broadcast is listening")
+        # b_recv.listen()
+        # print("multicast is listening")
+        # m_recv.listen()
