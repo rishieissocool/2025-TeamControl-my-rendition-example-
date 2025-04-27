@@ -1,11 +1,13 @@
-from TeamControl.Network.sender import Sender
+from TeamControl.network import Vision,Sender,RobotCommand
 
-from TeamControl.Examples.PathPlaner import pathplanning 
-from TeamControl.SSL.Vision.world import World
-from TeamControl.Model import world2robot
-from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
+from TeamControl.examples.PathPlaner import pathplanning 
+from TeamControl.world.main import WorldModel as wm
+from TeamControl.world.transform_cords import world2robot
+from TeamControl.voronoi_planner.voronoi_planner import VoronoiPlanner
 
-from TeamControl.RobotBehaviour.Movement import RobotMovement
+from TeamControl.robot_behaviour.Movement import RobotMovement
+
+import time
 
 if __name__ == "__main__":
     # VARIABLES 
@@ -14,10 +16,8 @@ if __name__ == "__main__":
     us_positive = True
     robot_ip = "192.168.8.200"
     robot_port = 50514
-                # ball_pos = vision_sock.world_model.get_ball()
-            # print(f"{ball_pos=}")
-    world_model = World(isYellow=us_yellow,isPositive=us_positive)
-    vision_sock = vision(world_model)
+    world_model = wm(isYellow=us_yellow,isPositive=us_positive)
+    vision_sock = Vision(world_model)
     sender = Sender(ip=robot_ip,port=robot_port)
     planner = VoronoiPlanner(xsize=9000,ysize=6000)
     

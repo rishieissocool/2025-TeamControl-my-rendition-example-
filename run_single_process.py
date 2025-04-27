@@ -1,9 +1,9 @@
-from TeamControl.Network import *
-from TeamControl.Examples.PathPlaner import pathplanning 
-from TeamControl.RobotBehaviour.Movement import RobotMovement 
-from TeamControl.Model import world2robot
-from TeamControl.SSL.Vision.world import World
-from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
+from TeamControl.network import *
+from TeamControl.examples.PathPlaner import pathplanning 
+from TeamControl.robot_behaviour.Movement import RobotMovement 
+from TeamControl.world.transform_cords import world2robot
+from TeamControl.world.model import WorldModel as wm
+from TeamControl.voronoi_planner.voronoi_planner import VoronoiPlanner
 
 
 if __name__ == "__main__":
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     numRobotsActive = 0
     planner = VoronoiPlanner(xsize=9000,ysize=6000)
     
-    world_model = World(isYellow=us_yellow,isPositive=us_positive)
+    world_model = wm(isYellow=us_yellow,isPositive=us_positive)
     if UseGrSimVision:
         world_model.max_cameras = 4
         # logging.info(f"Cameras Active : {world_model.max_cameras}")

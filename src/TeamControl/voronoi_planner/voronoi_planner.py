@@ -12,7 +12,7 @@ from matplotlib.patches import Circle
 import time
 from scipy.spatial import Voronoi, voronoi_plot_2d
 import networkx as nx
-from TeamControl.VoronoiPlanner.Obstacle import Obstacle
+from TeamControl.voronoi_planner.Obstacle import Obstacle
 
 class VoronoiPlanner:
     def __init__(self, xsize, ysize, obstacles = None):

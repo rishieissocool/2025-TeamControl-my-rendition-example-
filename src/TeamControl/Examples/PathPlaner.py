@@ -1,6 +1,6 @@
-from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
-from TeamControl.Model.world import World
-from TeamControl.Vision.frame import Robot as r
+from TeamControl.voronoi_planner.voronoi_planner import VoronoiPlanner
+from TeamControl.world.model import WorldModel as wm
+from TeamControl.SSL.vision.robots import Robot as r
 
 import time
 import numpy as np

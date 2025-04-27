@@ -75,7 +75,7 @@ class Nearest():
 
 if __name__ == "__main__":
     from TeamControl.Network.receiver import grSimVision
-    from TeamControl.SSL.Vision.world import World
+    from TeamControl.World.main import World
     world_model:World = World(isYellow= True, isPositive=True)
     recv = grSimVision(world_model)
     updated = False

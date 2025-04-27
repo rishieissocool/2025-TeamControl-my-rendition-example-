@@ -3,11 +3,11 @@ This class is going to be replaced.
 """
 import time
 
-from TeamControl.SSL.Vision.world import World as wm
-from TeamControl.Network.grSimSockets import grSimVision, grSimSender
-from TeamControl.SSL.grSim.grSimRobotCommand import GSRobotCommand as RobotCommand
-from TeamControl.RobotBehaviour.goToTarget import *
-from TeamControl.Model.transform_cords import *
+from TeamControl.world.model import WorldModel as wm
+from TeamControl.world.transform_cords import *
+
+from TeamControl.network import grSimVision, grSimSender,RobotCommand
+from TeamControl.robot_behaviour.goToTarget import *
 
 TIME = time.time()
 class grSimUtils():

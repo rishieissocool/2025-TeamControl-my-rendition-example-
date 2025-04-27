@@ -8,7 +8,7 @@ import logging
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
-class World:
+class WorldModel:
     """
     World Model aka wm
     Description : 
@@ -78,7 +78,7 @@ class World:
         try:
             # if the data received has field : detection
             if data.HasField("detection"):
-                debug_print("Updating Detection")
+                log.debug("Updating Detection")
                 # updates the detection data in world model
                 self.__update_detection(data.detection)
                 # returns whether the detection model is updated

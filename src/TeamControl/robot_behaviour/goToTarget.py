@@ -2,7 +2,7 @@ import time
 '''
 THIS HAS BEEN MOVED TO BEHAVIOUR.PY
 '''
-from TeamControl.Model.transform_cords import *
+from TeamControl.world.transform_cords import *
 import math
 import numpy as np
 c = time.localtime()

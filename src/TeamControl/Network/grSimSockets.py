@@ -1,13 +1,13 @@
 # from TeamControl.SSL.proto2 import grSim_Commands_pb2,grSim_Packet_pb2
 # from TeamControl.SSL.proto2 import grSim_Replacement_pb2,ssl_simulation_control_pb2,ssl_simulation_robot_feedback_pb2,ssl_simulation_robot_control_pb2
 
-from TeamControl.Network.sender import Sender
-from TeamControl.Network.receiver import Receiver
-from TeamControl.Network.robotCommand import RobotCommand
+from TeamControl.network.sender import Sender
+from TeamControl.network.receiver import Receiver
+from TeamControl.network.robotCommand import RobotCommand
 
-from TeamControl.Network.visionSockets import Vision 
-from TeamControl.SSL.Vision.world import *
-from TeamControl.SSL.grSim.grSimRobotCommand import GSRobotCommand
+from TeamControl.network.visionSockets import Vision 
+from TeamControl.world.model import *
+from TeamControl.network.grSimRobotCommmand import GSRobotCommand
 
 class grSimVision(Vision):
     """ grSim Vision multicast receiver

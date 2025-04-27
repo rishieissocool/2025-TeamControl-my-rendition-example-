@@ -6,7 +6,7 @@ This file is an extension of Message.py, in which compares and stores static ver
 working in progress
 """
 
-from TeamControl.SSL.GameControl.Message import *
+from TeamControl.SSL.game_control.Message import *
 import logging
 
 log = logging.getLogger()
