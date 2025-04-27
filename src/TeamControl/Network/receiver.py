@@ -48,7 +48,7 @@ class Receiver(BaseSocket):
 class Broadcast(Receiver):
     """reciever for broadcast"""
     def __init__(self, port: int = 0, buffer_size: int = 1024):
-        ip = '<broadcast>' #this is the broadcast address
+        ip = "0.0.0.0" #this is the broadcast address
         type = SocketType.SOCK_BROADCAST_UDP
         super().__init__(ip=ip,port=port,type=type,buffer_size=buffer_size)
         
