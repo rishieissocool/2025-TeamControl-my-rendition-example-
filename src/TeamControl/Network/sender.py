@@ -6,44 +6,50 @@ Sender includes :
 Raises:
     NotImplementedError: if user try to use an empty function
 """
-import ast
-
+#logging
 import logging
+log = logging.getLogger()
+log.setLevel(logging.DEBUG)
 
-from TeamControl.Network.robotCommand import RobotCommand
-from TeamControl.Network.baseUDP import BaseSocket,UDP
 
+from TeamControl.Network.baseUDP import BaseSocket, SocketType
 
           
 class Sender(BaseSocket):
-    def __init__(self, ip: str=None, port: int=0, sock_type=UDP.SOCK_UDP, binding=False) -> None:
-        if isinstance(ip,str):
-            self.destination = (ip,port)
-        else:
-            self.destination = ("127.0.0.1",port)
-        super().__init__(ip=None,port=port,sock_type=sock_type,binding=binding)
+    def __init__(self, ip: str='127.0.0.1', port: int=0, type=SocketType.SOCK_UDP, binding=False) -> None:
+        device_ip = None 
+        self.destination_ip = ip 
+        super().__init__(ip=device_ip,port=port,type=type,binding=binding)
     
-    def send_command(self,command:RobotCommand) -> None:
-        """
-        Sending command via UDP
-
-        Args:
-            command (RobotCommand): Command that wants to be sent
-            d_addr (tuple[str,int]): destination address to be delivered to 
-            
-        Params: 
-            encoded_Command(bytes): see Command.encode
-        Exceptions:
-            TypeError : Only Command or byte objects allowed
-        """
-        if not isinstance(command,RobotCommand):
-            raise TypeError("Only RobotCommands allowed")
+    @property
+    def destination_ip(self):
+        return self._destination_ip
+    
+    @destination_ip.setter
+    def destination_ip(self,value):
+        if not isinstance(value,str):
+            raise TypeError("Need IP Address (v4) as string type")
+        self._destination_ip = value
         
-        encoded_command:bytes = command.encode()
-                # sends the command to destined address
-        self.send(msg=encoded_command, destination=self.destination)
-        logging.info(f"SENT : {command=} TO: {self.destination}")
+    @property
+    def destination(self):
+        return (self.destination_ip,self.port)
+    
+    
+    def send(self, msg, ip:str=None, port:int=None):
+        # update address as provided, otherwise uses default
+        addr = tuple(ip,port) if isinstance(ip,str) and isinstance(port,int) else self.destination
+        if not isinstance(msg,bytes):
+            try:
+                msg = msg.encode()
+            except Exception as e:
+                raise(e, "Error with encoding")
+        print(self.destination)
+        self.sock.sendto(msg,addr)
+        log.debug(f"sending {msg.decode()} to {addr}")
 
+            
+    
     def update_destination(self, destination:str|tuple[str,int]) -> None:
         """Update Sending Socket's Destination
         This is a static method, so when the send is trigger, will always send to this specific destination (ip,port)
@@ -52,15 +58,14 @@ class Sender(BaseSocket):
             destination (str | tuple[str,int]): Destination addr, can be in format string / tuple
         """
         if isinstance(destination,str):
-            destination = ast.literal_eval(destination)
-        self.destination = destination
+            destination = self.string_to_tuple(destination)
+        self.destination_ip = destination[0]
+        self.port = destination[1]
     
-    def listen(self, duration: int = None) -> str | None:
-        raise NotImplementedError("Please Use Receiver")
-
+    
 
 class Broadcaster(Sender):
-    def __init__(self,port: int = 12342) -> None:
+    def __init__(self, broadcasting_port: int = 12342) -> None:
         """
         UDP Broadcast sending channel
 
@@ -71,8 +76,13 @@ class Broadcaster(Sender):
             ip (str) : Default broadcast. See python udp_broadcast for more information.
         """
         ip = '<broadcast>'
-        super().__init__(ip=ip,port=port,sock_type=UDP.SOCK_BROADCAST_UDP,binding=True)
+        type =SocketType.SOCK_BROADCAST_UDP
+        super().__init__(ip=ip,port=broadcasting_port,type=type,binding=True)
         
         
 class Multicaster(Sender):
     ...
+
+if __name__ == "__main__":
+    sender = Broadcaster()
+    sender.send("1")

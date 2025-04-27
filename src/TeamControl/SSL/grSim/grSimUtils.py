@@ -4,7 +4,7 @@ This class is going to be replaced.
 import time
 
 from TeamControl.SSL.Vision.world import World as wm
-from TeamControl.SSL.grSim.Sockets import grSimVision, grSimSender
+from TeamControl.Network.grSimSockets import grSimVision, grSimSender
 from TeamControl.SSL.grSim.grSimRobotCommand import GSRobotCommand as RobotCommand
 from TeamControl.RobotBehaviour.goToTarget import *
 from TeamControl.Model.transform_cords import *

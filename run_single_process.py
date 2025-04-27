@@ -1,4 +1,4 @@
-from TeamControl.SSL.ssl_networking import *
+from TeamControl.Network import *
 from TeamControl.Examples.PathPlaner import pathplanning 
 from TeamControl.RobotBehaviour.Movement import RobotMovement 
 from TeamControl.Model import world2robot
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         # logging.info(f"Cameras Active : {world_model.max_cameras}")
         vision_sock = grSimVision(world_model=world_model)
     else:
-        vision_sock = vision(world_model=world_model)
+        vision_sock = Vision(world_model=world_model)
     
     if isGrSimActive:
         g_sender = grSimSender(ip="127.0.0.1")

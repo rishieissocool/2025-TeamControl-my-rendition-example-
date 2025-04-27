@@ -3,7 +3,7 @@
 
 from TeamControl.Network import Sender,Receiver,RobotCommand
 
-from TeamControl.SSL.Vision.Receiver import Vision 
+from TeamControl.Network.visionSockets import Vision 
 from TeamControl.SSL.Vision.world import *
 from TeamControl.SSL.grSim.grSimRobotCommand import GSRobotCommand
 
