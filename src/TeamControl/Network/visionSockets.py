@@ -27,8 +27,8 @@ class Vision(Multicast):
         super().__init__(port=port,group=group,decoder=decoder,buffer_size=buffer_size)
         self.world_model = world_model
    
-    def listen(self, duration: int = None) -> bool:
-        new_data = super().listen(duration)
+    def listen(self) -> bool:
+        new_data = super().listen()
         is_updated:bool = self.world_model.update(new_data)
         logging.info(f"World Model has been updated")
         return is_updated
