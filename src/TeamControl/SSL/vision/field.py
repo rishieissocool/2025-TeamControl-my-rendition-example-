@@ -28,6 +28,9 @@ class Vector2f ():
     def from_proto (cls,vector):
         return cls(x=float(vector.x), y=float(vector.y))
     
+    def __str__(self):
+        return f"{self.x=} : {self.y=}"
+
 class FieldLines():
     def __init__(self,name : str, p1 : Vector2f, p2 : Vector2f, 
                  thickness : float, type : FieldShapeType=None):
@@ -41,6 +44,9 @@ class FieldLines():
         self.thickness : float = thickness
         ## The type of this shape (Optional)
         self.type : Optional[FieldShapeType] = type
+    
+    def __str__(self):
+        return f"{self.type=} : {self.name=}"
     
     @classmethod
     def from_proto(cls,fa):
@@ -69,6 +75,9 @@ class FieldArcs():
         self.thickness : float = thickness 
         ## The type of this shape (Optional)
         self.type : Optional[FieldShapeType] = type 
+    
+    def __str__(self):
+        return f"{self.type=} : {self.name=}"
     
     @classmethod
     def from_proto(cls,fa):
