@@ -18,8 +18,8 @@ class GameControl(Multicast):
         # group : str = "GC.GlOBAL"
         super().__init__(port=port, group=group, decoder=decoder,buffer_size=buffer_size)
 
-    def listen(self, duration: int = None) :
-        ref_msg = super().listen(duration)
+    def listen(self) :
+        ref_msg,addr = super().listen()
         return ref_msg
 
 

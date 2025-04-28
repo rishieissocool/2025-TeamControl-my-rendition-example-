@@ -45,7 +45,7 @@ class Receiver(BaseSocket):
                 result = self.last_message, self.last_addr
                 active = False
             except socket.timeout:
-                print("timeout")
+                # print("timeout")
                 continue
             
             if time.time() >= endTime:

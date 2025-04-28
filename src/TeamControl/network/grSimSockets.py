@@ -15,7 +15,7 @@ class grSimVision(Vision):
     Args:
         Multicast (Class): base Class
     """
-    def __init__(self, world_model: World, port : int=10020) -> None:
+    def __init__(self, port : int=10020) -> None:
         """
         Initialising Multicast GR Sim World Socket
         
@@ -23,7 +23,7 @@ class grSimVision(Vision):
             ip (str, optional): ip of the grSim device. Defaults to None -> local.
             port (int, optional): port of grSim Vision. Defaults to 10020.
         """
-        super().__init__(world_model=world_model,port=port)
+        super().__init__(port=port)
         
 ### Simulation Control ### 
 
