@@ -10,7 +10,7 @@ class Processing():
     def __init__(self,total_cameras:int=1, history_length:int=5):
         self.current_frame_number:int  = 0 #current frame id
         self.total_cameras:int = total_cameras # max cameras on field
-        self.history_length = history_length # histroy length
+        self.history_length = history_length # history length
         self.frames : list = list()
         self.field = None
         self.is_detection_fully_updated = False
