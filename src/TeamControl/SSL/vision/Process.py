@@ -38,7 +38,7 @@ class Processing():
             latest_frame = self.frames[-1]
             latest_frame.update(protobuf_detection)
         else :
-            print("unexcepted result")
+            print("unexpected result")
             return
         
         # checks if the frame is completed (obtain all field camera data)
@@ -48,3 +48,5 @@ class Processing():
             self.is_detection_fully_updated = True
         else : 
             self.is_detection_fully_updated = False
+        
+        

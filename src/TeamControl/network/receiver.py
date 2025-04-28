@@ -8,7 +8,7 @@ import socket
 import struct
 import time
 
-from TeamControl.Network.baseUDP import BaseSocket,SocketType
+from TeamControl.network.baseUDP import BaseSocket,SocketType
 
 #logging
 import logging

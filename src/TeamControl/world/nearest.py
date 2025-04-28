@@ -1,5 +1,5 @@
 import math
-from TeamControl.SSL.Vision.frame import Robot
+from TeamControl.SSL.vision.frame import Robot
 import logging
 import numpy as np
 import numpy.typing as npt
@@ -74,7 +74,7 @@ class Nearest():
 
 
 if __name__ == "__main__":
-    from TeamControl.Network.receiver import grSimVision
+    from TeamControl.network.receiver import grSimVision
     from TeamControl.World.main import World
     world_model:World = World(isYellow= True, isPositive=True)
     recv = grSimVision(world_model)

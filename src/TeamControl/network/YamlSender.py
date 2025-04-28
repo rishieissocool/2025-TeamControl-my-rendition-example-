@@ -11,8 +11,8 @@ import ast
 
 import logging
 
-from TeamControl.Network.robotCommand import RobotCommand
-from TeamControl.Network.baseUDP import BaseSocket,UDP
+from TeamControl.network.robotCommand import RobotCommand
+from TeamControl.network.baseUDP import BaseSocket,UDP
 import yaml
 try:
     from yaml import CLoader as Loader

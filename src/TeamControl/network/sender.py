@@ -12,7 +12,7 @@ log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
 
-from TeamControl.Network.baseUDP import BaseSocket, SocketType
+from TeamControl.network.baseUDP import BaseSocket, SocketType
 
           
 class Sender(BaseSocket):

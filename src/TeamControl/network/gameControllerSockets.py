@@ -1,5 +1,5 @@
 ### Game controller Receiver
-from TeamControl.Network import Multicast
+from TeamControl.network import Multicast
 from TeamControl.SSL.proto2 import ssl_gc_referee_message_pb2
 ### GC - Recv
 class GameControl(Multicast):
