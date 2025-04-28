@@ -54,7 +54,7 @@ class WorldModel:
         # game Controller
         self.has_new_state : bool = False
         self.has_new_event : bool= False
-        self.current_state : Command= None
+        self.current_command : Command= None
         self.current_event : GameEvent= None
         
         # init from args
@@ -88,21 +88,29 @@ class WorldModel:
         
     def update_game(self,ref_msg:ssl_gc_referee_message_pb2):
         new_ref_msg = RefereeMessage(referee=ref_msg)
-        if new_ref_msg.command != self.current_state:
+        if new_ref_msg.command != self.current_command:
             self.has_new_state = True
-            self.current_state = new_ref_msg.command
-            print(self.current_state)
+            self.current_command = new_ref_msg.command
+            print(self.current_command)
         
         
     def update_detection (self,detection):
-        print(detection.camera_id)
+        if detection.frame_number == self.current_frame_number:
+            frame = self.frames[-1]
+        elif detection.frame_number > self.current_frame_number:
+            frame = Frame(frame_data=detection)
+            self.frames.append(frame)
+            if self.frames > self.history_length:
+                self.frames.pop(0)
         
         if detection.camera_id == self.max_camera-1:
             self.is_detection_fully_updated = True
             self.vision_cool_down = time.time()+1    
         
     def update_geometry (self,geometry):
-        ...
+        self.field = GeometryData(geometry)
+        self.has_field_geometry = True
+        print(geometry)
         
 if __name__ == "__main__":
     from TeamControl.network import Vision, grSimVision, GameControl
