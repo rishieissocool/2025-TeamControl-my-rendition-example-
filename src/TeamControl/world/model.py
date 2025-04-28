@@ -78,7 +78,6 @@ class WorldModel:
             self._is_grSim = False
     
     def update(self,proto_data):
-        print(type(proto_data))
         if isinstance(proto_data,ssl_gc_referee_message_pb2.Referee):
             self.update_game(ref_msg=proto_data)
         elif isinstance(proto_data,ssl_vision_wrapper_pb2.SSL_WrapperPacket):
@@ -89,16 +88,21 @@ class WorldModel:
         
     def update_game(self,ref_msg:ssl_gc_referee_message_pb2):
         new_ref_msg = RefereeMessage(referee=ref_msg)
-        print(new_ref_msg)
+        if new_ref_msg.command != self.current_state:
+            self.has_new_state = True
+            self.current_state = new_ref_msg.command
+            print(self.current_state)
         
         
-    def update_detection (self,new_data):
-        print(new_data.camera_id)
+    def update_detection (self,detection):
+        print(detection.camera_id)
         
-        if new_data.camera_id == self.max_camera-1:
+        if detection.camera_id == self.max_camera-1:
             self.is_detection_fully_updated = True
             self.vision_cool_down = time.time()+1    
         
+    def update_geometry (self,geometry):
+        ...
         
 if __name__ == "__main__":
     from TeamControl.network import Vision, grSimVision, GameControl
@@ -108,13 +112,14 @@ if __name__ == "__main__":
     vision_recv = Vision()
     wm = WorldModel(use_sim=True)
     time_start = time.time()
-    for i in range (100):
+    # for i in range (100):
+    while True:
         if wm.is_detection_fully_updated is False:
             new_vision_data = vision_recv.listen()
             wm.update(proto_data=new_vision_data)
             
         if wm.is_detection_fully_updated is True:
-            print("FULLY UPDATED")
+            # print("FULLY UPDATED")
             if wm.vision_cool_down < time.time():
                 wm.is_detection_fully_updated = False
             

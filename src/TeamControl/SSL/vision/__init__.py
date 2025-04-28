@@ -5,4 +5,3 @@ from TeamControl.SSL.vision.frame import Frame
 from TeamControl.SSL.vision.robots import Robot,Team
 from TeamControl.SSL.vision.balls import Ball
 
-from TeamControl.SSL.vision.process import Processing
