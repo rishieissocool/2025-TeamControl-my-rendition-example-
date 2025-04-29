@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 
-from TeamControl.SSL.vision.frame import Frame,Robot,Ball
+from TeamControl.SSL.vision.frame import Frame, FrameList,Robot,Ball
 from TeamControl.SSL.vision.field import *
 from TeamControl.SSL.game_control.Message import *
 from TeamControl.SSL.proto2 import ssl_gc_referee_message_pb2,ssl_vision_wrapper_pb2
@@ -40,15 +40,18 @@ class WorldModel:
     """
     def __init__(self, us_yellow : bool=None, us_positive : bool=None, history:int=5, use_sim: bool = False):
         ## basic config 
+        self._is_grSim = False
+
 
         # vision data
-        self._is_grSim = False
         self.is_detection_fully_updated:bool = False
         self.has_field_geometry:bool = False        
         self.current_frame_number:int  = 0 #current frame id
-        self.max_camera:int = 1
-        
-        self.frames : list[Frame] = list()
+        self.cameras:int = 1
+        self.is_grSim : bool= use_sim
+
+        #static class init
+        self.detection_frames = FrameList(cameras=self.max_camera)
         self.field = None
 
         # game Controller
@@ -61,7 +64,6 @@ class WorldModel:
         self.us_yellow : bool= us_yellow
         self.us_positive : bool= us_positive
         self.history_length:int = history # histroy length
-        self.is_grSim : bool= use_sim
         
     
     @property
@@ -72,9 +74,10 @@ class WorldModel:
         if not isinstance(use_sim,bool):
             raise TypeError ("using_grSim should be a boolean")
         if use_sim is True:
-            self.max_camera = 4
+            self.cameras = 4
             self._is_grSim = True 
         else: 
+            self.cameras = 1
             self._is_grSim = False
     
     def update(self,proto_data):
