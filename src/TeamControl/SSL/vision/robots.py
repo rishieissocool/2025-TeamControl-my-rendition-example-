@@ -16,6 +16,7 @@ class Robot:
         o (float): Orientation in radians.
         px (float): X position in pixel coordinates (image space).
         py (float): Y position in pixel coordinates (image space).
+        h (float): height of robot.
     """
     def __init__(self,robot_data,isYellow:bool) -> object:
         self.isYellow : bool = isYellow
@@ -26,6 +27,7 @@ class Robot:
         self.o : float = robot_data.orientation.__round__(4)
         self.px : float = robot_data.pixel_x.__round__(4)
         self.py : float = robot_data.pixel_y.__round__(4)
+        self.h : float = robot_data.height
         
     @property
     def position(self) -> np.dtype:
