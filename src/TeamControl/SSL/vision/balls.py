@@ -9,11 +9,12 @@ class Ball:
         self.px = float(ball_data.pixel_x).__round__(4)
         self.py = float(ball_data.pixel_y).__round__(4)
     
+    
+    def __repr__(self):
+        return f"BALL \n Confidence : {self.c:.4f}\n POSITION : {self.position} \n PIXEL : {self.px:.4f}, {self.py:.4f}\n"
+        
     @property
     def position (self):
         return np.array([self.x,self.y],dtype=np.float32)
     
-    def __repr__(self):
-        return f"BALL \n Confidence : {self.c}\n POSITION : {self.x},{self.y} \n PIXEL : {self.px}, {self.py}\n"
-        
 
