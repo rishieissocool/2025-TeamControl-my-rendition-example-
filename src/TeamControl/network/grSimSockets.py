@@ -10,11 +10,6 @@ from TeamControl.world.model import *
 from TeamControl.network.grSimRobotCommmand import GSRobotCommand
 
 class grSimVision(Vision):
-    """ grSim Vision multicast receiver
-        grSim - vision world mulitcast
-    Args:
-        Multicast (Class): base Class
-    """
     def __init__(self, port : int=10020) -> None:
         """
         Initialising Multicast GR Sim World Socket
