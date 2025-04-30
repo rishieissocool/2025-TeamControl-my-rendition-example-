@@ -1,52 +1,49 @@
-from TeamControl.SSL.vision.frame import Frame
-
+from TeamControl.SSL.vision.frame import FrameList
+from TeamControl.network.visionSockets import Vision,VisionTracker
+from TeamControl.network.grSimSockets import grSimVision
 import numpy as np
 import numpy.typing as npt
 
-### THIS IS TEMP ###
+### THIS IS an example ###
 
-
-class Processing():
-    def __init__(self,total_cameras:int=1, history_length:int=5):
-        self.current_frame_number:int  = 0 #current frame id
-        self.total_cameras:int = total_cameras # max cameras on field
-        self.history_length = history_length # history length
-        self.frames : list = list()
-        self.field = None
-        self.is_detection_fully_updated = False
-
+class VisionManager():
+    GRSIM_CAMERAS = 4
+    REAL_CAMERAS = 1
+    VISION = Vision
+    GRSIM_VISION = grSimVision
     
-    def update(self,protobuf_data):
-        if getattr(protobuf_data,"detection"):
-            self.update_detection(protobuf_data.detection)
-            
-        if getattr(protobuf_data,"geometry"):
-            self.update_detection(protobuf_data.geometry)
+    def __init__(self,use_grSim:bool=False):
+        self.use_grSim = use_grSim
+        self.__set_recv()
+        self.field = None
+        self.history = 5
+        self.frames = FrameList(cameras=self.cameras,history=self.history)
+
+    @property
+    def cameras(self):
+        return self.GRSIM_CAMERAS if self.use_grSim else self.REAL_CAMERAS
+    
+    @property
+    def has_field(self):
+        return self.field is not None
+    
+    def __set_recv(self):
+        self.recv = self.GRSIM_VISION() if self.use_grSim else self.VISION()
+    
+    def update_detection(self,cycles:int=50) -> bool:
+        ## initiate update detection process
+        if not isinstance(cycles,int):
+            raise TypeError("cycles need to be an integer")
+        for _ in range(cycles):
+            new_detection_data = self.recv.listen()
+            if new_detection_data is not None:
+                self.frames.update(new_detection_data)
+            if self.frames.is_complete:
+                return True
         
-    def update_detection(self,protobuf_detection):
-        this_frame_number = protobuf_detection.frame_number
-        # if the new frame is later than our current latest frame 
-        if self.current_frame_number > this_frame_number:
-            new_frame = Frame(protobuf_detection)
-            self.frames.append(new_frame)
-            ## if the length is too long, get rid of the oldest
-            if len(self.frames) > self.history_length:
-                self.frames.pop(0)
-        
-        elif self.current_frame_number == this_frame_number:
-            # retrieve last frame
-            latest_frame = self.frames[-1]
-            latest_frame.update(protobuf_detection)
-        else :
-            print("unexpected result")
-            return
-        
-        # checks if the frame is completed (obtain all field camera data)
-        this_camera = protobuf_detection.camera_id
-        last_camera_id = self.cameras-1
-        if this_camera == last_camera_id: ## this camera is the last camera for the frame
-            self.is_detection_fully_updated = True
-        else : 
-            self.is_detection_fully_updated = False
-        
-        
+        raise TimeoutError("Wrong settings ? ")
+    
+
+if __name__ == "__main__" :
+    vision = VisionManager()
+    print(vision.frames.is_complete)
