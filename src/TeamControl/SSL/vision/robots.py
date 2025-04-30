@@ -6,7 +6,7 @@ import numpy as np
 class Robot:
     """
     Represents an individual robot detected on the field. from (SSL.proto2.detection)
-    
+    (all has been rounded to 4dp)
     Attributes:
         isYellow (bool): Whether the robot belongs to the yellow team.
         id (int): The robot's unique ID (0–15).
@@ -20,12 +20,12 @@ class Robot:
     def __init__(self,robot_data,isYellow:bool) -> object:
         self.isYellow : bool = isYellow
         self.id : int = robot_data.robot_id
-        self.c : float = robot_data.confidence
-        self.x : float = robot_data.x
-        self.y : float = robot_data.y
-        self.o : float = robot_data.orientation
-        self.px : float = robot_data.pixel_x
-        self.py : float = robot_data.pixel_y
+        self.c : float = robot_data.confidence.__round__(4)
+        self.x : float = robot_data.x.__round__(4)
+        self.y : float = robot_data.y.__round__(4)
+        self.o : float = robot_data.orientation.__round__(4)
+        self.px : float = robot_data.pixel_x.__round__(4)
+        self.py : float = robot_data.pixel_y.__round__(4)
         
     @property
     def position(self) -> np.dtype:
@@ -102,48 +102,43 @@ class Team ():
         for r in robots:
             robot_id = int(r.id)
             if 0 <= robot_id < 16:
+                # stores this to the numpy array with index = robot id
                 self._robots[robot_id] = r
             else:
                 raise ValueError(f"Invalid robot ID: {robot_id} (must be 0–15)")
 
     
     @property
-    def num_robots(self) -> int:
+    def num_robots(self) -> int: # does the count of robots , used by len(Team)
         return sum(isinstance(r, Robot) for r in self._robots)
         
     @property
-    def active(self) -> list:
+    def active(self) -> list: 
+        # returns a list of only active robots
         return [i for i, robot in enumerate(self._robots) if isinstance(robot, Robot)]    
     
     
-    def merge(self, other_team: "Team"):
-        if not isinstance(other_team, Team):
-            raise TypeError("merge() expects a Team instance, use add_robots for list instead")
+    def merge(self,other_team:"Team"):
+        if not isinstance(other_team,Team):
+            raise TypeError("Need type : Team, received : ",type(other_team))
         if self.isYellow != other_team.isYellow:
             raise ValueError(f"Cannot merge teams of different colors: {self.isYellow=}, {other_team.isYellow=}")
         
-        self.add_robots([r for r in other_team.robots if isinstance(r, Robot)])
-
-    def add_robots(self,team_robots:list):
-        for new_robot in team_robots:
-            robot_id = int(new_robot.robot_id)
-            if robot_id in self:
-                print(f"robot is found with data {self[robot_id]}")
-            if 0 <= robot_id < 16:
-                self._robots[robot_id] = new_robot if isinstance(new_robot, Robot) else Robot(isYellow=self.isYellow, robot_data=new_robot)
-            else:
-                raise ValueError(f"Invalid robot ID: {robot_id} (must be 0–15)")
-        
-    def __len__(self):
+        for new_robot in other_team:
+            if new_robot.id in self:
+                print(f"robot is found with data {self[new_robot.id]} , replacing . . .")
+            self._robots[new_robot.id] = new_robot 
+                    
+    def __len__(self): # allows len(Team) , returns number of robots store in this team
         return self.num_robots
     
-    def __iter__(self):
+    def __iter__(self): # allows for loop to iterate this 
         return (robot for robot in self._robots if isinstance(robot, Robot))
     
-    def __contains__(self, robot_id: int):
+    def __contains__(self, robot_id: int): # allows if robot_id in Team
         return isinstance(self._robots[robot_id], Robot)
     
-    def __getitem__(self,key:int) -> Robot :
+    def __getitem__(self,key:int) -> Robot : # allows Team[robot_id]
         if 0 <= key < 16:
             return self._robots[key]
         raise IndexError("Robot ID out of valid range (0–15)")
