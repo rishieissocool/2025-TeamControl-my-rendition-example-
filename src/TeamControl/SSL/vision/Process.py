@@ -6,7 +6,7 @@ import numpy.typing as npt
 
 ### THIS IS an example ###
 
-class VisionManager():
+class VisionProcessExample():
     GRSIM_CAMERAS = 4
     REAL_CAMERAS = 1
     VISION = Vision
@@ -30,11 +30,11 @@ class VisionManager():
     def __set_recv(self):
         self.recv = self.GRSIM_VISION() if self.use_grSim else self.VISION()
     
-    def update_detection(self,cycles:int=50) -> bool:
+    def update_detection(self) -> bool:
         ## initiate update detection process
-        if not isinstance(cycles,int):
-            raise TypeError("cycles need to be an integer")
-        for _ in range(cycles):
+        # if not isinstance(cycles,int):
+        #     raise TypeError("cycles need to be an integer")
+        for _ in range(self.history*self.cameras):
             new_detection_data = self.recv.listen()
             if new_detection_data is not None:
                 self.frames.update(new_detection_data)
@@ -45,5 +45,6 @@ class VisionManager():
     
 
 if __name__ == "__main__" :
-    vision = VisionManager()
+    vision = VisionProcessExample()
     print(vision.frames.is_complete)
+    vision.update_detection()
