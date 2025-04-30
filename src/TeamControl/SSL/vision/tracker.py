@@ -49,7 +49,7 @@ class KickedBall():
         ## The robot that kicked the ball
         self.robot_id : int = robot_id 
 
-class TrackedRobot()
+class TrackedRobot():
     def __init__(self,robot_id:int,pos:Vector2,orientation:float,vel:Vector2,vel_angular:float,visibility:float ):
         self.robot_id:int = robot_id
         ## The position [m] in the ssl-vision coordinate system
