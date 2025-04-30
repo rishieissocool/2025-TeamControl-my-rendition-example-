@@ -90,17 +90,21 @@ class Frame():
        
 class FrameList ():
     ### THIS IS A LIST CLASS so this would work like a list
-    def __init__(self,frame,cameras:int=1,history:int=5):
+    def __init__(self,cameras:int=1,history:int=5):
         self.newest_frame = 0
         self.cameras = cameras
         self.history = history
-        self._frames = deque(frame if frame is not None else [], maxlen=history)
+        self._frames = deque(maxlen=history)
         self._frame_lookup = {}  # Maps frame_id -> Frame
     
     
     def __repr__(self):
         return repr(self._frames)
-        
+    
+    @property
+    def is_complete(self):
+        return self.latest.is_completed if isinstance(self.latest,Frame) else False
+    
     @property
     def frame_ids(self) -> list[int]:
         return [f.id for f in self._frames]
@@ -109,9 +113,8 @@ class FrameList ():
         return [frame.frame_number for frame in self._frames]    
     
     @property
-    def latest(self):
+    def latest(self) -> Frame | None:
         return self._frames[-1] if self._frames else None
-        
 
     def update(self, new_detection):
         if new_detection.frame_number == self.newest_frame:
@@ -124,7 +127,7 @@ class FrameList ():
         
     def append(self, frame: Frame):
         if frame.frame_number in self._frame_lookup:
-            # raise LookupError (f"{frame.frame_number} exist, use update instead")
+            raise LookupError (f"{frame.frame_number} exist, use update instead")
             self.update(frame)
         # If full, remove oldest from both deque and dict
         if len(self._frames) == self._max_size:
