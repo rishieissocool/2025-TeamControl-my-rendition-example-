@@ -28,24 +28,49 @@ class Frame():
     Additional Attribute : 
         ball (Ball) : gets the first available ball out of self.balls
     """
-    def __init__(self,frame_number:int, balls: list[Ball],robots_yellow:Team, robots_blue:Team, cameras:int=4) -> object:
+    def __init__(self,frame_camera_id:int,frame_number:int, balls: list[Ball],robots_yellow:Team, robots_blue:Team, max_cameras:int) -> object:
         self._balls: list[Ball]= [] #init
-        self.fully_initialized:bool=False
-        self.cameras:int = cameras
-
+        # stores a backup copy of the data combines 
+        self.cameras: set[int]= set()
+        self.cameras.add(frame_camera_id)
+        
+        self.max_cameras:int= max_cameras
         self.frame_number: int= frame_number
         self.balls= balls
         self.robots_yellow: Team= robots_yellow
         self.robots_blue: Team= robots_blue
     
+    
+    def __repr__(self) -> str:
+        return f"{self.is_completed=}, {self.frame_number=},\n {self.balls=}, {self.robots_yellow=}\n {self.robots_blue=}"
+    
+    
+    @classmethod
+    def from_proto(cls,frame_data,max_camera:int):
+        return cls(
+            frame_camera_id=frame_data.camera_id,
+            frame_number=frame_data.frame_number,
+            balls=frame_data.balls,
+            robots_yellow=Team(frame_data.robots_yellow),
+            robots_blue=Team(frame_data.robots_blue),
+            max_camera=max_camera
+        )
+        
+    @property
+    def is_completed(self):
+        ## check if it goes through all specify cameras
+        return len(self.cameras) == self.max_cameras
+    
     @property
     def ball(self) -> Ball: 
         # returns the first ball
         return self._balls[0] if self._balls else None
+    # to see the position use : frame.ball.position
     
     @property
     def balls(self) -> list:
         return self._balls
+    # if you want to count balls use len(frame.balls)
     
     @balls.setter
     def balls(self,balls_in_frame):
@@ -53,25 +78,15 @@ class Frame():
             new_ball = Ball(data)
             self._balls.append(new_ball)
         
-    def __repr__(self) -> str:
-        return f"{self.frame_number=},\n {self.balls=}, {self.robots_yellow=}\n {self.robots_blue=}"
-        
-    @classmethod
-    def from_proto(cls,frame_data):
-        return cls(
-            frame_number=frame_data.frame_number,
-            balls=frame_data.balls,
-            robots_yellow=Team(frame_data.robots_yellow),
-            robots_blue=Team(frame_data.robots_blue)
-        )
     
     def update(self,new_frame_data):
-        self._balls += new_frame_data.balls
-        self.robots_blue += new_frame_data.robots_blue
-        self.robots_yellow += new_frame_data.robots_yellow
+        for data in new_frame_data.balls:
+            self._balls.append(Ball(data))
         
-        if new_frame_data.camera_id == self.cameras -1:
-            self.fully_initialized = True
+        self.robots_blue += Team(new_frame_data.robots_blue)
+        self.robots_yellow += Team(new_frame_data.robots_yellow)
+        self.cameras.add(new_frame_data.camera_id)
+
        
 class FrameList ():
     ### THIS IS A LIST CLASS so this would work like a list
@@ -80,7 +95,56 @@ class FrameList ():
         self.cameras = cameras
         self.history = history
         self._frames = deque(frame if frame is not None else [], maxlen=history)
+        self._frame_lookup = {}  # Maps frame_id -> Frame
     
+    
+    def __repr__(self):
+        return repr(self._frames)
+        
+    @property
+    def frame_ids(self) -> list[int]:
+        return [f.id for f in self._frames]
+    @property
+    def frame_ids(self):
+        return [frame.frame_number for frame in self._frames]    
+    
+    @property
+    def latest(self):
+        return self._frames[-1] if self._frames else None
+        
+
+    def update(self, new_detection):
+        if new_detection.frame_number == self.newest_frame:
+            self.latest.update(new_detection)
+        elif new_detection.frame_number > self.newest_frame:
+            self.newest_frame = new_detection.frame_number
+            frame = Frame(new_detection)
+            self.append(frame)
+    
+        
+    def append(self, frame: Frame):
+        if frame.frame_number in self._frame_lookup:
+            # raise LookupError (f"{frame.frame_number} exist, use update instead")
+            self.update(frame)
+        # If full, remove oldest from both deque and dict
+        if len(self._frames) == self._max_size:
+            old_frame = self._frames.popleft() 
+            del self._frame_lookup[old_frame.frame_number] 
+        # Add new frame
+        self._frames.append(frame)
+        self._frame_lookup[frame.id] = frame # adds to dictionary
+
+    def get_frame_withid(self, frame_id: int) -> Frame | None:
+        return self._frame_lookup.get(frame_id)
+
+    def get_last_n_frames(self, n: int) -> list[Frame]:
+        return list(self._frames)[-n:]
+
+    
+    def clear(self):
+        self._frames.clear()
+    
+    # * index is 0-100, not frame number 
     def __getitem__(self, index):
         return self._frames[index]
 
@@ -92,23 +156,3 @@ class FrameList ():
 
     def __iter__(self):
         return iter(self._frames)
-
-    def append(self, value):
-        self._frames.append(value)
-
-    def update(self, new_detection):
-        if new_detection.frame_number == self.newest_frame:
-            self.get_latest().update(new_detection)
-        elif new_detection.frame_number > self.newest_frame:
-            self.newest_frame = new_detection.frame_number
-            frame = Frame(new_detection)
-            self.append(frame)
-
-    def get_latest(self):
-        return self._frames[-1] if self._frames else None
-
-    def clear(self):
-        self._frames.clear()
-    
-    def __repr__(self):
-        return repr(self._frames)
