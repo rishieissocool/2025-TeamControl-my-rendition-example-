@@ -7,7 +7,7 @@ from TeamControl.world.model import WorldModel as wm
 from TeamControl.world.transform_cords import *
 
 from TeamControl.network import grSimVision, grSimSender,RobotCommand
-from TeamControl.robot_behaviour.goToTarget import *
+from TeamControl.actions.goToTarget import *
 
 TIME = time.time()
 class grSimUtils():

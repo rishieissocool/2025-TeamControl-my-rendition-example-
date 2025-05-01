@@ -1,6 +1,5 @@
 from TeamControl.network.receiver import Multicast
 from TeamControl.SSL.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2
-from TeamControl.SSL.vision.frame import Frame
 import logging
 
 # Classes of Vision Wolrd Receivers

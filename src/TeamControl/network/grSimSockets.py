@@ -6,7 +6,6 @@ from TeamControl.network.receiver import Receiver
 from TeamControl.network.robotCommand import RobotCommand
 
 from TeamControl.network.visionSockets import Vision 
-from TeamControl.world.model import *
 from TeamControl.network.grSimRobotCommmand import GSRobotCommand
 
 class grSimVision(Vision):
