@@ -46,14 +46,14 @@ class Frame():
     
     
     @classmethod
-    def from_proto(cls,frame_data,max_camera:int):
+    def from_proto(cls,frame_data,max_cameras:int):
         return cls(
             frame_camera_id=frame_data.camera_id,
             frame_number=frame_data.frame_number,
             balls=frame_data.balls,
-            robots_yellow=Team(frame_data.robots_yellow),
-            robots_blue=Team(frame_data.robots_blue),
-            max_camera=max_camera
+            robots_yellow=Team(frame_data.robots_yellow,team_is_yellow=True),
+            robots_blue=Team(frame_data.robots_blue,team_is_yellow=False),
+            max_cameras=max_cameras
         )
         
     @property
@@ -83,8 +83,8 @@ class Frame():
         for data in new_frame_data.balls:
             self._balls.append(Ball(data))
         
-        self.robots_blue += Team(new_frame_data.robots_blue)
-        self.robots_yellow += Team(new_frame_data.robots_yellow)
+        self.robots_blue.merge(Team(new_frame_data.robots_blue,team_is_yellow=False))
+        self.robots_yellow.merge(Team(new_frame_data.robots_yellow,team_is_yellow=True))
         self.cameras.add(new_frame_data.camera_id)
 
        
@@ -121,7 +121,7 @@ class FrameList ():
             self.latest.update(new_detection)
         elif new_detection.frame_number > self.newest_frame:
             self.newest_frame = new_detection.frame_number
-            frame = Frame(new_detection)
+            frame = Frame.from_proto(new_detection,max_cameras=self.cameras)
             self.append(frame)
     
         
@@ -130,12 +130,12 @@ class FrameList ():
             raise LookupError (f"{frame.frame_number} exist, use update instead")
             self.update(frame)
         # If full, remove oldest from both deque and dict
-        if len(self._frames) == self._max_size:
+        if len(self._frames) == self.history:
             old_frame = self._frames.popleft() 
             del self._frame_lookup[old_frame.frame_number] 
         # Add new frame
         self._frames.append(frame)
-        self._frame_lookup[frame.id] = frame # adds to dictionary
+        self._frame_lookup[frame.frame_number] = frame # adds to dictionary
 
     def get_frame_withid(self, frame_id: int) -> Frame | None:
         return self._frame_lookup.get(frame_id)

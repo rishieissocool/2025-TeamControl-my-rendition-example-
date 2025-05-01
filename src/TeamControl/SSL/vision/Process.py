@@ -12,11 +12,11 @@ class VisionProcessExample():
     VISION = Vision
     GRSIM_VISION = grSimVision
     
-    def __init__(self,use_grSim:bool=False):
+    def __init__(self,use_grSim:bool=False,history:int=5):
         self.use_grSim = use_grSim
         self.__set_recv()
         self.field = None
-        self.history = 5
+        self.history = history
         self.frames = FrameList(cameras=self.cameras,history=self.history)
 
     @property
@@ -37,7 +37,7 @@ class VisionProcessExample():
         for _ in range(self.history*self.cameras):
             new_detection_data = self.recv.listen()
             if new_detection_data is not None:
-                self.frames.update(new_detection_data)
+                self.frames.update(new_detection_data.detection)
             if self.frames.is_complete:
                 return True
         
