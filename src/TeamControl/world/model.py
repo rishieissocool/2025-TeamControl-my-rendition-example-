@@ -60,6 +60,9 @@ class WorldModel:
             print("vision has updated ! ")
 
 if __name__ == "__main__":
-    wm = WorldModel(use_sim=True)
+    import time
+    wm = WorldModel(use_sim=True,history=60)
+    start_time = time.time()
     wm.detection_updated = wm.vision_manager.update_detection()
+    print(f"time taken {time.time() - start_time}")
     print(f"{wm.detection}")
