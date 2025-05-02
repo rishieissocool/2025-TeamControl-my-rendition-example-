@@ -4,9 +4,9 @@ from TeamControl.network.grSimSockets import grSimVision
 import numpy as np
 import numpy.typing as npt
 
-### THIS IS an example ###
+### THIS IS a single process ###
 
-class VisionProcessExample():
+class VisionProcess():
     GRSIM_CAMERAS = 4
     REAL_CAMERAS = 1
     VISION = Vision
@@ -45,6 +45,6 @@ class VisionProcessExample():
     
 
 if __name__ == "__main__" :
-    vision = VisionProcessExample()
+    vision = VisionProcess()
     print(vision.frames.is_complete)
     vision.update_detection()
