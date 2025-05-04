@@ -122,5 +122,35 @@ class RobotMovement():
         robot_position = np.array(ball) - robot_offset * direction
         
         return robot_position
-    
+        
 
+class Follow_path:
+        def __init__(self):
+            self.path = None
+        def update_path(self, path:list):
+            """
+            Adds a path to follow
+            Prams --> path as a list[x position , y position]
+            """
+            self.path = path
+        
+        def get_point(self, robot_pos:tuple[float, float]):
+            '''
+            Gets the fist point of a given path, will remove the first point once reached  
+            Prams --> the robot position [x position , y position]
+            '''
+            if self.path == None:
+                print("Please update the path before you call this function")
+            else:
+                x_y_diff = np.array(self.path[0]) - np.array(robot_pos)
+
+                diff = np.sqrt(np.power(x_y_diff[0], 2) + np.power(x_y_diff[1], 2))
+
+                if len(self.path) == 1:   # Checks if the path length is 1 
+                    return self.path # paths become a singular point 
+                elif diff < 0.5: # if we are close enough we just delete the cuurent point and move on to the next one so path[1] --> path[0] 
+                    del self.path[0]
+                    return self.path[0]
+                else: #if we are transiation between paths 
+                    return self.path[0]
+                
