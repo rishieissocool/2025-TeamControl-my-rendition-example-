@@ -10,9 +10,9 @@ class VisionProcessExample():
     GRSIM_CAMERAS = 4
     REAL_CAMERAS = 1
     VISION = Vision
-    GRSIM_VISION = grSimVision
+    GRSIM_VISION = Vision
     
-    def __init__(self,use_grSim:bool=False,history:int=5):
+    def __init__(self,use_grSim:bool=True,history:int=5):
         self.use_grSim = use_grSim
         self.__set_recv()
         self.field = None
@@ -46,5 +46,6 @@ class VisionProcessExample():
 
 if __name__ == "__main__" :
     vision = VisionProcessExample()
-    print(vision.frames.is_complete)
-    vision.update_detection()
+    while True:
+        print(vision.frames.is_complete)
+        vision.update_detection()

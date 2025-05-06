@@ -96,7 +96,7 @@ class Processing():
         """
         self.command:Command = ref_msg.command
         self.__set_team(ref_msg.blue,ref_msg.yellow, ref_msg.blue_team_on_positive_half)
-        self.timeout_times = self.get_our_team(ref_msg).timeout_times
+        self.timeout_time = self.get_our_team(ref_msg).timeout_time
         return self.state
 
     def __set_team(self, blue:TeamInfo, yellow:TeamInfo, blue_is_positive:bool):
@@ -204,22 +204,23 @@ class Processing():
         
 
 if __name__ == "__main__":
-    # from TeamControl.Network.ssl_networking import GameControl
+    from TeamControl.network import GameControl
     import time
     
-    # gc_recv = GameControl()
+    gc_recv = GameControl()
     gc = Processing()
     gc.us_yellow = False
     
     while True:
-        for i in range (18):
-            print(i)
-            gc.command = Command(i)
-            gc.state()
+        # for i in range (18):
+        #     print(i)
+        #     gc.command = Command(i)
+        #     gc.state()
 
-        # ref_msg = gc_recv.listen()
-        # start_time = time.time()
-        # message = RefereeMessage(referee=ref_msg)
-        # gc_processing.update(message)
-        # log.debug(f"Internal Processing Time : {time.time() - start_time} \n")
+        ref_msg = gc_recv.listen()
+        start_time = time.time()
+        message = RefereeMessage(referee=ref_msg)
+        gc.update(message)
+        gc.state()
+        log.debug(f"Internal Processing Time : {time.time() - start_time} \n")
         
