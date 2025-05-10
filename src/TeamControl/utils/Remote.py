@@ -5,15 +5,15 @@ from TeamControl.network.robotCommand import RobotCommand
 
 class Remote_robot():
     def __init__(self):
-        robot_ip = ""
-        self.sender = Sender(ip=robot_ip,port=50514)
-        
+        print("Welcome, use ESC on tiny window to quit the programe")
+        self.robot_ip = str(input("Enter Robot IP"))
+        self.robot_id = int(input("Enter the ID of Robot you want to control: "))
+        self.sender = Sender(ip=self.robot_ip,port=50514)
         self.us_yellow = True 
 
 
     def run_remote_control(self):
-        robot_id = int(input("Enter the ID of Robot you want to control: "))
-        speed = 100
+        speed = 1
         vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
         pygame.init()
@@ -62,9 +62,9 @@ class Remote_robot():
                 d = 1
             
                                             
-            Command = RobotCommand(robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            Command = RobotCommand(robot_id=self.robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             vx,vy,vw,k,d = 0,0,0,0,0
-            self.sender.send_command(Command)
+            self.sender.send(Command)
 
 if __name__ == "__main__":
     rc = Remote_robot()
