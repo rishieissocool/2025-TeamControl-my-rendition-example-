@@ -1,7 +1,7 @@
 from TeamControl.network.robotCommand import RobotCommand
 from TeamControl.world.model import WorldModel as wm
 from TeamControl.world.transform_cords import world2robot
-from TeamControl.robot_behaviour.Movement import RobotMovement
+from TeamControl.robot.Movement import RobotMovement
 
 
 def go_to_ball(world_model:wm,isYellow:bool,robot_id:int):

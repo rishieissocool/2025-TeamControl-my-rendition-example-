@@ -1,6 +1,6 @@
 from TeamControl.SSL.vision.frame import FrameList
 from TeamControl.network.visionSockets import Vision,VisionTracker
-from TeamControl.network.grSimSockets import grSimVision
+from TeamControl.SSL.grSim.grSimSockets import grSimVision
 import numpy as np
 import numpy.typing as npt
 
