@@ -1,50 +1,69 @@
-from TeamControl.SSL.vision.frame import FrameList
+from TeamControl.SSL.vision.frame import Frame
+from TeamControl.SSL.vision.field import GeometryData
 from TeamControl.network.visionSockets import Vision,VisionTracker
-from TeamControl.network.grSimSockets import grSimVision
 import numpy as np
 import numpy.typing as npt
+from multiprocessing import Queue, Process
 
 ### THIS IS a single process ###
 
 class VisionProcess():
-    GRSIM_CAMERAS = 4
-    REAL_CAMERAS = 1
-    VISION = Vision
-    GRSIM_VISION = grSimVision
     
-    def __init__(self,use_grSim:bool=False,history:int=5):
+    def __init__(self,output_q:Queue,use_grSim:bool=True):
         self.use_grSim = use_grSim
-        self.__set_recv()
+        self.output_q = output_q
+        self.recv = Vision(port=10006)    
         self.field = None
-        self.history = history
-        self.frames = FrameList(cameras=self.cameras,history=self.history)
-
+        self.frame_number = 0
+        self.get_update()
+    
     @property
     def cameras(self):
-        return self.GRSIM_CAMERAS if self.use_grSim else self.REAL_CAMERAS
+        return 4 if self.use_grSim else 1
     
     @property
     def has_field(self):
         return self.field is not None
     
-    def __set_recv(self):
-        self.recv = self.GRSIM_VISION() if self.use_grSim else self.VISION()
+
+    def get_update(self) -> bool:
+        while True:
+            new_vision_data = self.recv.listen()
+            if new_vision_data.HasField("detection"):
+                new_detection_data = new_vision_data.detection
+                if self.frame_number < new_detection_data.frame_number:
+                    # generates new frame
+                    self.frame = Frame.from_proto(new_detection_data,self.cameras)
+                    self.frame_number = self.frame.frame_number
+                if self.frame_number == new_detection_data.frame_number:
+                    self.frame.update(new_detection_data)
+                    if self.frame.is_completed:
+                        self.send(self.frame)
+            if new_vision_data.HasField("geometry"):
+                geometry = new_vision_data.geometry
+                self.field = GeometryData.from_proto(geometry)
+                print(self.field)
+                self.send(self.field)
+                print("geometry has been initialised")
     
-    def update_detection(self) -> bool:
-        ## initiate update detection process
-        # if not isinstance(cycles,int):
-        #     raise TypeError("cycles need to be an integer")
-        for _ in range(self.history*self.cameras):
-            new_detection_data = self.recv.listen()
-            if new_detection_data is not None:
-                self.frames.update(new_detection_data.detection)
-            if self.frames.is_complete:
-                return True
-        
-        raise TimeoutError("Wrong settings ? ")
-    
+    def send(self,data):
+        if not self.output_q.full():
+            self.output_q.put(data)
+        else:
+            raise BufferError ("QUEUE IS FULL")
 
 if __name__ == "__main__" :
-    vision = VisionProcess()
-    print(vision.frames.is_complete)
-    vision.update_detection()
+    def read(input_q):
+        while True:
+            if not input_q.empty():
+                item = input_q.get_nowait()
+                # print(type(item))
+            
+    output_q = Queue()
+    vision = Process(target=VisionProcess,args=(output_q,))
+    reader = Process(target=read,args=(output_q,))
+    
+    vision.start()
+    reader.start()
+    vision.join()
+    reader.join()
