@@ -6,7 +6,6 @@ from TeamControl.network.receiver import Receiver
 from TeamControl.network.robotCommand import RobotCommand
 
 from TeamControl.network.visionSockets import Vision 
-from TeamControl.network.grSimRobotCommmand import GSRobotCommand
 
 class grSimVision(Vision):
     def __init__(self, port : int=10020) -> None:
@@ -23,13 +22,10 @@ class grSimVision(Vision):
 
 class grSimSender(Sender):
     def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
-        self.destination = (ip,port)
+        # self.destination = (ip,port)
         super().__init__(ip=ip,port=port)
 
-    def send(**kwargs) -> None:
-        raise NotImplementedError("please use send_command()")
-    
-    def send_command(self, Command: GSRobotCommand|RobotCommand, isYellow:bool=None) -> None:
+    def send(self, Command: bytes) -> None:
         """send_command
         
         sending Command over grsim command sender port
@@ -40,16 +36,8 @@ class grSimSender(Sender):
             isYellow (bool): controlling team is yellow
             Command (grSimRobotCommand|Command|bytes): either a RobotCommand or grSimRobotCommand Message Class
         """
-        if isinstance(Command,GSRobotCommand):
-            Command = Command.encode()
-        elif isinstance(Command,RobotCommand):
-            if isYellow is None:
-                raise AttributeError("isYellow is required, please fill in isYellow=True/False")
-            new_Command =GSRobotCommand(isYellow=isYellow,robot_id=Command.robot_id,vx=Command.vx,vy=Command.vy,w=Command.w,kick=Command.kick,dribble=Command.dribble)
-            Command = new_Command.encode()
-        else:
-            return
-        # sends packet to grsim
+        if not isinstance(Command,bytes):
+            raise TypeError("need to be bytes")
         self.sock.sendto(Command,self.destination)
 
 

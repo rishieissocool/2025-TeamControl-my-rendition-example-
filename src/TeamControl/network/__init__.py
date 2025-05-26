@@ -10,7 +10,6 @@ from TeamControl.network.grSimSockets import grSimYellowControl,grSimBlueControl
 from TeamControl.network.gameControllerSockets import GameControl
 
 from TeamControl.network.robotCommand import RobotCommand
-from TeamControl.network.grSimRobotCommmand import GSRobotCommand 
 
 if __name__ == "__main__" : 
     from TeamControl.network import sender

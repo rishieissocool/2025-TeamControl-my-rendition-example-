@@ -31,7 +31,7 @@ class WorldModel:
         self.count = 0
         self.update_interval:int = update_interval
         self.use_sim:bool = use_sim 
-        self.frame_list:FrameList[Frame] = FrameList(camera=4,history=history)
+        self.frame_list:FrameList[Frame] = FrameList(history=history)
         self.geometry:GeometryData = None
         self.field:FieldSize = None
         self._version = mgr.Value('i', 0)  # int counter
@@ -63,7 +63,6 @@ class WorldModel:
             return self.frame_list.latest.robots_yellow
         elif isYellow is False :
             if isinstance(robot_id,int):
-                print(self.frame_list.latest.robots_blue[robot_id])
                 return self.frame_list.latest.robots_blue[robot_id]
             return self.frame_list.latest.robots_blue
     
