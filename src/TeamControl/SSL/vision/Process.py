@@ -5,14 +5,12 @@ import numpy as np
 import numpy.typing as npt
 from multiprocessing import Queue, Process
 
-### THIS IS a single process ###
-
 class VisionProcess():
     
-    def __init__(self,output_q:Queue,use_grSim:bool=True):
+    def __init__(self,output_q:Queue,use_grSim:bool=True,vision_port=10006):
         self.use_grSim = use_grSim
         self.output_q = output_q
-        self.recv = Vision(port=10006)    
+        self.recv = Vision(port=vision_port)    
         self.field = None
         self.frame_number = 0
         self.get_update()
@@ -42,9 +40,7 @@ class VisionProcess():
             if new_vision_data.HasField("geometry"):
                 geometry = new_vision_data.geometry
                 self.field = GeometryData.from_proto(geometry)
-                print(self.field)
                 self.send(self.field)
-                print("geometry has been initialised")
     
     def send(self,data):
         if not self.output_q.full():
@@ -57,7 +53,7 @@ if __name__ == "__main__" :
         while True:
             if not input_q.empty():
                 item = input_q.get_nowait()
-                # print(type(item))
+                print(type(item))
             
     output_q = Queue()
     vision = Process(target=VisionProcess,args=(output_q,))
