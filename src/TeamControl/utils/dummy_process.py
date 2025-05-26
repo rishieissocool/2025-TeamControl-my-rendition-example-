@@ -13,7 +13,7 @@ class DummyReader():
             current_version = self.wm.get_version()
             # print(current_version)
             if current_version > self.last_version:
-                print(f"{time.time() - last_update}, {self.wm.get_latest_frame().frame_number}")
+                print(f"{time.time() - last_update}, {len(self.wm.get_last_n_frames(10))}")
                 last_update = time.time()
                 self.last_version = current_version
                 

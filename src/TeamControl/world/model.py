@@ -26,6 +26,8 @@ class WorldModel:
     """
     def __init__(self,update_interval:int=5,history:int=60, use_sim:bool=True):
         mgr = Manager()
+        self.us_yellow = True
+        self.us_positive = True
         self.count = 0
         self.update_interval:int = update_interval
         self.use_sim:bool = use_sim 
@@ -33,6 +35,10 @@ class WorldModel:
         self.geometry:GeometryData = None
         self.field:FieldSize = None
         self._version = mgr.Value('i', 0)  # int counter
+
+    def update_team(self,us_yellow:bool,us_positive:bool):
+        self.us_yellow = us_yellow
+        self.us_positive = us_positive
     
     def add_new_frame(self,frame:Frame):
         self.count += 1
@@ -49,6 +55,9 @@ class WorldModel:
 
     def get_latest_frame(self):
         return self.frame_list.latest
+    
+    def get_last_n_frames(self,n:int):
+        return self.frame_list.get_last_n_frames(n)
     
     
     def get_version(self):
