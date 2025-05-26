@@ -20,13 +20,16 @@ def main():
     vision_wkr = Process(target=VisionProcess, args=(vision_q,use_sim,))
     wmr = Process(target=wm_runner, args=(wm,vision_q,gc_q,))
     some_other_process = Process(target=DummyReader,args=(wm,))
+    some_other_process2 = Process(target=DummyReader,args=(wm,))
     vision_wkr.start()
     wmr.start()
     some_other_process.start()
+    some_other_process2.start()
     
     vision_wkr.join()
     wmr.join()
     some_other_process.join()
+    some_other_process2.join()
 
 if __name__ == "__main__":
     main()
