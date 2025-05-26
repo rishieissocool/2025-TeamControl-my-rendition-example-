@@ -63,7 +63,7 @@ class Robot:
     def __repr__(self):
         color = 'Yellow' if self.isYellow else 'Blue'
         return (
-        f"Team: {color}, Robot ID: {self.id}, Confidence: {self.c:.2f}\n"
+        f"Team: {color}, Robot ID: {self.id}, Confidence: {self.confidence:.2f}\n"
         f"Position: {self.position} | Pixel: ({self.px}, {self.py})\n"
         f"Obstacle: {self.obstacle}"
     )
@@ -131,7 +131,9 @@ class Team ():
                 if self[new_robot.id].confidence < new_robot.confidence:
                     print(f"robot is found with data {self[new_robot.id]} , replacing . . .")
                     self._robots[new_robot.id] = new_robot 
-                    
+            else:
+                self._robots[new_robot.id] = new_robot 
+         
     def __len__(self): # allows len(Team) , returns number of robots store in this team
         return self.num_robots
     
