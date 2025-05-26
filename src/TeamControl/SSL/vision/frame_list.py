@@ -6,13 +6,9 @@ import numpy.typing as npt
 
 class FrameList ():
     
-    GRSIM_CAMERAS = 4
-    REAL_CAMERAS = 1
-    
     ### THIS IS A LIST CLASS so this would work like a list
-    def __init__(self,camera:int=1,history:int=60):
+    def __init__(self,history:int=60):
         self.newest_frame = 0
-        self.cameras = camera
         self.history = history
         self._frames = deque(maxlen=history)
         self._frame_lookup = {}  # Maps frame_id -> Frame
@@ -21,14 +17,6 @@ class FrameList ():
     def __repr__(self):
         return repr(self._frames)
     
-    @property 
-    def max_num(self):
-        return self.history * self.cameras
-    
-    # @property
-    # def cameras(self):
-    #     return self.GRSIM_CAMERAS if self.use_sim is True else self.REAL_CAMERAS
-        
 
     @property
     def frame_ids(self) -> list[int]:
@@ -38,14 +26,7 @@ class FrameList ():
     def latest(self) -> Frame | None:
         return self._frames[-1] if self._frames else None
 
-    # def update(self, new_detection):
-    #     if new_detection.frame_number == self.newest_frame:
-    #         self.latest.update(new_detection)
-    #     elif new_detection.frame_number > self.newest_frame:
-    #         self.newest_frame = new_detection.frame_number
-    #         frame = Frame.from_proto(new_detection,max_cameras=self.cameras)
-    #         self.append(frame)
-    
+
         
     def append(self, frame: Frame):
         if frame.frame_number in self._frame_lookup:
