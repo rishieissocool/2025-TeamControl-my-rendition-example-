@@ -5,6 +5,7 @@ from TeamControl.world.model import WorldModel
 
 def wm_runner(wm:WorldModel,vision_q:Queue,gc_q:Queue,interval:int=5):
         count = 0
+        i=0
         while True:
             try:
                 if not vision_q.empty():
@@ -13,12 +14,13 @@ def wm_runner(wm:WorldModel,vision_q:Queue,gc_q:Queue,interval:int=5):
                         wm.add_new_frame(item)
                         count += 1
                         if count >= interval:
+                            i +=1
                             wm.detection_updated = True
-                            print(wm.get_latest_frame())
+                            print(i)
                             count = 0 
                             wm.detection_updated = False
                     elif isinstance(item,GeometryData):
-                        wm.update_geometry = item
+                        wm.update_geometry(item)
                         
                 # if not self.gc_q.empty():
                 #     new_info = self.gc_q.get_nowait()

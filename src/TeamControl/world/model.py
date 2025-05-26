@@ -34,8 +34,9 @@ class WorldModel:
         self.frame_list.append(frame)
 
     def update_geometry(self,geometry:GeometryData):
-        self.geometry=geometry
-        self.field=geometry.field
+        self.geometry = geometry
+        self.field = geometry.field
+        self.ball_model = geometry.models
 
 
     def get_latest_frame(self):
