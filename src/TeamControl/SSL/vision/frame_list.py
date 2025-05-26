@@ -42,18 +42,18 @@ class FrameList ():
     def latest(self) -> Frame | None:
         return self._frames[-1] if self._frames else None
 
-    def update(self, new_detection):
-        if new_detection.frame_number == self.newest_frame:
-            self.latest.update(new_detection)
-        elif new_detection.frame_number > self.newest_frame:
-            self.newest_frame = new_detection.frame_number
-            frame = Frame.from_proto(new_detection,max_cameras=self.cameras)
-            self.append(frame)
+    # def update(self, new_detection):
+    #     if new_detection.frame_number == self.newest_frame:
+    #         self.latest.update(new_detection)
+    #     elif new_detection.frame_number > self.newest_frame:
+    #         self.newest_frame = new_detection.frame_number
+    #         frame = Frame.from_proto(new_detection,max_cameras=self.cameras)
+    #         self.append(frame)
     
         
     def append(self, frame: Frame):
         if frame.frame_number in self._frame_lookup:
-            raise LookupError (f"{frame.frame_number} exist, use update instead")
+            raise LookupError (f"{frame.frame_number} exist")
             self.update(frame)
         # If full, remove oldest from both deque and dict
         if len(self._frames) == self.history:
