@@ -28,11 +28,7 @@ class FrameList ():
     @property
     def cameras(self):
         return self.GRSIM_CAMERAS if self.use_sim else self.REAL_CAMERAS
-    
-    @property
-    def is_complete(self):
-        return self.latest.is_completed if isinstance(self.latest,Frame) else False
-    
+        
 
     @property
     def frame_ids(self) -> list[int]:
