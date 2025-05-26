@@ -10,9 +10,9 @@ class FrameList ():
     REAL_CAMERAS = 1
     
     ### THIS IS A LIST CLASS so this would work like a list
-    def __init__(self,use_sim:bool=True,history:int=60):
+    def __init__(self,camera:int=1,history:int=60):
         self.newest_frame = 0
-        self.use_sim = use_sim
+        self.cameras = camera
         self.history = history
         self._frames = deque(maxlen=history)
         self._frame_lookup = {}  # Maps frame_id -> Frame
@@ -25,9 +25,9 @@ class FrameList ():
     def max_num(self):
         return self.history * self.cameras
     
-    @property
-    def cameras(self):
-        return self.GRSIM_CAMERAS if self.use_sim else self.REAL_CAMERAS
+    # @property
+    # def cameras(self):
+    #     return self.GRSIM_CAMERAS if self.use_sim is True else self.REAL_CAMERAS
         
 
     @property
