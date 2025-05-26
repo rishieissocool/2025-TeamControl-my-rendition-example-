@@ -1,11 +1,16 @@
-import numpy as np
-import numpy.typing as npt
+''' World Model - Central Storage and access control
+- apply this in multiprocessing or equivalent 
+@author - Emma
 
-from TeamControl.SSL.vision.field import *
-from TeamControl.world.vision_worker import VisionWorker
-from TeamControl.SSL.game_control.Processing import Processing
+'''
+
+from TeamControl.SSL.vision.frame_list import FrameList
+from TeamControl.SSL.vision.field import GeometryData
+from TeamControl.SSL.vision.frame import Frame
 
 from multiprocessing import Queue,Process
+import numpy as np
+import numpy.typing as npt
 
 import logging
 log = logging.getLogger()
@@ -19,35 +24,40 @@ class WorldModel:
         
         
     """
-    def __init__(self, us_yellow : bool=None, us_positive : bool=None, history:int=5, use_sim: bool = False):
-        self.use_sim = use_sim 
-        self.us_yellow : bool= us_yellow
-        self.us_positive : bool= us_positive
-        self.history:int = history # histroy length
-        self.vision_q = Queue()
-        self.gc_q = Queue()
-        
-        self.vision_wkr = Process(target=VisionWorker, args=(True,self.vision_q,use_sim,history,))
-        # self.gc_wkr = Processing(output=self.gc_q)
-        # self.field_manager = Field_manager
-        self.p2 = Process(target=WorldModel.internal_process)
-        self.start()
+    def __init__(self,vision_q:Queue, gc_q:Queue, vision_interval:int, history:int=60, use_sim:bool=True):
+        self.use_sim:bool = use_sim 
+        self.vision_q:Queue = vision_q
+        self.gc_q:Queue = gc_q
+        self.interval:int = vision_interval # determines how many frames recv to do an update to all process
+        self.frame_list = FrameList(use_sim,history=history)
+        self.run()
     
-    def start(self):
-        self.vision_wkr.start()
-        self.p2.start()
-        
-        self.p2.join()
-        self.vision_wkr.join()
-    @property
-    def detection(self):
-        return self.vision_wkr.frames
-    @staticmethod
-    def internal_process():
+    def run(self):
+        count = 0
         while True:
-            for i in range(100):
-                print(i)
-
-if __name__ == "__main__":
-    import time
-    wm = WorldModel(use_sim=True,history=60)
+            try:
+                if not self.vision_q.empty():
+                    item = self.vision_q.get_nowait()
+                    if isinstance(item,Frame):
+                        self.frame_list.append(item)
+                        count += 1
+                        if count >= self.interval:
+                            self.detection_updated = True
+                            print(self.detection_updated)
+                            count = 0 
+                            self.detection_updated = False
+                    elif isinstance(item,GeometryData):
+                        self.field = item
+                        
+                # if not self.gc_q.empty():
+                #     new_info = self.gc_q.get_nowait()
+                #     self.update_game_data(new_info)
+            except Exception as e:
+                print("ERROR", e)
+    
+    # @classmethod
+    ## all the method to retrieve data here
+    
+                
+# if __name__ == "__main__":
+#     import time
