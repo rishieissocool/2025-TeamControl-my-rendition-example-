@@ -6,7 +6,8 @@ import numpy.typing as npt
 from multiprocessing import Queue, Process
 
 class VisionProcess():
-    
+    GRSIM_CAMERAS = 4
+    REAL_LIFE_CAMERAS = 1
     def __init__(self,output_q:Queue,use_grSim:bool=True,vision_port=10006):
         self.use_grSim = use_grSim
         self.output_q = output_q
@@ -17,7 +18,7 @@ class VisionProcess():
     
     @property
     def cameras(self):
-        return 4 if self.use_grSim else 1
+        return self.GRSIM_CAMERAS if self.use_grSim is True else self.REAL_LIFE_CAMERAS
     
     @property
     def has_field(self):
