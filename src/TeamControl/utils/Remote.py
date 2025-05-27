@@ -4,20 +4,20 @@ from TeamControl.network import Sender,grSimSender
 from TeamControl.network.robotCommand import RobotCommand
 
 class Remote_robot():
-    def __init__(self,use_sim:bool=False,isYellow=True):
+    def __init__(self, use_sim:bool=False, robot_id=2, isYellow=True):
+        self.robot_id = robot_id
         self.us_yellow = isYellow
         if use_sim is True:
             device_ip = "127.0.0.1"
             DEFAULT = 20010
             self.sender = grSimSender(isYellow=isYellow,ip=device_ip,port=DEFAULT)
         elif use_sim is False:
-            robot_ip = "192.168.70.56"
+            robot_ip = "192.168.70.171"
             self.sender = Sender(ip=robot_ip,port=50514)
         
 
 
     def run_remote_control(self):
-        robot_id = int(input("Enter the ID of Robot you want to control: "))
         speed = 1
         vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
@@ -68,7 +68,7 @@ class Remote_robot():
                 d = 1
             
                                             
-            Command = RobotCommand(robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            Command = RobotCommand(robot_id=self.robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             if Command.vx == 0 and Command.vy == 0 and Command.w ==0:
                 continue # skips the command send
             
