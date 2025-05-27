@@ -1,5 +1,7 @@
 # Multiprocessing 
 
+![27May2025](27May2025_Multiprcessing.png)
+
 World Model as a Multiprocessing Manager . which means : 
 
 - gets shared across processes and keeps itself up-to-date
