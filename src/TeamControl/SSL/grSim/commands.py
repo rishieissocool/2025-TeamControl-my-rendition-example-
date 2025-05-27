@@ -1,5 +1,5 @@
 # this is to get us ready to turn the commands to grSim RobotCommands
-from TeamControl.network.robotCommand import RobotCommand as RobotCommands
+from TeamControl.network.robotCommand import RobotCommand
 # from TeamControl.robot.robot_commands import RobotCommands # do not use
 # proto import
 from TeamControl.SSL.proto2 import grSim_Commands_pb2
@@ -48,7 +48,7 @@ class GrSimRobotCommands:
         grSim_commands = self._commands_wrapper(self.team(us),grSim_robot_command)
         return grSim_commands
     
-    def convert(self,robot_commands:RobotCommands,us=True) -> None:
+    def convert(self,robot_commands:RobotCommand,us=True) -> None:
         grSim_commands = self.new_command(robot_id=robot_commands.robot_id,
             vx=robot_commands.vx,vy=robot_commands.vy,w=robot_commands.w,
             k=robot_commands.kick,d=robot_commands.dribble,us=us)
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     
     
     # if you want to convert from
-    r1 = RobotCommands(1,2,3,4,1,0) 
+    r1 = RobotCommand(1,2,3,4,1,0) 
     msg2 = GSC.convert(r1)
     # afterwards, you can pack and send it ! no problem
     encoded = GSC.pack(msg2)
