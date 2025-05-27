@@ -8,19 +8,19 @@ from TeamControl.SSL.proto2 import grSim_Packet_pb2
 import time
 
 class GrSimRobotCommands:
-    def __init__(self,us_yellow: bool):
-        self.us_yellow : bool = us_yellow 
+    def __init__(self,isYellow: bool):
+        self.isYellow : bool = isYellow 
         self.kick_speed_x : float = 10.0
         self.kick_speed_z : float = 0.0 #we have no chip kick
         self.wheel_speed : bool = False
         
-    def update_us_yellow(self,new_us_yellow: bool) -> None:
+    def update_is_yellow(self,new_is_Yellow: bool) -> None:
         # at any time if you want to switch 
-        self.us_yellow = new_us_yellow
+        self.isYellow = new_is_Yellow
         # log update
     
     def team(self,us:bool) -> bool:
-        is_yellow = self.us_yellow if us is True else not(self.us_yellow)
+        is_yellow = self.isYellow if us is True else not(self.isYellow)
         return is_yellow
     
     def _robot_command_wrapper(self,robot_id:int,vx: float,vy: float,w: float,k:bool,d:bool) -> object:
@@ -63,8 +63,8 @@ class GrSimRobotCommands:
 # Test run
 if __name__ == "__main__":
     # initialise this handler 
-    us_yellow = True
-    GSC = GrSimRobotCommands(us_yellow=us_yellow) #always initialise this
+    isYellow = True
+    GSC = GrSimRobotCommands(isYellow=isYellow) #always initialise this
     
     # building a new command from scratch 
     msg1 = GSC.new_command(robot_id=1,vx=2.0,vy=1.0,w=1,k=1,d=1,us=True)
@@ -84,16 +84,16 @@ if __name__ == "__main__":
 
     
     # To check what the current team has set to use either one 
-    us_yellow = GSC.team(us=True)
-    print(f"1. {us_yellow=}")
-    us_yellow = GSC.us_yellow
-    print(f"2. {us_yellow=}")
+    isYellow = GSC.team(us=True)
+    print(f"1. {isYellow=}")
+    isYellow = GSC.isYellow
+    print(f"2. {isYellow=}")
     
     # To update it's team color use either: 
-    GSC.us_yellow = not(us_yellow)
-    print(f"{us_yellow=},{GSC.us_yellow=}")
+    GSC.isYellow = not(isYellow)
+    print(f"{isYellow=},{GSC.isYellow=}")
     
-    GSC.update_us_yellow(not(us_yellow))
-    print(f"{us_yellow=},{GSC.us_yellow=},{GSC.team(us=True)=}")
+    GSC.update_is_yellow(not(isYellow))
+    print(f"{isYellow=},{GSC.isYellow=},{GSC.team(us=True)=}")
     
     ## This packet is a one way packet ##
