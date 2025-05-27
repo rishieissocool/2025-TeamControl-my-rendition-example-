@@ -13,8 +13,7 @@ class DummyReader():
     def __init__(self, wm:WorldModel):
         self.wm:WorldModel = wm
         self.last_version = 0
-        self.GSC = GrSimRobotCommands(us_yellow=True)
-        self.sender = grSimSender()
+        self.sender = grSimSender(isYellow=True)
         self.loop()
         
     def loop(self):
