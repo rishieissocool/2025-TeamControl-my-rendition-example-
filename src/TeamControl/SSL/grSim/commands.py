@@ -1,5 +1,6 @@
 # this is to get us ready to turn the commands to grSim RobotCommands
-from TeamControl.robot.robot_commands import RobotCommands
+from TeamControl.network.robotCommand import RobotCommand as RobotCommands
+# from TeamControl.robot.robot_commands import RobotCommands # do not use
 # proto import
 from TeamControl.SSL.proto2 import grSim_Commands_pb2
 from TeamControl.SSL.proto2 import grSim_Packet_pb2
@@ -50,7 +51,7 @@ class GrSimRobotCommands:
     def convert(self,robot_commands:RobotCommands,us=True) -> None:
         grSim_commands = self.new_command(robot_id=robot_commands.robot_id,
             vx=robot_commands.vx,vy=robot_commands.vy,w=robot_commands.w,
-            k=robot_commands.k,d=robot_commands.d,us=us)
+            k=robot_commands.kick,d=robot_commands.dribble,us=us)
         return grSim_commands
 
     def pack(self,grSim_commands) -> bytes:

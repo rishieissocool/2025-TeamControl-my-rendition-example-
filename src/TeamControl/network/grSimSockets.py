@@ -4,6 +4,7 @@
 from TeamControl.network.sender import Sender
 from TeamControl.network.receiver import Receiver
 from TeamControl.network.robotCommand import RobotCommand
+from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 
 from TeamControl.network.visionSockets import Vision 
 
@@ -21,24 +22,23 @@ class grSimVision(Vision):
 ### Simulation Control ### 
 
 class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
+    def __init__(self,isYellow:bool, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         # self.destination = (ip,port)
+        self.GSC = GrSimRobotCommands(isYellow=isYellow)
         super().__init__(ip=ip,port=port)
 
-    def send(self, Command: bytes) -> None:
+    def send(self, command: object) -> None:
         """send_command
-        
-        sending Command over grsim command sender port
-        
-        can parse in either GRSIM Command or RobotCommand message type
-
-        Args:
-            isYellow (bool): controlling team is yellow
-            Command (grSimRobotCommand|Command|bytes): either a RobotCommand or grSimRobotCommand Message Class
+        command (bytes) : bytestring serialised by 
         """
-        if not isinstance(Command,bytes):
-            raise TypeError("need to be bytes")
-        self.sock.sendto(Command,self.destination)
+        if isinstance(command,RobotCommand):
+            self.GSC.convert(command)
+        try :
+            command = self.GSC.pack(command)
+        except Exception as e:
+            raise Exception("Error encountered in packing : ", e)
+        
+        self.sock.sendto(command,self.destination)
 
 
 
