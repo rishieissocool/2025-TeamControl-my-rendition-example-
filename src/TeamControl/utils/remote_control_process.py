@@ -2,10 +2,11 @@ from TeamControl.world.model import WorldModel
 from TeamControl.SSL.vision.frame import Frame
 from TeamControl.world.transform_cords import world2robot
 from TeamControl.robot_behaviour.Movement import RobotMovement
-from TeamControl.SSL.grSim.commands import GrSimRobotCommands
+# from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 # from TeamControl.robot.robot_commands import RobotCommands
-from TeamControl.network import grSimSender,Sender,RobotCommand
-
+from TeamControl.network import grSimSender,Sender
+from TeamControl.network.robotCommand import RobotCommand
+# from TeamControl.robot_behaviour import 
 import pygame
 import time
 
@@ -14,41 +15,53 @@ class RCProcess():
         self.us_yellow = False
         self.wm:WorldModel = wm
         self.last_version = 0
-        robot_ip = ""
+        robot_ip = "192.168.122.171"
         self.sender = Sender(ip=robot_ip,port=50514)
         
-        pygame.init()
-        screen = pygame.display.set_mode((400, 300))
+        # pygame.init()
+        # screen = pygame.display.set_mode((400, 300))
         self.loop()
         
     def loop(self):
         self.robot_id =2
         robot_pos = None
         last_update = time.time()
+        vx,vy,w,k,d = 0,0,0,0,0
         while True:
-            vx,vy,vw,k,d = 0,0,0,0,0
 
             current_version:int = self.wm.get_version()
             # print(current_version)
             if current_version > self.last_version:
-                # print(f"{time.time() - last_update}, {self.wm.get_latest_frame().frame_number}")
+                print(f"{time.time() - last_update}, {self.wm.get_latest_frame().frame_number}")
                 last_update = time.time()
                 self.last_version = current_version
-                robot_pos = self.wm.get_yellow_robots(isYellow=False,robot_id=self.robot_id).position
-                # ball = self.wm.get_latest_frame().ball.position
+                try:
+                    robot_pos = self.wm.get_yellow_robots(isYellow=False,robot_id=self.robot_id).position
+                    ball = self.wm.get_latest_frame().ball.position
+                except Exception :
+                    robot_pos = 0,0,0
+                    ball = 0,0
+                    
+                vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
+                
+            cmd = RobotCommand(1, vx, vy, w, 0, 0)
+            print(cmd)
+            self.sender.send(cmd)
+                
+                
             
-            command = self.run_remote_control()
-            if command.vx == 0 and command.vy == 0 and command.w ==0:
-                command = None
-            if command is not None:
-                self.sender.send(command)
+            # command = self.run_remote_control()
+            # if command.vx == 0 and command.vy == 0 and command.w ==0:
+            #     command = None
+            # if command is not None:
+            #     self.sender.send(command)
 
-            if robot_pos is not None:
+            # if robot_pos is not None:
                 # pos_relative_to_robot = world2robot(robot_position=robot_pos, target_position=ball)
                 
                 # vx,vy,w= RobotMovement.velocity_to_target(robot_pos=robot_pos,target=ball)
                 # w = RobotMovement.turn_to_target(pos_relative_to_robot,speed=2)
-                print(robot_pos)
+                # print(robot_pos)
 
     
         
