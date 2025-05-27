@@ -9,7 +9,7 @@ from TeamControl.utils.remote_control_process import RCProcess
 # in multiprocessing this can only be a simple process
 
 def main():
-    use_sim = True
+    use_sim = False
     vision_q = Queue()
     gc_q = Queue()
     
