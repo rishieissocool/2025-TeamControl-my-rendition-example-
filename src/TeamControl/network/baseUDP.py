@@ -153,8 +153,8 @@ class BaseSocket():
             case 'win32':
                 ip = socket.gethostbyname(socket.gethostname())
             case 'linux':
-                ip = os.popen('hostname -I').read().strip().split(" ")[0]
-                print(os.popen('hostname -I').read().strip().split(" "))
+                ip = os.popen('hostname -I').read().strip().split(" ")[1]
+                print(f'available : {os.popen("hostname -I").read().strip().split(" ")} , using : {ip}')
             case 'darwin':
                 ip = os.popen('ipconfig getifaddr en0').read().strip()
             case _:

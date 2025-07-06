@@ -1,13 +1,13 @@
 """
 This class is going to be replaced. 
 """
-import time
-
+from TeamControl.SSL.grSim.grSimSockets import grSimSender, grSimVision
+from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 from TeamControl.world.model import WorldModel as wm
 from TeamControl.world.transform_cords import *
-
-from TeamControl.network import grSimVision, grSimSender,RobotCommand
 from TeamControl.actions.goToTarget import *
+
+import time
 
 TIME = time.time()
 class grSimUtils():
@@ -27,41 +27,19 @@ class grSimUtils():
             vision_port (int): GRSIM Vision port number. Default : 10020 or 10006
             sender_port (int): grSim Command listening Port Number.
         """
-        self.us_yellow = isYellow
         self.us_positive = isPositive
+        self.gsc:GrSimRobotCommands = GrSimRobotCommands(us_yellow=isYellow)
         self.world_model = wm(isYellow=self.us_yellow, isPositive=self.us_positive)
         self.vision = grSimVision(world_model=self.world_model,port=vision_port)
         self.sender = grSimSender(ip=ip, port=sender_port)
         
         
-    def get_team_color(self,ourTeam):
-        if ourTeam is True:
-            return self.us_yellow
-        elif ourTeam is False:
-            return not(self.us_yellow)
+    def get_team_color(self,us:bool):
+        return self.gsc.team(us=us)
     
-        
-            
-    # some simple functions
-    def make_robot_move(self,ourTeam: bool,robot_id:int,vx=0.0,vy=0.0,vw=0.0):
-        isYellow = self.get_team_color(ourTeam)
-        command = RobotCommand(isYellow=isYellow,robot_id=robot_id,vx=vx,vy=vy,w=vw)
-        self.sender.send_command(command)
-      
-    
-    def make_robot_kick(self, ourTeam:bool, robot_id:int, kickx = 1.0, kickz = 0.0):
-        isYellow = self.get_team_color(ourTeam)
-        command = RobotCommand(isYellow=isYellow,robot_id=robot_id,kx=kickx,kz=kickz)
-        self.sender.send_command(command)
-
-    def make_robot_dribble(self,ourTeam:bool,robot_id:int, dribble: bool):
-        isYellow = self.get_team_color(ourTeam)
-        command = RobotCommand(isYellow=isYellow,robot_id=robot_id,d=dribble)
-        self.sender.send_command(command)
-        
     def run_remote_control(self):
         robot_id = int(input("Enter the ID of Robot you want to control: "))
-        self.us_yellow = True 
+        us = True
         speed = 5.0
         vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
@@ -94,9 +72,9 @@ class grSimUtils():
                     vy += +speed
                 
             if keys[pygame.K_q] or keys[pygame.K_PAGEUP]:
-                vw += +speed
+                w += +speed
             if keys[pygame.K_e] or keys[pygame.K_PAGEDOWN]:
-                vw += -speed
+                w += -speed
             
             
             if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
@@ -112,9 +90,10 @@ class grSimUtils():
                 d = 1
             
                                             
-            command = RobotCommand(isYellow=self.us_yellow, robot_id=robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+            command = self.gsc.new_command(robot_id=robot_id, vx=vx,vy=vy,w=w,k=k,d=d,us=us)
+            encoded = command.pack()
             vx,vy,vw,k,d = 0,0,0,0,0
-            self.sender.send_command(command)
+            self.sender.send_command(encoded)
     
     def run_code(self):
         command_list = list()
@@ -131,12 +110,13 @@ class grSimUtils():
                 print(f'{translated_point=}')
                 vx,vy = go_To_Target(translated_point)
                 w = turn_to_target(translated_point)
-                command = self.make_robot_move(ourTeam=True,robot_id=robot_id,vx=vx,vy=vy,vw=w)
+                command = self.gsc.new_command(robot_id=robot_id,vx=vx,vy=vy,w=w,k=0,d=0)
                 command_list.append(command)
     
             if len(command_list) > 0:
                 a = command_list.pop(0)
-                self.sender.send_command(isYellow=self.ourTeam,command=a)
+                encoded = GrSimRobotCommands.pack(a)
+                self.sender.send_command(encoded)
     
 
 if __name__ =="__main__" :

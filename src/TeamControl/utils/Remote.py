@@ -1,3 +1,4 @@
+from TeamControl.SSL.grSim import grSimRobotCommmand
 import pygame
 
 from TeamControl.network import Sender,grSimSender
@@ -18,6 +19,7 @@ class Remote_robot():
 
 
     def run_remote_control(self):
+        speed = 1
         speed = 1
         vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False

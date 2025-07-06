@@ -20,7 +20,6 @@ class Vision(Multicast):
         decoder :object = ssl_vision_wrapper_pb2.SSL_WrapperPacket()
         group : str = "224.5.23.2"
         buffer_size : int = 6000
-        # group = "VISIONSSL.GLOBAL"
         super().__init__(port=port,group=group,decoder=decoder,buffer_size=buffer_size)
    
     def listen(self) -> bool:
