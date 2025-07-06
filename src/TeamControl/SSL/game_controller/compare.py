@@ -14,7 +14,7 @@ class GameControllerManager:
             self.update(new_ref)
     
     def listen(self):
-        data, _ = self.recv.listen()
+        data = self.recv.listen()
         ref_msg = self.convert(data)
         return ref_msg
      
