@@ -27,24 +27,27 @@ class GameControllerManager:
             return
         elif current is not None:
             if current.command != ref_msg.command:
+                print(f"new Command: {ref_msg.command}")
                 self.output_q.put(ref_msg.command)
             if current.stage != ref_msg.stage:
+                print(f"new Stage: {ref_msg.stage}")
                 self.output_q.put(ref_msg.stage)
             if current.blue_team_on_positive_half != ref_msg.blue_team_on_positive_half:
                 print("sides switched")
                 self.output_q.put(ref_msg)
-            if current.yellow.name == ref_msg.blue.name:
-                print(f"Team {current.yellow.name} has switch to blue")
-                self.output_q.put(ref_msg.blue)
-            if current.blue.name == ref_msg.yellow.name:
-                print(f"Team {current.blue.name} has switch to yellow")
-                self.output_q.put(ref_msg.yellow)
-                
-            if current.yellow.max_allowed_bots < ref_msg.yellow.max_allowed_bots:
-                self.output_q.put(ref_msg.yellow) 
+            
+            # when yellow is no longer yellow, when blue is no longer blue
+            elif current.yellow.name != ref_msg.yellow.name or current.blue.name != ref_msg.blue.name:
+                print(f"Team {ref_msg.yellow.name} is now yellow, Team {ref_msg.blue.name} is now BLUE, Blue Positive={ref_msg.blue_team_on_positive_half}")
+                packet = [ref_msg.yellow, ref_msg.blue]
+                self.output_q.put(packet)
+            
+            else: #when no team color / side change    
+                if current.yellow.max_allowed_bots < ref_msg.yellow.max_allowed_bots:
+                    self.output_q.put(ref_msg.yellow) 
 
-            if current.blue.max_allowed_bots < ref_msg.blue.max_allowed_bots:
-                self.output_q.put(ref_msg.yellow)
+                if current.blue.max_allowed_bots < ref_msg.blue.max_allowed_bots:
+                    self.output_q.put(ref_msg.blue)
             self.ref_msg = ref_msg
         else:
             return
