@@ -9,7 +9,7 @@ x = 9000
 y = 6000
 # planner = VoronoiPlanner(xsize=x,ysize=y)
 
-def pathplanning(planner:VoronoiPlanner,world_model:World,target_pos):
+def pathplanning(planner:VoronoiPlanner,world_model:wm,target_pos):
     """
     This generates waypoints for all of our robots to target and returns as a list
 

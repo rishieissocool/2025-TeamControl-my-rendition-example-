@@ -1,7 +1,7 @@
 from TeamControl.world.model import WorldModel
 from TeamControl.SSL.vision.frame import Frame
 from TeamControl.world.transform_cords import world2robot
-from TeamControl.robot_behaviour.Movement import RobotMovement
+from TeamControl.robot.Movement import RobotMovement
 # from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 # from TeamControl.robot.robot_commands import RobotCommands
 from TeamControl.network import grSimSender,Sender

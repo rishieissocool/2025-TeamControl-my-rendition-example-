@@ -86,8 +86,7 @@ class WorldModel:
             case Command.DIRECT_FREE_YELLOW:
                 return
             case Command.INDIRECT_FREE_YELLOW:
-                returnd received: {command}")
-            
+                return
 
     def update_team(self,us_yellow:bool,us_positive:bool):
         self.us_yellow = us_yellow

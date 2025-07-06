@@ -74,10 +74,10 @@ class Nearest():
 
 
 if __name__ == "__main__":
-    from TeamControl.network.receiver import grSimVision
-    from TeamControl.World.main import World
-    world_model:World = World(isYellow= True, isPositive=True)
-    recv = grSimVision(world_model)
+    from TeamControl.network.visionSockets import Vision
+    from TeamControl.world.model import WorldModel
+    world_model:WorldModel = WorldModel(isYellow= True, isPositive=True)
+    recv = Vision(world_model)
     updated = False
     while True:
         updated = recv.listen()

@@ -1,7 +1,8 @@
-from TeamControl.SSL.grSim import grSimRobotCommmand
+from TeamControl.SSL.grSim.grSimSockets import grSimSender
+from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 import pygame
 
-from TeamControl.network import Sender,grSimSender
+from TeamControl.network import Sender
 from TeamControl.network.robotCommand import RobotCommand
 
 class Remote_robot():
