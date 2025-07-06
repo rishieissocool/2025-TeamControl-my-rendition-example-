@@ -7,6 +7,7 @@
 from TeamControl.SSL.vision.frame_list import FrameList
 from TeamControl.SSL.vision.field import GeometryData,FieldSize
 from TeamControl.SSL.vision.frame import Frame
+from TeamControl.SSL.game_controller.Message import *
 
 from multiprocessing import Queue,Manager
 import numpy as np
@@ -15,6 +16,11 @@ import numpy.typing as npt
 import logging
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
+
+class STATE(Enum):
+    RUNNING = 0
+    HALTED = 1
+    STOPPED = 2
 
 class WorldModel:
     """
@@ -35,6 +41,53 @@ class WorldModel:
         self.geometry:GeometryData = None
         self.field:FieldSize = None
         self._version = mgr.Value('i', 0)  # int counter
+    
+    def update_game_data(self,game_data):
+        if isinstance(game_data,Command):
+            self.update_state(game_data)
+        elif isinstance(game_data,tuple):
+            if isinstance(game_data[0],TeamInfo):
+                self.ref_data.yellow = game_data[0]
+                self.ref_data.blue = game_data[1]
+        
+    def update_state(self,command):
+        print(command) 
+        match command:
+            case Command.HALT:
+                return STATE.HALTED
+            case Command.STOP:
+                return STATE.STOPPED
+            case Command.NORMAL_START | Command.FORCE_START:
+                return STATE.RUNNING
+            
+            case Command.TIMEOUT_BLUE:
+                return 
+            case Command.TIMEOUT_YELLOW:
+                return 
+            case Command.BALL_PLACEMENT_BLUE:
+                return
+            case Command.PREPARE_KICKOFF_BLUE:
+                return
+            case Command.PREPARE_PENALTY_BLUE:
+                return
+            
+            case Command.DIRECT_FREE_BLUE:
+                return
+            case Command.INDIRECT_FREE_BLUE:
+                return
+            
+            case Command.BALL_PLACEMENT_YELLOW:
+                return
+            case Command.PREPARE_KICKOFF_YELLOW:
+                return
+            case Command.PREPARE_PENALTY_YELLOW:
+                return
+            
+            case Command.DIRECT_FREE_YELLOW:
+                return
+            case Command.INDIRECT_FREE_YELLOW:
+                returnd received: {command}")
+            
 
     def update_team(self,us_yellow:bool,us_positive:bool):
         self.us_yellow = us_yellow

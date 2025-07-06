@@ -13,9 +13,9 @@ def wm_runner(wm:WorldModel,vision_q:Queue,gc_q:Queue,interval:int=5):
                     elif isinstance(item,GeometryData):
                         wm.update_geometry(item)
                         
-                # if not self.gc_q.empty():
-                #     new_info = self.gc_q.get_nowait()
-                #     self.update_game_data(new_info)
+                if not gc_q.empty():
+                    new_info = gc_q.get_nowait()
+                    wm.update_game_data(new_info)
                 
             except Exception as e:
                 print("ERROR", e)
