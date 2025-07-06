@@ -5,7 +5,7 @@ from TeamControl.SSL.grSim.grSimSockets import grSimSender, grSimVision
 from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 from TeamControl.world.model import WorldModel as wm
 from TeamControl.world.transform_cords import *
-from TeamControl.actions.goToTarget import *
+from TeamControl.robot.Movement import RobotMovement
 
 import time
 
@@ -108,8 +108,8 @@ class grSimUtils():
                 print(f'{robot_pos=}')
                 translated_point = self.world2Robot(robot_pos,target)
                 print(f'{translated_point=}')
-                vx,vy = go_To_Target(translated_point)
-                w = turn_to_target(translated_point)
+                vx,vy = RobotMovement.go_To_Target(translated_point)
+                w = RobotMovement.turn_to_target(translated_point)
                 command = self.gsc.new_command(robot_id=robot_id,vx=vx,vy=vy,w=w,k=0,d=0)
                 command_list.append(command)
     
