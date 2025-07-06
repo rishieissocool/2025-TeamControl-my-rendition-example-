@@ -13,8 +13,8 @@ class VisionProcess():
         self.output_q = output_q
         self.recv = Vision(port=vision_port)    
         self.field = None
+        self.frame = None
         self.frame_number = 0
-        self.get_update()
     
     @property
     def cameras(self):
@@ -25,7 +25,7 @@ class VisionProcess():
         return self.field is not None
     
 
-    def get_update(self) -> bool:
+    def run(self) -> bool:
         while True:
             new_vision_data = self.recv.listen()
             if new_vision_data.HasField("detection"):
@@ -49,6 +49,10 @@ class VisionProcess():
         else:
             raise BufferError ("QUEUE IS FULL")
 
+def vision_worker(output_q:Queue,use_grSim:bool=True,vision_port=10006):
+    v = VisionProcess(output_q,use_grSim,vision_port)
+    v.run()
+
 if __name__ == "__main__" :
     def read(input_q):
         while True:
@@ -57,7 +61,7 @@ if __name__ == "__main__" :
                 print(type(item))
             
     output_q = Queue()
-    vision = Process(target=VisionProcess,args=(output_q,))
+    vision = Process(target=vision_worker,args=(output_q,))
     reader = Process(target=read,args=(output_q,))
     
     vision.start()
