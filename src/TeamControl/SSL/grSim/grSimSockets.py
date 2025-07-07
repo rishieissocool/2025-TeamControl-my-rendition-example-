@@ -20,6 +20,8 @@ class grSimVision(Vision):
 
 class grSimSender(Sender):
     def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
+        # if this socket is not working, please open the client window, connect and try again
+        # to do so : ./bin/client (this should pop up a small window)
         self.destination = (ip,port)
         super().__init__(ip=ip,port=port)
 
@@ -29,10 +31,8 @@ class grSimSender(Sender):
     def send_command(self, bytes_command: bytes) -> None:
         """send_command
         
-        sending Command over grsim command sender port
+        sending encoded Command over grsim command sender port
         
-        can parse in either GRSIM Command or RobotCommand message type
-
         Args:
             isYellow (bool): controlling team is yellow
             Command (grSimRobotCommand|Command|bytes): either a RobotCommand or grSimRobotCommand Message Class
