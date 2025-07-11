@@ -9,39 +9,41 @@ class STATE(Enum):
     def update_stage(self,stage):
         print(stage)
         match stage:
-            case Stage.NORMAL_FIRST_HALF_PRE :
-                return prepare_for_game
-            case Stage.NORMAL_SECOND_HALF_PRE :
-                return prepare_for_game
-            case Stage.NORMAL_FIRST_HALF :
-                return run
+            # prepare for game
+            case Stage.NORMAL_FIRST_HALF_PRE | Stage.EXTRA_FIRST_HALF_PRE :
+                return 
+            case Stage.NORMAL_SECOND_HALF_PRE | Stage.EXTRA_SECOND_HALF_PRE:
+                return 
+            
+            # first, second half
+            case Stage.NORMAL_FIRST_HALF | Stage.EXTRA_FIRST_HALF :
+                return 
+            case Stage.NORMAL_SECOND_HALF | Stage.EXTRA_SECOND_HALF :
+                return 
+            
+            # half time breaks
             case Stage.NORMAL_HALF_TIME :
-                return timeout
-            case Stage.NORMAL_SECOND_HALF :
                 return 
             case Stage.EXTRA_TIME_BREAK :
                 return 
-            case Stage.EXTRA_FIRST_HALF_PRE :
-                return 
-            case Stage.EXTRA_FIRST_HALF :
-                return 
             case Stage.EXTRA_HALF_TIME :
-                return 
-            case Stage.EXTRA_SECOND_HALF_PRE :
-                return 
-            case Stage.EXTRA_SECOND_HALF :
-                return 
+                return
+            
+            # Penalty 
             case  Stage.PENALTY_SHOOTOUT_BREAK :
-                return timeout
+                return 
             case  Stage.PENALTY_SHOOTOUT :
-                return penalty_shoot
+                return 
+            
+            # post game
             case Stage.POST_GAME :
-                return post_game
+                return 
 
     
     def update_state(self,command):
         print(command) 
         match command:
+            # basic
             case Command.HALT:
                 return STATE.HALTED
             case Command.STOP:
@@ -49,30 +51,31 @@ class STATE(Enum):
             case Command.NORMAL_START | Command.FORCE_START:
                 return STATE.RUNNING
             
+            #timeout
             case Command.TIMEOUT_BLUE:
-                return 
+                return STATE.TIMEOUT
             case Command.TIMEOUT_YELLOW:
-                return 
+                return STATE.TIMEOUT
+            
+            case Command.PREPARE_KICKOFF_BLUE:
+                return
+            case Command.PREPARE_KICKOFF_YELLOW:
+                return
+            
+            case Command.DIRECT_FREE_BLUE | Command.INDIRECT_FREE_BLUE:
+                return
+            case Command.DIRECT_FREE_YELLOW | Command.INDIRECT_FREE_YELLOW:
+                return
+
+            # Ball placements
             case Command.BALL_PLACEMENT_BLUE:
                 return
-            case Command.PREPARE_KICKOFF_BLUE:
+            case Command.BALL_PLACEMENT_YELLOW:
+                return
+            
+            # Penalty
+            case Command.PREPARE_PENALTY_YELLOW:
                 return
             case Command.PREPARE_PENALTY_BLUE:
                 return
             
-            case Command.DIRECT_FREE_BLUE:
-                return
-            case Command.INDIRECT_FREE_BLUE:
-                return
-            
-            case Command.BALL_PLACEMENT_YELLOW:
-                return
-            case Command.PREPARE_KICKOFF_YELLOW:
-                return
-            case Command.PREPARE_PENALTY_YELLOW:
-                return
-            
-            case Command.DIRECT_FREE_YELLOW:
-                return
-            case Command.INDIRECT_FREE_YELLOW:
-                return
