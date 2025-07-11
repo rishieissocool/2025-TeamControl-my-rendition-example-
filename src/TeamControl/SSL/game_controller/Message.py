@@ -111,7 +111,6 @@ class RefereeMessage():
     
     @classmethod
     def from_proto(cls,referee):
-        
         packet_timestamp = int(referee.packet_timestamp)
         stage = Stage(referee.stage)
         command = Command(referee.command)

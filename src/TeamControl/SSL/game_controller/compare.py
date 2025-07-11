@@ -14,7 +14,7 @@ class GameControllerManager:
             self.update(new_ref)
     
     def listen(self):
-        data = self.recv.listen()
+        data,_ = self.recv.listen()
         ref_msg = self.convert(data)
         return ref_msg
      
@@ -43,10 +43,12 @@ class GameControllerManager:
                 self.output_q.put(packet)
             
             else: #when no team color / side change    
-                if current.yellow.max_allowed_bots < ref_msg.yellow.max_allowed_bots:
+                if current.yellow.max_allowed_bots != ref_msg.yellow.max_allowed_bots:
+                    print(f"YELLOW ROBOTS ALLOWED : {ref_msg.yellow.max_allowed_bots} ")
                     self.output_q.put(ref_msg.yellow) 
 
-                if current.blue.max_allowed_bots < ref_msg.blue.max_allowed_bots:
+                if current.blue.max_allowed_bots != ref_msg.blue.max_allowed_bots:
+                    print(f"BLUE ROBOTS ALLOWED : {ref_msg.blue.max_allowed_bots} ")
                     self.output_q.put(ref_msg.blue)
             self.ref_msg = ref_msg
         else:

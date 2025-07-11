@@ -4,10 +4,9 @@ from TeamControl.world.transform_cords import world2robot
 from TeamControl.robot.Movement import RobotMovement
 # from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 # from TeamControl.robot.robot_commands import RobotCommands
-from TeamControl.network import grSimSender,Sender
+from TeamControl.network import Sender
 from TeamControl.network.robotCommand import RobotCommand
 # from TeamControl.robot_behaviour import 
-import pygame
 import time
 
 class RCProcess():
@@ -20,9 +19,9 @@ class RCProcess():
         
         # pygame.init()
         # screen = pygame.display.set_mode((400, 300))
-        self.loop()
         
-    def loop(self):
+        
+    def run(self):
         self.robot_id =2
         robot_pos = None
         last_update = time.time()
@@ -63,11 +62,12 @@ class RCProcess():
                 # w = RobotMovement.turn_to_target(pos_relative_to_robot,speed=2)
                 # print(robot_pos)
 
-    
         
 
 
     def run_remote_control(self):
+        import pygame
+        
         speed = 1
 
         vx,vy,vw,k,d = 0,0,0,0,0
@@ -113,3 +113,8 @@ class RCProcess():
             d = 1
         
         return RobotCommand(robot_id=self.robot_id,vx=vx,vy=vy,w=vw,kick=k,dribble=d)
+    
+    
+def run_rc_process(wm:WorldModel):
+    dummy = RCProcess(wm=wm)
+    dummy.run()
