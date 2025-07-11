@@ -4,7 +4,7 @@ from TeamControl.SSL.game_controller.compare import game_controller_worker
 from TeamControl.world.model_manager import WorldModelManager
 from TeamControl.world.model_runner import wm_runner
 from TeamControl.utils.dummy_process import DummyReader
-from TeamControl.utils.remote_control_process import RCProcess
+from TeamControl.utils.remote_control_process import RCProcess,run_rc_process
 
 # in multiprocessing this can only be a simple process
 
@@ -22,7 +22,7 @@ def main():
     gc_wkr = Process(target=game_controller_worker, args=(gc_q,))
     
     wmr = Process(target=wm_runner, args=(wm,vision_q,gc_q,))
-    # some_other_process = Process(target=RCProcess,args=(wm,))
+    some_other_process = Process(target=run_rc_process,args=(wm,))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))
     vision_wkr.start()
     gc_wkr.start()
