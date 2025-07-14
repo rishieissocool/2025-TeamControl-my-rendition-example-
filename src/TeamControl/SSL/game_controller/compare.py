@@ -1,5 +1,5 @@
 from TeamControl.SSL.game_controller.Message import *
-from TeamControl.network.gameControllerSockets import GameControl
+from TeamControl.network.ssl_sockets import GameControl
 from multiprocessing import Queue
 
 class GameControllerManager:
