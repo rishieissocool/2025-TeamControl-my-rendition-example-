@@ -4,8 +4,6 @@ import datetime
 import time
 
 
-log = logging.getLogger()
-log.setLevel(logging.NOTSET)
 
 
 class RobotCommand():
@@ -46,8 +44,7 @@ class RobotCommand():
         """
         return f'''
     Robot Command: 
-    {self.time_set=} , {self.time_origin}
-    {self.robot_id=}
+    {self.time_set=} , {self.time_origin=} : {self.robot_id=}
     Velocity : {self.vx=} , {self.vy=}, {self.w=}
     Kick? : {self.kick=}
     Dribble? : {self.dribble=}
