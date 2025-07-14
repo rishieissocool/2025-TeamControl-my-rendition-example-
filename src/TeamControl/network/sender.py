@@ -43,11 +43,11 @@ class Sender(BaseSocket):
         addr = tuple(ip,port) if isinstance(ip,str) and isinstance(port,int) else self.destination
         if not isinstance(msg,bytes):
             try:
-                encoded_msg = msg.encode()
+                msg = msg.encode()
             except Exception as e:
                 raise(e, "Error with encoding")
         # print(self.destination)
-        self.sock.sendto(encoded_msg,addr)
+        self.sock.sendto(msg,addr)
         
         # print(f"sending {msg} to {addr}")
 
