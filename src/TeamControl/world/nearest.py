@@ -74,7 +74,7 @@ class Nearest():
 
 
 if __name__ == "__main__":
-    from TeamControl.network.visionSockets import Vision
+    from TeamControl.network.ssl_sockets import Vision
     from TeamControl.world.model import WorldModel
     world_model:WorldModel = WorldModel(isYellow= True, isPositive=True)
     recv = Vision(world_model)

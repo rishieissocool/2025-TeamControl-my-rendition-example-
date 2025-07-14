@@ -1,14 +1,18 @@
 from TeamControl.SSL.vision.frame import Frame
 from TeamControl.SSL.vision.field import GeometryData
-from TeamControl.network.visionSockets import Vision,VisionTracker
+from TeamControl.network.ssl_sockets import Vision,VisionTracker
+from TeamControl.utils.Logger import LogSaver
+
 import numpy as np
 import numpy.typing as npt
 from multiprocessing import Queue, Process
 
+
 class VisionProcess():
     GRSIM_CAMERAS = 4
     REAL_LIFE_CAMERAS = 1
-    def __init__(self,output_q:Queue,use_grSim:bool=True,vision_port=10006):
+    def __init__(self,output_q:Queue,logs,use_grSim:bool=True,vision_port=10006):
+        self.logs:LogSaver = logs
         self.use_grSim = use_grSim
         self.output_q = output_q
         self.recv = Vision(port=vision_port)    
@@ -31,10 +35,12 @@ class VisionProcess():
             if new_vision_data.HasField("detection"):
                 new_detection_data = new_vision_data.detection
                 if self.frame_number < new_detection_data.frame_number:
+                    self.logs.info(f"{new_detection_data.frame_number=}")
                     # generates new frame
                     self.frame = Frame.from_proto(new_detection_data,self.cameras)
                     self.frame_number = self.frame.frame_number
-                if self.frame_number == new_detection_data.frame_number:
+                elif self.frame_number == new_detection_data.frame_number:
+                    self.logs.info(f"updating last one, {new_detection_data.camera_id}")
                     self.frame.update(new_detection_data)
                     if self.frame.is_completed:
                         self.send(self.frame)
@@ -47,10 +53,11 @@ class VisionProcess():
         if not self.output_q.full():
             self.output_q.put(data)
         else:
-            raise BufferError ("QUEUE IS FULL")
+            self.logs.warning("QUEUE IS FULL")
 
 def vision_worker(output_q:Queue,use_grSim:bool=True,vision_port=10006):
-    v = VisionProcess(output_q,use_grSim,vision_port)
+    logs = LogSaver()
+    v = VisionProcess(output_q,logs,use_grSim,vision_port)
     v.run()
 
 if __name__ == "__main__" :
@@ -58,7 +65,7 @@ if __name__ == "__main__" :
         while True:
             if not input_q.empty():
                 item = input_q.get_nowait()
-                print(type(item))
+                # print(type(item))
             
     output_q = Queue()
     vision = Process(target=vision_worker,args=(output_q,))

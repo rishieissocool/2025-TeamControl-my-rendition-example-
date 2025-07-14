@@ -1,9 +1,60 @@
-# from TeamControl.SSL.proto2 import grSim_Commands_pb2,grSim_Packet_pb2
-# from TeamControl.SSL.proto2 import grSim_Replacement_pb2,ssl_simulation_control_pb2,ssl_simulation_robot_feedback_pb2,ssl_simulation_robot_control_pb2
-
+from TeamControl.SSL.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2
+from TeamControl.network.receiver import Multicast
 from TeamControl.network.sender import Sender
 
-from TeamControl.network.visionSockets import Vision 
+
+# Classes of Vision Wolrd Receivers
+class Vision(Multicast):
+    """ Vision SSL multicast receiver
+        world vision SSL  mulitcast listener
+    Args:
+        Multicast (Class): base Class
+    """
+    def __init__(self,port : int=10006) -> None:
+        """
+        Initialising Multicast Vision SSL Socket
+
+        Args:
+            world_model (wm): current world model
+            port (int, optional): Port for Vision World multicast. Defaults to 10005. change accordingly if needed
+        """
+        decoder :object = ssl_vision_wrapper_pb2.SSL_WrapperPacket()
+        group : str = "224.5.23.2"
+        buffer_size : int = 6000
+        super().__init__(port=port,group=group,decoder=decoder,buffer_size=buffer_size)
+   
+    def listen(self) -> bool:
+        vision_data,addr = super().listen()
+        return vision_data
+            
+class VisionTracker(Multicast):
+    """
+    For Tracked Packets
+
+    Args:
+        Multicast: the recv socket
+    """
+    def __init__(self, port, group, decoder, buffer_size = 6000, timeout = 1):
+        port = 1234
+        decoder = ssl_vision_detection_tracked_pb2.TrackerWrapperPacket()
+        group : str = "224.5.23.2"
+        buffer_size : int = 6000
+        super().__init__(port, group, decoder, buffer_size, timeout)
+
+
+class GameControl(Multicast):
+    def __init__(self) -> None:
+        group : str = '224.5.23.1'
+        port : int = 10003
+        decoder = ssl_gc_referee_message_pb2.Referee()
+        buffer_size : int = 6000
+        timeout : float = 5.0
+        super().__init__(port=port, group=group, decoder=decoder, buffer_size=buffer_size,timeout=timeout)
+        
+    def listen(self) -> ssl_gc_referee_message_pb2.Referee:
+        # see Multicast listen(), decode()
+        return super().listen()
+    
 
 class grSimVision(Vision):
     def __init__(self, port : int=10020) -> None:
@@ -98,3 +149,9 @@ class grSimSender(Sender):
 #     def send(self, packet) -> None:
 #         return super().send(packet)
   
+
+
+# if __name__ == "__main__":
+#     recv = GameControl()
+#     data,addr = recv.listen()
+#     print(f"{data} \n received from {addr}.")
