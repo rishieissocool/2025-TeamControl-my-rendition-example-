@@ -39,7 +39,7 @@ class VisionProcess():
                     # generates new frame
                     self.frame = Frame.from_proto(new_detection_data,self.cameras)
                     self.frame_number = self.frame.frame_number
-                elif self.frame_number == new_detection_data.frame_number:
+                if self.frame_number == new_detection_data.frame_number:
                     self.logs.info(f"updating last one, {new_detection_data.camera_id}")
                     self.frame.update(new_detection_data)
                     if self.frame.is_completed:
