@@ -36,6 +36,8 @@ def predict_trajectory(history: list, num_samples, isPostive:bool, feild_size ):
     #print(ball_pos)
     ball_pos_x = []
     ball_pos_y = []
+    if len(history) <= 0:
+        return
     for ball_pos in history:
         ball_pos_x.append(ball_pos[0])
         ball_pos_y.append(ball_pos[1])
