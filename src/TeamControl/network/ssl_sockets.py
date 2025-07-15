@@ -1,6 +1,7 @@
 from TeamControl.SSL.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2
 from TeamControl.network.receiver import Multicast
 from TeamControl.network.sender import Sender
+from TeamControl.SSL.grSim.commands import GrSimRobotCommands
 
 
 # Classes of Vision Wolrd Receivers
@@ -70,29 +71,33 @@ class grSimVision(Vision):
 ### Simulation Control ### 
 
 class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
-        self.destination = (ip,port)
+    def __init__(self, ip: str = "127.0.0.1", port : int = 20010,is_yellow = True) -> None: #please check and verify this port
+        self.is_yellow = is_yellow 
+        self.GSC = GrSimRobotCommands(isYellow=is_yellow)
         super().__init__(ip=ip,port=port)
 
-    def send(**kwargs) -> None:
-        raise NotImplementedError("please use send_command()")
+    def send(self,msg) -> None:
+        """
+        send GrSimRobotCommands or bytes to grSim
+        """
+        if not isinstance(msg,bytes):
+            try:
+                msg = msg.pack()
+            except Exception as e:
+                raise(e, "Error with GRSIM message packing")
+        self.sock.sendto(msg,self.destination)
     
-    def send_command(self, bytes_command: bytes) -> None:
+    def send_command(self, robot_command,us=True) -> None:
         """send_command
         
         sending Command over grsim command sender port
         
-        can parse in either GRSIM Command or RobotCommand message type
-
-        Args:
-            isYellow (bool): controlling team is yellow
-            Command (grSimRobotCommand|Command|bytes): either a RobotCommand or grSimRobotCommand Message Class
+        converting RobotCommands into grSim commands
         """
-        # if not bytes throw error
-        if not isinstance(bytes,bytes_command):
-            raise TypeError("You need to pack it first")
-        # sends packet to grsim
-        self.sock.sendto(bytes_command,self.destination)
+        packet:GrSimRobotCommands = self.GSC.convert(robot_commands=robot_command,us=us)
+        encoded_msg = self.GSC.pack(packet)
+        self.send(encoded_msg)
+        
 
 
 
