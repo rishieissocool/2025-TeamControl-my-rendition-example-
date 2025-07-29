@@ -1,27 +1,23 @@
-from TeamControl.SSL.grSim.grSimSockets import grSimSender
-from TeamControl.SSL.grSim.commands import GrSimRobotCommands
+
 import pygame
+import time
 
 from TeamControl.network import Sender
 from TeamControl.network.robotCommand import RobotCommand
 
 class Remote_robot():
-    def __init__(self, use_sim:bool=False, robot_id=2, isYellow=True):
+    def __init__(self, robot_id=2, isYellow=True):
         self.robot_id = robot_id
         self.us_yellow = isYellow
-        if use_sim is True:
-            device_ip = "127.0.0.1"
-            DEFAULT = 20010
-            self.sender = grSimSender(isYellow=isYellow,ip=device_ip,port=DEFAULT)
-        elif use_sim is False:
-            robot_ip = "192.168.70.171"
-            self.sender = Sender(ip=robot_ip,port=50514)
+
+
+        robot_ip = "172.20.10.2"
+        self.sender = Sender(ip=robot_ip,port=50514)
         
 
 
     def run_remote_control(self):
-        speed = 1
-        speed = 1
+        speed = 50
         vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
         pygame.init()
@@ -72,10 +68,11 @@ class Remote_robot():
             
                                             
             Command = RobotCommand(robot_id=self.robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
-            if Command.vx == 0 and Command.vy == 0 and Command.w ==0:
-                continue # skips the command send
-            
+            # if Command.vx == 0 and Command.vy == 0 and Command.w ==0 :
+            #     continue # skips the command send
+            time.sleep(0.1)
             self.sender.send(Command)
+            print("Command sent : ", Command)
 
 
 if __name__ == "__main__":
