@@ -70,9 +70,11 @@ class Remote_robot():
             Command = RobotCommand(robot_id=self.robot_id, vx=vx,vy=vy,w=vw,kick=k,dribble=d)
             # if Command.vx == 0 and Command.vy == 0 and Command.w ==0 :
             #     continue # skips the command send
-            time.sleep(0.1)
             self.sender.send(Command)
             print("Command sent : ", Command)
+            
+            time.sleep(0.05)
+
 
 
 if __name__ == "__main__":
