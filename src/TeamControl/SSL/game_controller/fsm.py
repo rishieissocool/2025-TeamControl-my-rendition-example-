@@ -5,14 +5,16 @@ from TeamControl.network.ssl_sockets import GameControl
 from multiprocessing import Queue
 from enum import Enum,auto
 
-class PacketType(Enum):
+# these are Enums defined by us
+
+class PacketType(Enum): # for message sending onto gc_queue
     REMOVE_ROBOTS = auto()
     ADD_ROBOTS = auto()
     NEW_STATE = auto()
     SWITCH_TEAM = auto()
     BLF_LOCATION = auto()
 
-class State(Enum) :
+class GameState(Enum) :
     PREPARE_FOR_GAME = auto()
     HALF_TIME = auto()
     TIMEOUT = auto()
@@ -28,9 +30,9 @@ class State(Enum) :
     FREE_KICK = auto()
     BALL_PLACEMENT = auto()
     
-command_able_state = {State.GAME_IS_RUNNING,
-                      State.PENALTY_SHOOTOUT_BREAK,
-                      State.PENALTY_SHOOTOUT
+command_able_state = {GameState.GAME_IS_RUNNING,
+                      GameState.PENALTY_SHOOTOUT_BREAK,
+                      GameState.PENALTY_SHOOTOUT
                       }
     
 class GCfsm ():
@@ -60,9 +62,14 @@ class GCfsm ():
             return 
         # otherwise :
         self.last_ref_msg = new_ref_msg
+        # check team color if this changes, basically resets everything
         self.check_color_side(new_ref_msg)
+        # check for card and foul changes, add / remove robot from field
         self.check_cards(new_ref_msg)
+        # check for state changes, forward new decided state (see GameState Enum)
         self.check_state(new_ref_msg)
+        # check for game event : ball placement location (for now)
+        self.check_game_events(new_ref_msg)
         
     
             
@@ -109,9 +116,7 @@ class GCfsm ():
         elif num == 0: 
             return
         self.robots_away = robots_away
-        self.output_q.put(packet)
-        
-        
+        self.output_q.put_nowait(packet)
         
         
     def check_color_side(self,new_ref_msg:RefereeMessage):
@@ -135,7 +140,7 @@ class GCfsm ():
         
         if self.us_yellow != us_yellow or self.us_positive != us_positive:
             packet = (PacketType.SWITCH_TEAM, {"YELLOW" : self.us_yellow,"POSITIVE": self.us_positive})
-            self.output_q.put(packet)
+            self.output_q.put_nowait(packet)
             
         elif self.us_yellow is None:
             # warning log saying this is none
@@ -153,11 +158,10 @@ class GCfsm ():
             state_has_changed = True
             self.current_stage = new_ref_msg.stage
         
-       
         if state_has_changed is True:
             new_state = self.update_state()
             packet = (PacketType.NEW_STATE, new_state)
-            self.output_q.put(packet)
+            self.output_q.put_nowait(packet)
 
     def check_game_events(self,new_ref_msg:RefereeMessage):
         game_events = new_ref_msg.game_events
@@ -173,7 +177,7 @@ class GCfsm ():
         location = event_data.location.vector
         if location is not None and self.last_blf_location != location:
                 packet = (PacketType.BLF_LOCATION, location)
-                self.output_q.put(packet)
+                self.output_q.put_nowait(packet)
                 
     def update_state(self):
         stage_state = self._state_from_stage(self.current_stage)
@@ -188,29 +192,29 @@ class GCfsm ():
         if final_state != self.current_state:
             # forward new state update
             packet = (PacketType.NEW_STATE, final_state)
-            self.output_q.put(packet)
+            self.output_q.put_nowait(packet)
             # update new state in FSM 
             self.current_state = final_state
     
     def _state_from_stage(self):
         match self.current_stage:
             case Stage.NORMAL_FIRST_HALF_PRE  | Stage.NORMAL_SECOND_HALF_PRE | Stage.EXTRA_FIRST_HALF_PRE | Stage.EXTRA_SECOND_HALF_PRE:
-                state = State.PREPARE_FOR_GAME
+                state = GameState.PREPARE_FOR_GAME
                 
             case Stage.NORMAL_FIRST_HALF | Stage.NORMAL_SECOND_HALF | Stage.EXTRA_FIRST_HALF | Stage.EXTRA_HALF_TIME:
-                state = State.GAME_IS_RUNNING
+                state = GameState.GAME_IS_RUNNING
                 
             case Stage.EXTRA_HALF_TIME | Stage.NORMAL_HALF_TIME:
-                state = State.HALF_TIME
+                state = GameState.HALF_TIME
         
             case Stage.PENALTY_SHOOTOUT : 
-                state = State.PENALTY_SHOOTOUT
+                state = GameState.PENALTY_SHOOTOUT
                 
             case Stage.PENALTY_SHOOTOUT_BREAK : 
-                state = State.PENALTY_SHOOTOUT_BREAK
+                state = GameState.PENALTY_SHOOTOUT_BREAK
             
             case Stage.POST_GAME:
-                state = State.POST_GAME
+                state = GameState.POST_GAME
     
         return state
     
@@ -218,68 +222,68 @@ class GCfsm ():
         ### COMMAND ###
         match self.current_command: 
             case Command.HALT:
-                state = State.GAME_IS_HALTED 
+                state = GameState.GAME_IS_HALTED 
             case Command.STOP:
-                state = State.GAME_IS_STOPPED
+                state = GameState.GAME_IS_STOPPED
             case Command.NORMAL_START | Command.FORCE_START:
-                state = State.GAME_IS_RUNNING
+                state = GameState.GAME_IS_RUNNING
             
             ## YELLOW ##
             case Command.DIRECT_FREE_YELLOW | Command.INDIRECT_FREE_YELLOW:
                 if self.us_yellow == True:
-                    state = State.FREE_KICK
+                    state = GameState.FREE_KICK
                 else:
-                    state = State.GAME_IS_HALTED
+                    state = GameState.GAME_IS_HALTED
             case Command.PREPARE_KICKOFF_YELLOW:
                 if self.us_yellow == True:
-                    state = State.PREPARE_KICKOFF
+                    state = GameState.PREPARE_KICKOFF
                 else:
-                    state = State.GAME_IS_HALTED
+                    state = GameState.GAME_IS_HALTED
             case Command.BALL_PLACEMENT_YELLOW:
                 if self.us_yellow == True:
-                    state = State.BALL_PLACEMENT
+                    state = GameState.BALL_PLACEMENT
                 else:
-                    state = State.GAME_IS_HALTED
+                    state = GameState.GAME_IS_HALTED
                     
             case Command.PREPARE_PENALTY_YELLOW: 
                 if self.us_yellow == True:
-                    state = State.PREPARE_OUR_PENALTY
+                    state = GameState.PREPARE_OUR_PENALTY
                 else:
-                    state = State.PREPARE_THEIR_PENALTY
+                    state = GameState.PREPARE_THEIR_PENALTY
             case Command.TIMEOUT_YELLOW:
                 if self.us_yellow == True:
-                    state = State.TIMEOUT
+                    state = GameState.TIMEOUT
                 else: 
-                    state = State.PREPARE_FOR_GAME
+                    state = GameState.PREPARE_FOR_GAME
             
             ## BLUE ## 
             case Command.DIRECT_FREE_BLUE | Command.INDIRECT_FREE_BLUE:
                 if self.us_yellow == False:
-                    state = State.FREE_KICK
+                    state = GameState.FREE_KICK
                 else:
-                    state = State.GAME_IS_HALTED
+                    state = GameState.GAME_IS_HALTED
             case Command.PREPARE_KICKOFF_BLUE:
                 if self.us_yellow == False:
-                    state = State.PREPARE_KICKOFF
+                    state = GameState.PREPARE_KICKOFF
                 else:
-                    state = State.GAME_IS_HALTED
+                    state = GameState.GAME_IS_HALTED
             case Command.BALL_PLACEMENT_BLUE:
                 if self.us_yellow == False:
-                    state = State.BALL_PLACEMENT
+                    state = GameState.BALL_PLACEMENT
                 else:
-                    state = State.GAME_IS_HALTED
+                    state = GameState.GAME_IS_HALTED
                     
             case Command.PREPARE_PENALTY_BLUE: 
                 if self.us_yellow == False:
-                    state = State.PREPARE_OUR_PENALTY
+                    state = GameState.PREPARE_OUR_PENALTY
                 else:
-                    state = State.PREPARE_THEIR_PENALTY
+                    state = GameState.PREPARE_THEIR_PENALTY
                     
             case Command.TIMEOUT_BLUE:
                 if self.us_yellow == False:
-                    state = State.TIMEOUT
+                    state = GameState.TIMEOUT
                 else: 
-                    state = State.PREPARE_FOR_GAME
+                    state = GameState.PREPARE_FOR_GAME
             
         return state
 
@@ -290,7 +294,6 @@ def run_gcfsm(output_q,us_yellow=None,us_positive=None): #Process for multiproce
     gcl = GameControl()
     while True: 
         raw_ref_msg = gcl.listen() # listens overnetwork
-        new_ref_msg = RefereeMessage(raw_ref_msg) # format into class
+        new_ref_msg = RefereeMessage.from_proto(raw_ref_msg) # format into class
         fsm.update(new_ref_msg) # updates state machine
-    
     
