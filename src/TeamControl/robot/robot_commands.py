@@ -1,3 +1,13 @@
+""" New robot command 
+
+Summary : this utilises struct object to define a specific buffer size
+* struct in python is different from other programming language.
+
+
+Using the SIZE (=buffer size) will be able to be effectively read and decode the code among communication.
+"""
+
+
 import struct
 import time
 
