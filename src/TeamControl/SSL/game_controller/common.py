@@ -4,6 +4,8 @@ The following is obtained from gc_referee_message.proto
 """
 from enum import Enum, IntEnum
 
+import numpy as np
+
 class Command(Enum):
     HALT = 0
     STOP = 1
@@ -107,7 +109,8 @@ class Point():
         # required
        self.x = float(point.x)
        self.y = float(point.y)
-       self.vector = [self.x, self.y]
+       self.vector = np.array([self.x, self.y])
+       
 
 def has_proto_field(obj, field_name:str):
     try:
