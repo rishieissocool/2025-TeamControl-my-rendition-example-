@@ -29,8 +29,8 @@ class WorldModel:
     """
     def __init__(self,update_interval:int=5,history:int=60, use_sim:bool=True,us_yellow=True,us_positive=True):
         mgr = Manager()
-        self.us_yellow = us_yellow
-        self.us_positive = us_positive
+        self._us_yellow = us_yellow
+        self._us_positive = us_positive
         self.count = 0
         self.update_interval:int = update_interval
         self.use_sim:bool = use_sim 
@@ -96,8 +96,8 @@ class WorldModel:
         self.game_state = state
         
     def update_team(self,us_yellow:bool,us_positive:bool):
-        self.us_yellow = us_yellow
-        self.us_positive = us_positive
+        self._us_yellow = us_yellow
+        self._us_positive = us_positive
     
     def update_ball_left_field_location(self,location):
         self.blf_location = location
@@ -108,11 +108,11 @@ class WorldModel:
     def get_current_state(self):
         return self.game_state
     
-    def are_we_yellow(self):
-        return self.us_yellow 
+    def us_yellow(self):
+        return self._us_yellow 
     
-    def are_we_positive(self):
-        return self.us_positive
+    def us_positive(self):
+        return self._us_positive
     
     #vision
     def get_latest_frame(self):
@@ -132,7 +132,7 @@ class WorldModel:
     def get_our_robots(self, us=True, robot_id=None):
         frame = self.frame_list.latest
         # use is_yellow value as us_yellow if us== True, otherwise, the opposite i.e. not(us_yellow)
-        is_yellow = self.us_yellow if us else not(self.us_yellow)
+        is_yellow = self._us_yellow if us else not(self._us_yellow)
         # get list of robots base on team color
         robots = frame.robots_yellow if is_yellow else frame.robots_blue
         # returns a robot if a valid id is given, otherwise, returns list of robot
