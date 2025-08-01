@@ -18,8 +18,9 @@ def wm_runner(wm:WorldModel,vision_q:Queue,gc_q:Queue,interval:int=5):
                     logs.warning(f"Recv unexpected item : {item}")
                     
             if not gc_q.empty():
-                new_info = gc_q.get_nowait()
-                wm.update_game_data(new_info)
+                packet = gc_q.get_nowait()
+                wm.update_gc_data(packet)
+                
             
         except Exception as e:
             logs.error(f"Unexpected Exception caught, {e}")
