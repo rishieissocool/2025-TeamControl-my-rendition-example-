@@ -8,8 +8,7 @@ from enum import Enum,auto
 # these are Enums defined by us
 
 class PacketType(Enum): # for message sending onto gc_queue
-    REMOVE_ROBOTS = auto()
-    ADD_ROBOTS = auto()
+    ROBOTS_ACTIVE = auto()
     NEW_STATE = auto()
     SWITCH_TEAM = auto()
     BLF_LOCATION = auto()
@@ -50,7 +49,8 @@ class GCfsm ():
         self.yellow_cards = 0
         self.yellow_card_active:int = 0
         self.red_cards = 0
-        self.robots_away = 0
+        self.robots_active = 0
+        self.max_robots = 6 #small size league team member
 
         # last known ball_left_field_location
         self.last_blf_location = None
@@ -79,44 +79,56 @@ class GCfsm ():
         if self.us_yellow is None or new_ref_msg.yellow is None or new_ref_msg.blue is None:
             return # no color identified = > do nothing
         
+        # check yellow cards in our team
         yellow_cards = new_ref_msg.yellow.yellow_cards if self.us_yellow == True else new_ref_msg.blue.yellow_cards
         
         if self.yellow_cards != yellow_cards :  # number not equal
             print(f"yellow card number changed : {yellow_cards}")
             self.yellow_cards = yellow_cards
         
+        # check how many are still active
         yellow_card_active:int = len(new_ref_msg.yellow.yellow_card_times) if self.us_yellow==True else len(new_ref_msg.blue.yellow_card_times)
-
-        if yellow_card_active != self.yellow_card_active:
+        
+        if yellow_card_active != self.yellow_card_active: # if this has changes (more / less)
             print(f"yellow card times changed : {yellow_card_active}")
             self.yellow_card_active = yellow_card_active
+            # we need to update our active robot numbers
             update_numbers = True
         
+        # check red cards in our Team
         red_cards = new_ref_msg.yellow.red_cards if self.us_yellow == True else new_ref_msg.blue.red_cards
+        # check if there's number changes from the record
         if self.red_cards != red_cards : 
             print(f"red card number changed : {red_cards}")
             self.red_cards = red_cards
+            # update active robot *red card = permanently remove
             update_numbers = True
         
+        # checking fouls in our team
         fouls = new_ref_msg.yellow.foul_counter if self.us_yellow == True else new_ref_msg.blue.foul_counter
         if self.fouls != fouls:
             print(f"Foul Counter has changed : {fouls}")
-            self.fouls = fouls
+            self.fouls = fouls # 3 fouls = 1 yellow card 
             
         if update_numbers is True : 
             self.update_robot_numbers()
             
     def update_robot_numbers(self):
+        # robots away = how many we need to take out 
         robots_away = self.red_cards + self.yellow_card_active
-        num =  robots_away - self.robots_away
-        if num > 0:
-            packet = (PacketType.REMOVE_ROBOTS,num)
-        elif num < 0:
-            packet = (PacketType.ADD_ROBOTS,abs(num))
-        elif num == 0: 
+        # check how many robots should be active now
+        robots_active =  self.max_robots - robots_away 
+        
+        if robots_active <= 0:
+            robots_active = 0
+        # if this is different from our record
+        if robots_active == self.robots_active:
             return
-        self.robots_away = robots_away
-        self.output_q.put_nowait(packet)
+        else:
+            packet = (PacketType.ROBOTS_ACTIVE,robots_active)
+            self.output_q.put_nowait(packet)
+            self.robots_active = robots_active
+
         
         
     def check_color_side(self,new_ref_msg:RefereeMessage):
