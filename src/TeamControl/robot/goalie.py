@@ -24,7 +24,8 @@ class Goalie():
         self.version = 0
         self.field_x = 9000 
         self.field_y = 6000
-        self.goal_x = self.field_x/2-200 if self.is_positive else -(self.field_x/2-200)
+        self.goal_depth = 200
+        self.neutral_x_pos = self.field_x/2-self.goal_depth if self.is_positive else -(self.field_x/2-self.goal_depth)
 
     def test(self):
         pass
@@ -48,7 +49,7 @@ class Goalie():
                 target_pos1 = world2robot(robot_position=goalie_pos,target_position=goalie_points[0])
             else: #reset position
                 # target_pos1 = world2robot(robot_position=goalie_pos,target_position= (2200, 0))
-                target_pos1 = world2robot(robot_position=goalie_pos,target_position= (self.goal_x, 0))
+                target_pos1 = world2robot(robot_position=goalie_pos,target_position= (self.neutral_x_pos, 0))
                 
             print("Relative Target : ", target_pos1)
             # target_pos = world2robot(robot_position=robot_pos,target_position=target)
