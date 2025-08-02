@@ -39,7 +39,7 @@ class WorldModel:
         self.field:FieldSize = None
         self._version = mgr.Value('i', 0)  # int counter
         self.robot_active = 6 # robots active
-        self.game_state = GameState.GAME_IS_HALTED
+        self.game_state = GameState.HALTED
         self.blf_location = None
         # self.logger = logSaver()
     
@@ -55,9 +55,6 @@ class WorldModel:
     #             self.ref_data.yellow = game_data[0]
     #             self.ref_data.blue = game_data[1]
     
-    def update_state(self,new_state):
-        # when we have a new incoming state, it updates this
-        self._state = new_state 
 
 
    
@@ -92,8 +89,10 @@ class WorldModel:
     def update_robots_active(self,new_active) : 
         self.robot_active = new_active
     
-    def update_state(self,state):
-        self.game_state = state
+    def update_state(self,new_state):
+        # when we have a new incoming state, it updates this
+        self._state = new_state 
+
         
     def update_team(self,us_yellow:bool,us_positive:bool):
         self._us_yellow = us_yellow
@@ -106,7 +105,7 @@ class WorldModel:
         return self.blf_location
     
     def get_current_state(self):
-        return self.game_state
+        return self._state
     
     def us_yellow(self):
         return self._us_yellow 
