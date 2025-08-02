@@ -22,7 +22,10 @@ class Goalie():
         self.ball_hist =list()
         self.planner =VoronoiPlanner(xsize=9000,ysize=6000)
         self.version = 0
-    
+        self.field_x = 9000 
+        self.field_y = 6000
+        self.goal_x = 9000/2-200
+
     def test(self):
         pass
     
@@ -32,19 +35,20 @@ class Goalie():
             try:
                 self.wm.get_yellow_robots(isYellow=self.is_yellow,robot_id=self.id)
                 self.ball_hist = self.update_ball_history(5)
-                print("ball history has been updated")
+                # print("ball history has been updated")
             except AttributeError:
                 continue
             
-            goalie_points = predict_trajectory(self.ball_hist, 3, isPostive=self.is_positive, feild_size=(9000, 6000))
+            goalie_points = predict_trajectory(self.ball_hist, 3, isPostive=self.is_positive, feild_size=(self.field_x,self.field_y))
             # goalie_points = predict_trajectory(self.ball_hist, 3, isPostive=self.is_positive, feild_size=(4800, 2700))
         
             goalie_pos = self.wm.get_yellow_robots(isYellow=self.is_yellow,robot_id=self.id).position
             
             if goalie_points[1] == True:              
                 target_pos1 = world2robot(robot_position=goalie_pos,target_position=goalie_points[0])
-            else:
-                target_pos1 = world2robot(robot_position=goalie_pos,target_position= (2200, 0))
+            else: #reset position
+                # target_pos1 = world2robot(robot_position=goalie_pos,target_position= (2200, 0))
+                target_pos1 = world2robot(robot_position=goalie_pos,target_position= (self.goal_x, 0))
                 
             print("Relative Target : ", target_pos1)
             # target_pos = world2robot(robot_position=robot_pos,target_position=target)
@@ -82,7 +86,7 @@ class Goalie():
             if ball_data != None:
                 # print(ball_data)
                 self.ball_hist.append([ball_data.x,ball_data.y])
-        print(len(self.ball_hist))
+        # print(len(self.ball_hist))
         return self.ball_hist
         
     
