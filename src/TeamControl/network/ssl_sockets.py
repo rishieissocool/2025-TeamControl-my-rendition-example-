@@ -54,7 +54,8 @@ class GameControl(Multicast):
         
     def listen(self) -> ssl_gc_referee_message_pb2.Referee:
         # see Multicast listen(), decode()
-        return super().listen()
+        data, addr = super().listen()
+        return data
     
 
 class grSimVision(Vision):
