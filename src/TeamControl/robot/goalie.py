@@ -24,7 +24,7 @@ class Goalie():
         self.version = 0
         self.field_x = 9000 
         self.field_y = 6000
-        self.goal_x = 9000/2-200
+        self.goal_x = self.field_x/2-200 if self.is_positive else -(self.field_x/2-200)
 
     def test(self):
         pass
