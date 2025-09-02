@@ -9,9 +9,6 @@ dependencies = [
     "numpy",
     "matplotlib",
     "protobuf",
-    "Shapely",
-    "scikit-learn",
-    "networkx",
     "PyYAML"
 ]
 
@@ -24,3 +21,13 @@ where = ["src"]
 
 [tools.setuptools.dynamic]
 version = {attr = "TeamControl.__version__"}
+
+[project.optional-dependencies]
+pathplanning = [
+    "Shapely",
+    "scikit-learn",
+    "networkx",
+    ]
+trajectory = [
+    "scikit-learn",
+]
