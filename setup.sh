@@ -33,7 +33,8 @@ fi
 echo -e "\n - - - Installing Python Module - - - "
 
 pip3 install --editable . # add "--user" to this if you don't have access to your computer's system-wide python packages.
-
+# pip3 install -e .[trajectory]
+# pip3 install -e .[pathplanning]
 echo -e "\n - - - Performing Git Pull - - - "
 git pull || { echo "Git pull failed"; exit 1; }
 
