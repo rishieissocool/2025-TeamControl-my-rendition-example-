@@ -29,27 +29,40 @@ echo "Installing gameController please do not touch until you see the phrase - '
         TIGERS_DIR="$SSL_DIR/TIGERS"
         ERFORCE_DIR="$SSL_DIR/ERFORCE"
         export NVM_DIR="$HOME/.nvm"
+        echo "To make sure you install the right stuff, questions will be asked."
+        echo "Only Type 'n' or 'N' if you don't want that software to be installed. "
+        read -p "Would you Like to check System Update ? (Recommended yes) : " s 
+        read -p "Would you Like to install SSL Status Board ? : " sb
+        read -p "Would you Like to install Tigers' AutoReferee ? : " ta
+        read -p "Would you Like to install ER-FORCE's AutoRef ? : " ea
+        echo "User input received. -- Proceeding --"
 
-
+        
         if [ ! -d "$SSL_DIR" ]; then
             echo "Directory : $SSL_DIR not found. Creating directory . . ."
             mkdir -p "$SSL_DIR" || { echo "Fail to create Directory $SSL_DIR"; exit 1; }
         fi
 
         cd "$SSL_DIR" || { echo "Failed to cd into $SSL_DIR"; exit 1;}
-       
 
-        echo "*** Updating System ***"
-        ## SELECT YOUR OWN UPGRADE
-        sudo apt update
-        # sudo apt upgrade -y
-        # sudo apt-get dist-upgrade
-        sudo apt-get full-upgrade -y
-        sudo apt install curl -y
-
+        case "$s" in 
+            [nN]* ) echo "SKIPPING SYSTEM UPDATE & UPGRADE" ;;
+            * ) 
+                echo "*** Updating System ***"
+                ## SELECT YOUR OWN UPGRADE
+                sudo apt update
+                # sudo apt upgrade -y 
+                sudo apt-get dist-upgrade -y 
+                # sudo apt-get full-upgrade -y 
+                echo " SYSTEM UPDATE COMPLETED " ;;
+        esac 
 
         echo "*** Installing Software Dependency ***"
+        echo "This will install : curl, unzip, NVM, NodeJS, GO"
 
+        sudo apt install curl unzip -y # u need this anyway
+        
+            
         ## The game controller requires a node JS version above 20, so we will be using the following script.
         # Ensure nvm is installed
         echo "Checking for nvm . . ."
@@ -71,7 +84,7 @@ echo "Installing gameController please do not touch until you see the phrase - '
 
         ## Locate if there's any existing NodeJs and what is the version
         if command -v node &>/dev/null; then
-    	    CURRENT_NODEJS=$(node -v | sed 's/v//')
+            CURRENT_NODEJS=$(node -v | sed 's/v//')
             echo "Installed Node.js version: $CURRENT_NODEJS"
         else
             CURRENT_NODEJS="none"
@@ -119,12 +132,10 @@ echo "Installing gameController please do not touch until you see the phrase - '
             echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 
             echo "Go has been updated to version $(go version)"
-   	    else
+        else
             echo "Go is up to date. No update needed."
         fi
         
-        
-
         ##########################################################################
         echo "*** Installing ssl-game-controller ***"
         
@@ -143,73 +154,88 @@ echo "Installing gameController please do not touch until you see the phrase - '
         cd $SSL_DIR
 
         ##################################################################
-
-        echo "*** Installing SSL-Status-Board ***"
-        echo "*** Cloning Git Repository -> $SB_DIR ***"
-        if [ ! -d "$SB_DIR" ]; then ## IF the folder ssl-status-board does not exist
-            git clone https://github.com/RoboCup-SSL/ssl-status-board.git || { echo "Git clone failed"; exit 1; }
-        else
-            echo "Status Board already Cloned from GitHub" 
-        fi
-        cd $SB_DIR
-        make install || { echo "Fail to make install Status Board"; exit 1; }
-        ## RETURN
-        cd $SSL_DIR
+        case $sb in 
+            [Nn]* ) echo "SKIPPING SSL-Status-Board" ;;
+            * )
+                echo "*** Installing SSL-Status-Board ***"
+                echo "*** Cloning Git Repository -> $SB_DIR ***"
+                if [ ! -d "$SB_DIR" ]; then ## IF the folder ssl-status-board does not exist
+                    git clone https://github.com/RoboCup-SSL/ssl-status-board.git || { echo "Git clone failed"; exit 1; }
+                else
+                    echo "Status Board already Cloned from GitHub" 
+                fi
+                cd $SB_DIR
+                make install || { echo "Fail to make install Status Board"; exit 1; }
+                ## RETURN
+                cd $SSL_DIR
+                ;;
+        esac
 
 
 
         #######################################################################
-        echo "*** Installing Java SDK for TIGER's AutoRef ***"
-        sudo apt install openjdk-21-jdk -y
+        case "$ta" in
+            [nN]* ) echo "SKIPPING TIGERS' AUTOREF";;
+            * ) 
+            
+                echo "*** Installing Java SDK for TIGER's AutoRef ***"
+                sudo apt install openjdk-21-jdk -y
 
-        echo "*** Installing TIGER's AutoReferee -> $TIGERS_DIR/AutoReferee ***"
-        if [ ! -d "$TIGERS_DIR/AutoReferee" ]; then
-            mkdir -p "$TIGERS_DIR"
-            cd "$TIGERS_DIR" || { echo "Failed to cd into $TIGERS_PATH"; exit 1; }
-            echo "*** Cloning Git Repository -> Tiger's AutoReferee ***"
-            git clone https://github.com/TIGERs-Mannheim/AutoReferee.git || { echo "Git clone failed"; exit 1; }
-        else
-            echo "TIGER's AutoReferee Already Exists"
-        fi
+                echo "*** Installing TIGER's AutoReferee -> $TIGERS_DIR/AutoReferee ***"
+                if [ ! -d "$TIGERS_DIR/AutoReferee" ]; then
+                    mkdir -p "$TIGERS_DIR"
+                    cd "$TIGERS_DIR" || { echo "Failed to cd into $TIGERS_PATH"; exit 1; }
+                    echo "*** Cloning Git Repository -> Tiger's AutoReferee ***"
+                    git clone https://github.com/TIGERs-Mannheim/AutoReferee.git || { echo "Git clone failed"; exit 1; }
+                else
+                    echo "TIGER's AutoReferee Already Exists"
+                fi
 
-        ## Navigate into AutoReferee directory
-        cd "$TIGERS_DIR/AutoReferee" || { echo "Failed to cd into AutoReferee"; exit 1; }
+                ## Navigate into AutoReferee directory
+                cd "$TIGERS_DIR/AutoReferee" || { echo "Failed to cd into AutoReferee"; exit 1; }
 
-        ## Try to build AutoReferee
-        ./build.sh || { echo "ERROR during execution on Tiger's build.sh"; exit 1; }
+                ## Try to build AutoReferee
+                ./build.sh || { echo "ERROR during execution on Tiger's build.sh"; exit 1; }
 
-        ## RETURN
-        cd "$SSL_DIR" 
+                ## RETURN
+                cd "$SSL_DIR" 
+                ;;
+        esac
 
         ################################################################################
-        echo "*** Installing ERFORCE - AUTOREF --> $ERFORCE_DIR/autoref ***"
-        if [ ! -d "$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
-            mkdir -p "$ERFORCE_DIR"|| { echo "Failed to create $ERFORCE_DIR"; exit 1; }
-            cd "$ERFORCE_DIR" || { echo "Failed to cd into $ERFORCE_DIR"; exit 1; }
-            git clone https://github.com/robotics-erlangen/autoref.git || { echo "Git clone failed"; exit 1; }
-        else
-            echo "$ERFORCE_DIR exists."
-        fi
+        case "$ea" in
+            [nN]* ) echo "SKIPPING ER-FORCE'S AUTOREF" ;;
+            * )
+                echo "*** Installing ERFORCE - AUTOREF --> $ERFORCE_DIR/autoref ***"
+                if [ ! -d "$ERFORCE_DIR/autoref" ]; then ## IF the folder ERFORCE does not exist
+                    mkdir -p "$ERFORCE_DIR"|| { echo "Failed to create $ERFORCE_DIR"; exit 1; }
+                    cd "$ERFORCE_DIR" || { echo "Failed to cd into $ERFORCE_DIR"; exit 1; }
+                    git clone https://github.com/robotics-erlangen/autoref.git || { echo "Git clone failed"; exit 1; }
+                else
+                    echo "$ERFORCE_DIR exists."
+                fi
 
-        ## going into ERFORCE's AUTOREF folder
-	    cd "$ERFORCE_DIR/autoref" || { echo "Failed to cd into $ERFORCE_DIR/autoref"; exit 1; }
+                ## going into ERFORCE's AUTOREF folder
+                cd "$ERFORCE_DIR/autoref" || { echo "Failed to cd into $ERFORCE_DIR/autoref"; exit 1; }
 
-        echo "Initialising ERFORCE GitHub Submodule"
-        git submodule update --init || { echo "Submodule initialization failed"; exit 1; }
-        ## Setting auto pull submodule
-        git config submodule.recurse true
-        ## Pulling Submodule
-        git pull || { echo "Failed to pull updates"; exit 1; }
+                echo "Initialising ERFORCE GitHub Submodule"
+                git submodule update --init || { echo "Submodule initialization failed"; exit 1; }
+                ## Setting auto pull submodule
+                git config submodule.recurse true
+                ## Pulling Submodule
+                git pull || { echo "Failed to pull updates"; exit 1; }
 
-        echo "Installing Dependencies"
-        ./install_ubuntu_deps.sh || { echo "Dependency installation failed"; exit 1; }
+                echo "Installing Dependencies"
+                ./install_ubuntu_deps.sh || { echo "Dependency installation failed"; exit 1; }
 
-        echo "Building ERFORCE AutoRef package"
-        ./build.sh || { echo "Build failed"; exit 1; }
+                echo "Building ERFORCE AutoRef package"
+                ./build.sh || { echo "Build failed"; exit 1; }
 
-        echo "-- Installation Completed , Returning to : $SSL_DIR"
-        ## RETURN
-        cd $SSL_DIR
+                echo "-- Installation Completed , Returning to : $SSL_DIR"
+                ## RETURN
+                cd "$SSL_DIR"
+                ;;
+        esac
 
     fi
 
