@@ -98,7 +98,7 @@ class grSimSender(Sender):
         
         converting RobotCommands into grSim commands
         """
-        packet = self.GSC.convert(robot_commands=robot_command,us=us)
+        packet = self.GSC.convert(robot_command=robot_command,us=us)
         encoded_msg = self.GSC.encode(packet)
         self.send(encoded_msg)
         
