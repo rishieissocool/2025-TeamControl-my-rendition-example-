@@ -7,7 +7,7 @@ from TeamControl.world.model_runner import wm_runner
 from TeamControl.utils.dummy_process import DummyReader
 from TeamControl.utils.remote_control_process import RCProcess,run_rc_process
 from TeamControl.robot.goalie import run_goalie
-
+from TeamControl.network.proto2 import *
 # in multiprocessing this can only be a simple process
 
 def main():

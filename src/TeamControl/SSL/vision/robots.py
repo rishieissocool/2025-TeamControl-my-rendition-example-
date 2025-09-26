@@ -5,7 +5,7 @@ import numpy as np
 
 class Robot:
     """
-    Represents an individual robot detected on the field. from (SSL.proto2.detection)
+    Represents an individual robot detected on the field. from (network.proto2.detection)
     (all has been rounded to 4dp)
     Attributes:
         isYellow (bool): Whether the robot belongs to the yellow team.

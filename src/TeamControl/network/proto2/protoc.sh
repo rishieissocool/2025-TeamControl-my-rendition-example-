@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 
 if ! command -v protoc &> /dev/null ; then
-    brew install protobuf
+    # brew install protobuf
+    sudo apt install protobuf-compiler
 fi
+
 
 touch __init__.py
 

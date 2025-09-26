@@ -1,7 +1,7 @@
-from TeamControl.SSL.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2
+from TeamControl.network.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2
 from TeamControl.network.receiver import Multicast
 from TeamControl.network.sender import Sender
-from TeamControl.SSL.grSim.commands import GrSimRobotCommands
+from TeamControl.network.grSim_commands import GrSimRobotCommands
 
 
 # Classes of Vision Wolrd Receivers
@@ -76,14 +76,17 @@ class grSimSender(Sender):
         self.is_yellow = is_yellow 
         self.GSC = GrSimRobotCommands(isYellow=is_yellow)
         super().__init__(ip=ip,port=port)
-
+    
+    def new_raw_command(self,robot_id,vx=0.0,vy=0.0,w=0.0,k=0,d=0,us=True):
+        return GSC.new_command(robot_id=robot_id,vx=vx,vy=vy,w=w,k=k,d=d,us=us)
+    
     def send(self,msg) -> None:
         """
         send GrSimRobotCommands or bytes to grSim
         """
         if not isinstance(msg,bytes):
             try:
-                msg = msg.pack()
+                msg = self.GSC.encode(msg)
             except Exception as e:
                 raise(e, "Error with GRSIM message packing")
         self.sock.sendto(msg,self.destination)
@@ -95,8 +98,8 @@ class grSimSender(Sender):
         
         converting RobotCommands into grSim commands
         """
-        packet:GrSimRobotCommands = self.GSC.convert(robot_commands=robot_command,us=us)
-        encoded_msg = self.GSC.pack(packet)
+        packet = self.GSC.convert(robot_commands=robot_command,us=us)
+        encoded_msg = self.GSC.encode(packet)
         self.send(encoded_msg)
         
 
