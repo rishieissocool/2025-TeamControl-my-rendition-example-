@@ -10,7 +10,6 @@ def sandbox_process(wm):
     
     version = 0 # vision version
     
-    r = RobotMovement()
     robot_pos = 0,0,0
     ball = 0,0
     while True:
@@ -19,7 +18,10 @@ def sandbox_process(wm):
         if version < wm.get_version():
             version = wm.get_version
             try:
-                robot_pos = self.wm.get_yellow_robots(isYellow=False,robot_id=self.robot_id).position
+                robot_obj = self.wm.get_yellow_robots(isYellow=is_yellow,robot_id=self.robot_id)
+                robots = self.wm.get_yellow_robots(isYellow=is_yellow,robot_id=None)
+                robot_pos = robot_obj.position
+                robot_obstacle = robot_obj.obstacle
                 ball = self.wm.get_latest_frame().ball.position
             except Exception :
                 robot_pos = 0,0,0

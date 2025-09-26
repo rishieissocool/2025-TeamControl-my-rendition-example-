@@ -43,7 +43,7 @@ class Robot:
     #     return self.id < other.id
     
     @property
-    def obstacle(self) -> Obstacle:
+    def obstacle(self) -> Obstacle: # To Rafael: Change Value if needed
         """
         Returns a Voronoi-compatible obstacle representation of this robot.
 
