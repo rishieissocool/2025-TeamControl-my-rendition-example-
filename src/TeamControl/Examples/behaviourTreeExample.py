@@ -172,4 +172,4 @@ if __name__ == "__main__":
     tree.setup(timeout=15)
     for _ in range(5):
         tree.tick_once()
-        time.sleep(0.5)
+        time.sleep(0.5) #need to be 0.05 in real scenario
