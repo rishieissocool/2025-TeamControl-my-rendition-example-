@@ -6,23 +6,23 @@ def sandbox_process(wm):
     sim_ip = "127.0.0.1"
     cmd_listen_port = 20010
     is_yellow = True
+    robot_id = 1
     sender = grSimSender(ip=sim_ip,port=cmd_listen_port,is_yellow=is_yellow)
     
     version = 0 # vision version
-    
     robot_pos = 0,0,0
     ball = 0,0
     while True:
         # This is running
         # get_update
         if version < wm.get_version():
-            version = wm.get_version
+            version = wm.get_version()
             try:
-                robot_obj = self.wm.get_yellow_robots(isYellow=is_yellow,robot_id=self.robot_id)
-                robots = self.wm.get_yellow_robots(isYellow=is_yellow,robot_id=None)
+                robot_obj = wm.get_yellow_robots(isYellow=is_yellow,robot_id=robot_id)
+                robots = wm.get_yellow_robots(isYellow=is_yellow,robot_id=None)
                 robot_pos = robot_obj.position
                 robot_obstacle = robot_obj.obstacle
-                ball = self.wm.get_latest_frame().ball.position
+                ball = wm.get_latest_frame().ball.position
             except Exception :
                 robot_pos = 0,0,0
                 ball = 0,0
