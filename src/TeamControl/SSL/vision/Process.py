@@ -18,7 +18,7 @@ class VisionProcess():
         self.recv = Vision(port=vision_port)    
         self.field = None
         self.frame = None
-        self.frame_number = 0
+        self.frame_number = -1
     
     @property
     def cameras(self):
