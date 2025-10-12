@@ -48,7 +48,7 @@ class RCProcess():
                 
             cmd = RobotCommand(1, vx, vy, w, 0, 0)
             # puts command into queue
-            self.dispatch_q.put(cmd,5) # 5 seconds runtime
+            self.dispatch_q.put((cmd, 0.5)) # 0.5 seconds runtime
                 
                 
 

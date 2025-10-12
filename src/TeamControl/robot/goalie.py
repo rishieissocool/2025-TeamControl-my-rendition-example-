@@ -47,13 +47,13 @@ class Goalie():
             else: #reset position
                 target_pos1 = world2robot(robot_position=goalie_pos,target_position= (self.neutral_x_pos, 0))
                 
-            print("Relative Target : ", target_pos1)
+            # print("Relative Target : ", target_pos1)
             vx1,vy1 = RobotMovement.go_To_Target(target_pos=target_pos1, stop_threshold=50)
            
     
             command1 = RobotCommand(robot_id=self.id,vx=vx1,vy=vy1)
             # puts command into queue
-            self.dispatch_q.put(command1,5) # 5 seconds runtime
+            self.dispatch_q.put((command1, 0.1)) # 0.5 seconds runtime
         
     def update_ball_history(self,n:int):
         self.ball_hist = list()
