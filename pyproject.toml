@@ -9,7 +9,8 @@ dependencies = [
     "numpy",
     "matplotlib",
     "protobuf",
-    "PyYAML"
+    "PyYAML",
+    "pytest"
 ]
 
 dynamic = [
