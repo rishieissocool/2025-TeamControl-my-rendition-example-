@@ -27,7 +27,7 @@ class dispatch():
             self.check_new_commands()
             self.handle_commands()
             self.check_command_timeout()
-            time.sleep(1)
+            # time.sleep(1)
 
     # Get the next command from the queue and add it
     def check_new_commands(self):
