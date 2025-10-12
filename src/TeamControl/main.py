@@ -8,36 +8,42 @@ from TeamControl.utils.dummy_process import DummyReader
 from TeamControl.utils.remote_control_process import RCProcess,run_rc_process
 from TeamControl.robot.goalie import run_goalie
 from TeamControl.network.proto2 import *
+from TeamControl.dispatcher.dispatch import run_dispatcher
 # in multiprocessing this can only be a simple process
 
 def main():
     use_sim = True
+    is_yellow = True
     vision_q = Queue()
     gc_q = Queue()
+    dispatch_q = Queue()
     # robot_feedback_q = Queue()
-    
-    # inputs
-    vision_wkr = Process(target=vision_worker, args=(vision_q,use_sim,))
-    gc_wkr = Process(target=run_gcfsm, args=(gc_q,))
-    
     # world model
     wm_manager = WorldModelManager()
     wm_manager.start()
     wm = wm_manager.WorldModel()
     wmr = Process(target=wm_runner, args=(wm,vision_q,gc_q,))
     
-    goalie = Process(target=run_goalie,args=(wm,5))
+    # processes
+    vision_wkr = Process(target=vision_worker, args=(vision_q,use_sim,))
+    gc_wkr = Process(target=run_gcfsm, args=(gc_q,))
+    dispatch_wkr = Process(target=run_dispatcher, args=(dispatch_q,use_sim,is_yellow))
+
+    goalie = Process(target=run_goalie,args=(dispatch_q,wm,5,is_yellow))
+    chaser = Process(target=run_rc_process,args=(dispatch_q,wm,5,is_yellow))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))
     vision_wkr.start()
     gc_wkr.start()
     wmr.start()
     goalie.start()
+    dispatch_wkr.start()
     # some_other_process2.start()
     
     vision_wkr.join()
     gc_wkr.join()
     wmr.join()
     goalie.join()
+    dispatch_wkr.join()
     # some_other_process2.join()
 
 if __name__ == "__main__":
