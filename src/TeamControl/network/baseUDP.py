@@ -82,6 +82,7 @@ class BaseSocket():
         return (self.ip,self.port)
     
     def __str__(self):
+        """retrutns the address in string format"""
         return f"{self.addr}"
     
     def __repr__(self):
@@ -90,6 +91,7 @@ class BaseSocket():
     def close(self):
         """closes the socket"""
         self.is_ready = False
+        self.sock.close()
     
     def _bind_sock(self) -> bool:
         """
@@ -109,6 +111,7 @@ class BaseSocket():
                 if self.use_generated_port is True: 
                     # generates port and tries again
                     self.port = self._generate_port()
+                    tries += 1
                 continue                    
         if is_binded is False:
             raise ConnectionError("Socket was not Activated Correctly")    
