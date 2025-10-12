@@ -1,24 +1,25 @@
 
-# from TeamControl.SSL.grSim.commands import GrSimRobotCommands
-# from TeamControl.robot.robot_commands import RobotCommands
-from TeamControl.network.robotCommand import RobotCommand
+
+from TeamControl.network.robot_command import RobotCommand
 from TeamControl.world.transform_cords import world2robot
 from TeamControl.robot.Movement import RobotMovement
 from TeamControl.utils.Logger import LogSaver 
 
 from TeamControl.world.model import WorldModel
 from TeamControl.SSL.vision.frame import Frame
-from TeamControl.network import Sender,grSimSender
+from multiprocessing import Queue
 
 import time
 class RCProcess():
-    def __init__(self, wm:WorldModel,robot_id:int,
-                 robot_ip:str="127.0.0.1",us_yellow=True):
+    def __init__(self, dispatch_q:Queue, 
+                 wm:WorldModel,
+                 robot_id:int,
+                 us_yellow=True):
+        self.wm:WorldModel = wm
+        self.dispatch_q = dispatch_q
         self.robot_id = robot_id
         self.us_yellow = us_yellow
-        self.wm:WorldModel = wm
         self.last_version = 0
-        self.sender = Sender(ip=robot_ip,port=50514)
         self.logs = LogSaver(process_name="rc_Process",id=robot_id)
 
         
@@ -46,26 +47,10 @@ class RCProcess():
                 vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
                 
             cmd = RobotCommand(1, vx, vy, w, 0, 0)
-            self.logs.info(cmd)
-            self.sender.send(cmd)
+            # puts command into queue
+            self.dispatch_q.put(cmd,5) # 5 seconds runtime
                 
                 
-            
-            # command = self.run_remote_control()
-            # if command.vx == 0 and command.vy == 0 and command.w ==0:
-            #     command = None
-            # if command is not None:
-            #     self.sender.send(command)
-
-            # if robot_pos is not None:
-                # pos_relative_to_robot = world2robot(robot_position=robot_pos, target_position=ball)
-                
-                # vx,vy,w= RobotMovement.velocity_to_target(robot_pos=robot_pos,target=ball)
-                # w = RobotMovement.turn_to_target(pos_relative_to_robot,speed=2)
-                # print(robot_pos)
-
-        
-
 
     def run_remote_control(self):
         import pygame
@@ -120,15 +105,11 @@ class RCProcess():
             if vx !=0 or vy != 0 or vw!=0 or k !=0 or d!=0:
                 
                 msg = RobotCommand(robot_id=self.robot_id,vx=vx,vy=vy,w=vw,kick=k,dribble=d)
-                encoded_msg = msg.encode()
-                self.logs.info(f"sent {msg=}")
-                self.sender.send(encoded_msg)
+                # puts command into queue
+                self.dispatch_q.put(msg,5) # 5 seconds runtime
+        
     
     
-def run_rc_process(wm:WorldModel):
-    dummy = RCProcess(wm=wm,robot_id=1)
+def run_rc_process(dispatch_q,wm:WorldModel,robot_id,is_yellow):
+    dummy = RCProcess(dispatch_q, wm=wm,robot_id=robot_id,us_yellow=is_yellow)
     dummy.run()
-    
-if __name__ == "__main__":
-    wm = WorldModel()
-    run_rc_process(wm)
