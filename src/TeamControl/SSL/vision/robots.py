@@ -5,7 +5,7 @@ import numpy as np
 
 class Robot:
     """
-    Represents an individual robot detected on the field. from (SSL.proto2.detection)
+    Represents an individual robot detected on the field. from (network.proto2.detection)
     (all has been rounded to 4dp)
     Attributes:
         isYellow (bool): Whether the robot belongs to the yellow team.
@@ -43,7 +43,7 @@ class Robot:
     #     return self.id < other.id
     
     @property
-    def obstacle(self) -> Obstacle:
+    def obstacle(self) -> Obstacle: # To Rafael: Change Value if needed
         """
         Returns a Voronoi-compatible obstacle representation of this robot.
 
@@ -133,7 +133,13 @@ class Team ():
                     self._robots[new_robot.id] = new_robot 
             else:
                 self._robots[new_robot.id] = new_robot 
-         
+                
+    def remove(self,robot_id):
+        if self._robots[robot_id] == 0:
+            return self._robots
+        self._robots[robot_id] = 0
+        return self._robots
+    
     def __len__(self): # allows len(Team) , returns number of robots store in this team
         return self.num_robots
     
@@ -147,7 +153,7 @@ class Team ():
         if 0 <= key < 16:
             return self._robots[key]
         raise IndexError("Robot ID out of valid range (0–15)")
-
+    
     def __repr__(self):
         return f"{self.isYellow=} : {self.num_robots=} \n {self.active=}"
     

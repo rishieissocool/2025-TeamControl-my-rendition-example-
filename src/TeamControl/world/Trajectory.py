@@ -3,8 +3,10 @@ import math
 import numpy as np
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-
+try:
+    from sklearn.linear_model import LinearRegression
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError ("please install scikit-learn for running trajectory")
 
 
 def predict_trajectory(history: list, num_samples, isPostive:bool, feild_size ):

@@ -117,8 +117,30 @@ class WorldModel:
     def get_latest_frame(self):
         return self.frame_list.latest
     
+    def get_all_in_team(self,isYellow:bool,exclude:list[int]=None):
+        # get the latest frame
+        frame = self.frame_list.latest
+        # get the team
+        if isYellow is True:
+            team  = frame.robots_yellow
+        elif isYellow is False:
+            team = frame.robots_blue
+        else:
+            raise AttributeError("isYellow needs to be True / False")  # shouldn't get into here, but ok
+        # print(team)
+        # nothing is being excluded ! 
+        if exclude is None or len(exclude) == 0:
+            # return the team
+            return team
+        # now check the list of wanting to be excluded.  
+        else: # returning except robot with excluded id
+            for e in list(exclude):
+                if e in team:
+                    team.remove(e)
+            return team
+        
+    
     def get_yellow_robots(self,isYellow, robot_id=None):
-        # depeciated . . . 
         if isYellow is True:
             if isinstance(robot_id,int):
                 return self.frame_list.latest.robots_yellow[robot_id]
