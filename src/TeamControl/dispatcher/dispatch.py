@@ -7,7 +7,7 @@ import time
 class dispatch():
     def __init__(self, q,use_sim,is_yellow):
         self.q = q
-        self.is_yellow = is_yellow
+        self.is_yellow = is_yellow 
         self.use_sim = use_sim
 
         self.running_commands = {}
@@ -24,10 +24,13 @@ class dispatch():
     # Main processing loop
     def process_q(self):
         while True:
+            lap_time = time.time()
             self.check_new_commands()
+            # if time.time() > lap_time + 0.05:
+            #     lap_time = time.time() +0.05
             self.handle_commands()
             self.check_command_timeout()
-            # time.sleep(1)
+            
 
     # Get the next command from the queue and add it
     def check_new_commands(self):
@@ -40,7 +43,7 @@ class dispatch():
     def add(self, command, run_time):
         robot_id = command.robot_id
         self.running_commands[robot_id] = {"command": command, "runtime": run_time, "start_time": time.time()}
-        print(f"[Robot {robot_id}] New command added for {run_time}s")
+        print(f"[Robot {robot_id}] New command added for {run_time}s , command: {command}")
         
     # Check if any commands have expired
     def check_command_timeout(self):

@@ -1,7 +1,12 @@
-"1": 
+"0": 
   ip: "127.0.0.1"
   port: 50514
   shell_number: 6
+
+"1": 
+  ip: "127.0.0.1"
+  port: 1234
+  shell_number: 3
 
 "2": 
   ip: "127.0.0.1"
@@ -22,8 +27,3 @@
   ip: "127.0.0.1"
   port: 1234
   shell_number: 2
-
-"6": 
-  ip: "127.0.0.1"
-  port: 1234
-  shell_number: 3

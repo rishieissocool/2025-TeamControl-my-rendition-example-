@@ -14,7 +14,7 @@ class RCProcess():
     def __init__(self, dispatch_q:Queue, 
                  wm:WorldModel,
                  robot_id:int,
-                 us_yellow=True):
+                 us_yellow):
         self.wm:WorldModel = wm
         self.dispatch_q = dispatch_q
         self.robot_id = robot_id
@@ -29,27 +29,31 @@ class RCProcess():
             self.logs.error("ROBOT ID IS NONE EXITING . . .")
         last_update = time.time()
         vx,vy,w,k,d = 0,0,0,0,0
+        frame = None
         while True:
 
             current_version:int = self.wm.get_version()
             # print(current_version)
             if current_version > self.last_version:
-                self.logs.debug(f"{time.time() - last_update}, {self.wm.get_latest_frame().frame_number}")
+                frame= self.wm.get_latest_frame()
+                self.logs.debug(f"{time.time() - last_update}, {frame.frame_number}")
                 last_update = time.time()
                 self.last_version = current_version
-                try:
-                    robot_pos = self.wm.get_yellow_robots(isYellow=False,robot_id=self.robot_id).position
-                    ball = self.wm.get_latest_frame().ball.position
-                except Exception :
-                    robot_pos = 0,0,0
-                    ball = 0,0
-                    
-                vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
+            try:
+                robot = frame.get_yellow_robots(isYellow=self.us_yellow,robot_id=self.robot_id)
+                robot_pos = robot.position
+                ball = frame.ball.position
                 
-            cmd = RobotCommand(1, vx, vy, w, 0, 0)
+                
+            except Exception :
+                robot_pos = 0,0,0
+                ball = 0,0
+            vx, vy,w = RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
+
+            cmd = RobotCommand(self.robot_id, vx, vy, w, 0, 0)
             # puts command into queue
-            self.dispatch_q.put((cmd, 0.5)) # 0.5 seconds runtime
-                
+            self.dispatch_q.put((cmd, 0.2)) # 0.5 seconds runtime
+                        
                 
 
     def run_remote_control(self):
