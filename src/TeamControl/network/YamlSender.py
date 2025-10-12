@@ -11,8 +11,8 @@ import ast
 
 import logging
 
-from TeamControl.network.robotCommand import RobotCommand
-from TeamControl.network.baseUDP import BaseSocket,UDP
+from TeamControl.network.robot_command import RobotCommand
+from TeamControl.network.baseUDP import BaseSocket,SocketType
 import yaml
 try:
     from yaml import CLoader as Loader
@@ -26,12 +26,11 @@ class YamlSender(BaseSocket):
     def __init__(self):
         file = open("src/TeamControl/utils/ipconfig.yaml", "r")
         self.robot = yaml.load(file, Loader)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        super().__init__()
+        super().__init__(type=SocketType.SOCK_UDP,ip='')
 
         
     
-    def send_command(self, command_list:RobotCommand):
+    def send_command(self, command:RobotCommand):
         """
         Sending command via UDP
 
@@ -44,17 +43,12 @@ class YamlSender(BaseSocket):
         Exceptions:
             TypeError : Only Command or byte objects allowed
         """
+        robot_id = str(command.robot_id)
+        destination = self.robot[robot_id]["ip"]
+        port = self.robot[robot_id]["port"]
+        enocded_command:bytes = command.encode()
+        self.sock.sendto(enocded_command, (destination, port))
+        print(robot_id,destination,port, command, " Message Sent")
 
-        for command in command_list:
-            robot_id = str(command.robot_id)
-            destination = self.robot[robot_id]["ip"]
-            port = self.robot[robot_id]["port"]
-            print(robot_id,destination,port, command)
-            enocded_command:bytes = command.encode()
-            self.sock.sendto(enocded_command, (destination, port))
             
 
-if __name__ == "__main__" :
-    s = YamlSender()
-    list_cmd = [RobotCommand(1),RobotCommand(2),RobotCommand(3),RobotCommand(4)]
-    s.send_command(list_cmd)
