@@ -48,7 +48,7 @@ class YamlSender(BaseSocket):
         port = self.robot[robot_id]["port"]
         enocded_command:bytes = command.encode()
         self.sock.sendto(enocded_command, (destination, port))
-        print(robot_id,destination,port, command, " Message Sent")
+        # print(robot_id,destination,port, command, " Message Sent")
 
             
 

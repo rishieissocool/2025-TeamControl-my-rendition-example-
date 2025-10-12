@@ -88,3 +88,35 @@ class Frame():
         self.cameras.add(new_frame_data.camera_id)
 
        
+    def get_all_in_team(self,isYellow:bool,exclude:list[int]=None):
+        # get the latest frame
+        # get the team
+        if isYellow is True:
+            team  = self.robots_yellow
+        elif isYellow is False:
+            team = self.robots_blue
+        else:
+            raise AttributeError("isYellow needs to be True / False")  # shouldn't get into here, but ok
+        # print(team)
+        # nothing is being excluded ! 
+        if exclude is None or len(exclude) == 0:
+            # return the team
+            return team
+        # now check the list of wanting to be excluded.  
+        else: # returning except robot with excluded id
+            for e in list(exclude):
+                if e in team:
+                    team.remove(e)
+            return team
+        
+    
+    def get_yellow_robots(self,isYellow, robot_id=None):
+        if isYellow is True:
+            if isinstance(robot_id,int):
+                return self.robots_yellow[robot_id]
+            return self.robots_yellow
+        elif isYellow is False :
+            if isinstance(robot_id,int):
+                return self.robots_blue[robot_id]
+            return self.robots_blue
+        

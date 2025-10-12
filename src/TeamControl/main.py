@@ -13,11 +13,14 @@ from TeamControl.dispatcher.dispatch import run_dispatcher
 
 def main():
     use_sim = True
-    is_yellow = True
+    is_yellow = False
+    
+    # queues
     vision_q = Queue()
     gc_q = Queue()
     dispatch_q = Queue()
     # robot_feedback_q = Queue()
+    
     # world model
     wm_manager = WorldModelManager()
     wm_manager.start()
@@ -29,14 +32,16 @@ def main():
     gc_wkr = Process(target=run_gcfsm, args=(gc_q,))
     dispatch_wkr = Process(target=run_dispatcher, args=(dispatch_q,use_sim,is_yellow))
 
-    goalie = Process(target=run_goalie,args=(dispatch_q,wm,5,is_yellow))
-    chaser = Process(target=run_rc_process,args=(dispatch_q,wm,5,is_yellow))
-    # some_other_process2 = Process(target=DummyReader,args=(wm,))
+    goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
+    chaser = Process(target=run_rc_process,args=(dispatch_q,wm,1,is_yellow))
+    # some_other_process2 = Process(target=DummyReader,args=(wm,))'
+    
     vision_wkr.start()
     gc_wkr.start()
     wmr.start()
     goalie.start()
     dispatch_wkr.start()
+    chaser.start()
     # some_other_process2.start()
     
     vision_wkr.join()
@@ -44,6 +49,7 @@ def main():
     wmr.join()
     goalie.join()
     dispatch_wkr.join()
+    chaser.join()   
     # some_other_process2.join()
 
 if __name__ == "__main__":

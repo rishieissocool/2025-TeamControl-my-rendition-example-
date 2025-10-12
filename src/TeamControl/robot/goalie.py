@@ -20,8 +20,8 @@ class Goalie():
         self.version = 0
         self.field_x = 9000 
         self.field_y = 6000
-        self.goal_depth = 200
-        self.is_positive = True
+        self.goal_depth = 500
+        self.is_positive = is_yellow
         self.ball_hist =list()
         self.neutral_x_pos = self.field_x/2-self.goal_depth if self.is_positive else -(self.field_x/2-self.goal_depth)
 
@@ -32,14 +32,15 @@ class Goalie():
         while True:     
             # if self.version <= self.wm.get_version():
             try:
-                self.wm.get_yellow_robots(isYellow=self.is_yellow,robot_id=self.id)
+                frame = self.wm.get_latest_frame()
+                robot = frame.get_yellow_robots(isYellow=self.is_yellow,robot_id=self.id)
                 self.ball_hist = self.update_ball_history(5)
             except AttributeError:
                 continue
             
             goalie_points = predict_trajectory(self.ball_hist, 3, isPostive=self.is_positive, feild_size=(self.field_x,self.field_y))
         
-            goalie_pos = self.wm.get_yellow_robots(isYellow=self.is_yellow,robot_id=self.id).position
+            goalie_pos = robot.position
             
             if goalie_points[1] == True:   
                 # if there's a point go block           
@@ -53,7 +54,7 @@ class Goalie():
     
             command1 = RobotCommand(robot_id=self.id,vx=vx1,vy=vy1)
             # puts command into queue
-            self.dispatch_q.put((command1, 0.1)) # 0.5 seconds runtime
+            self.dispatch_q.put((command1, 0.01)) # 0.1 seconds runtime
         
     def update_ball_history(self,n:int):
         self.ball_hist = list()
