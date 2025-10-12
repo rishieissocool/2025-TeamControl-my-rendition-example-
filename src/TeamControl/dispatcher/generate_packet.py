@@ -14,6 +14,7 @@ def create_input():
     return command,run_time #this creates tuple automatically 
 
 def generate_w_interval(q,x=5):
+    # this is a demo input function
     while True:
         packet = create_input()
         q.put(packet)
