@@ -1,10 +1,10 @@
-from TeamControl.Coms.Action import Action
-from TeamControl.Model.world import World
-from TeamControl.Model.transform_cords import world2robot
-from TeamControl.RobotBehaviour import *
+from TeamControl.network.robotCommand import RobotCommand
+from TeamControl.world.model import WorldModel as wm
+from TeamControl.world.transform_cords import world2robot
+from TeamControl.robot.Movement import RobotMovement
 
 
-def go_to_ball(world_model:World,isYellow:bool,robot_id:int):
+def go_to_ball(world_model:wm,isYellow:bool,robot_id:int):
 
     # get positions from the world model
     ball_pos = world_model.get_ball() 
@@ -22,4 +22,4 @@ def go_to_ball(world_model:World,isYellow:bool,robot_id:int):
     vx,vy = RobotMovement.go_To_Target(target_pos=pos_relative_to_robot)
     w = RobotMovement.turn_to_target(pos_relative_to_robot,speed=2)
     
-    return Action(robot_id=robot_id,vx=vx,vy=vy,w=w)
+    return RobotCommand(robot_id=robot_id,vx=vx,vy=vy,w=w)

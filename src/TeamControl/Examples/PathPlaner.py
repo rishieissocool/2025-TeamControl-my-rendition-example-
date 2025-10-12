@@ -1,6 +1,6 @@
-from TeamControl.VoronoiPlanner.VoronoiPlanner import VoronoiPlanner
-from TeamControl.Model.world import World
-from TeamControl.Model.frame import Robot as r
+from TeamControl.voronoi_planner.voronoi_planner import VoronoiPlanner
+from TeamControl.world.model import WorldModel as wm
+from TeamControl.SSL.vision.robots import Robot as r
 
 import time
 import numpy as np
@@ -9,7 +9,7 @@ x = 9000
 y = 6000
 # planner = VoronoiPlanner(xsize=x,ysize=y)
 
-def pathplanning(planner:VoronoiPlanner,world_model:World,target_pos):
+def pathplanning(planner:VoronoiPlanner,world_model:wm,target_pos):
     """
     This generates waypoints for all of our robots to target and returns as a list
 
