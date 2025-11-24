@@ -9,16 +9,19 @@ from TeamControl.utils.remote_control_process import RCProcess,run_rc_process
 from TeamControl.robot.goalie import run_goalie
 from TeamControl.network.proto2 import *
 from TeamControl.dispatcher.dispatch import run_dispatcher
+from TeamControl.voronoi_planner.run_planner import run_planner
 # in multiprocessing this can only be a simple process
 
 def main():
     use_sim = True
-    is_yellow = False
+    is_yellow = True
     
     # queues
     vision_q = Queue()
     gc_q = Queue()
     dispatch_q = Queue()
+    planner_q = Queue()
+    
     # robot_feedback_q = Queue()
     
     # world model
@@ -31,6 +34,7 @@ def main():
     vision_wkr = Process(target=vision_worker, args=(vision_q,use_sim,))
     gc_wkr = Process(target=run_gcfsm, args=(gc_q,))
     dispatch_wkr = Process(target=run_dispatcher, args=(dispatch_q,use_sim,is_yellow))
+    planner_wkr = Process(target=run_planner, args=(wm,planner_q))
 
     goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
     chaser = Process(target=run_rc_process,args=(dispatch_q,wm,1,is_yellow))
@@ -42,14 +46,16 @@ def main():
     goalie.start()
     dispatch_wkr.start()
     chaser.start()
+    planner_wkr.start()
     # some_other_process2.start()
     
     vision_wkr.join()
     gc_wkr.join()
     wmr.join()
-    goalie.join()
+    # goalie.join()
     dispatch_wkr.join()
-    chaser.join()   
+    # chaser.join()   
+    planner_wkr.join()
     # some_other_process2.join()
 
 if __name__ == "__main__":
