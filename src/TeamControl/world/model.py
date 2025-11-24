@@ -27,7 +27,7 @@ class WorldModel:
         
         
     """
-    def __init__(self,update_interval:int=5,history:int=60, use_sim:bool=True,us_yellow=True,us_positive=True):
+    def __init__(self,update_interval:int=10,history:int=60, use_sim:bool=True,us_yellow=True,us_positive=True):
         mgr = Manager()
         self._us_yellow = us_yellow
         self._us_positive = us_positive
@@ -117,16 +117,16 @@ class WorldModel:
     def get_latest_frame(self):
         return self.frame_list.latest
     
-    def get_all_in_team(self,isYellow:bool,exclude:list[int]=None):
+    # high level
+    def get_all_in_team_except(self,us:bool,exclude:list[int]):
         # get the latest frame
+        isYellow = self._us_yellow if us is True else not(self._us_yellow)
         frame = self.frame_list.latest
         # get the team
         if isYellow is True:
             team  = frame.robots_yellow
         elif isYellow is False:
             team = frame.robots_blue
-        else:
-            raise AttributeError("isYellow needs to be True / False")  # shouldn't get into here, but ok
         # print(team)
         # nothing is being excluded ! 
         if exclude is None or len(exclude) == 0:
@@ -139,8 +139,8 @@ class WorldModel:
                     team.remove(e)
             return team
         
-    
-    def get_yellow_robots(self,isYellow, robot_id=None):
+    # lower level
+    def get_yellow_robots(self,isYellow, robot_id=None) -> object | list:
         if isYellow is True:
             if isinstance(robot_id,int):
                 return self.frame_list.latest.robots_yellow[robot_id]
@@ -150,7 +150,8 @@ class WorldModel:
                 return self.frame_list.latest.robots_blue[robot_id]
             return self.frame_list.latest.robots_blue
         
-    def get_our_robots(self, us=True, robot_id=None):
+    # higher level 
+    def get_our_robots(self, us=True, robot_id=None) -> object | list:
         frame = self.frame_list.latest
         # use is_yellow value as us_yellow if us== True, otherwise, the opposite i.e. not(us_yellow)
         is_yellow = self._us_yellow if us else not(self._us_yellow)
