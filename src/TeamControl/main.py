@@ -36,16 +36,16 @@ def main():
     dispatch_wkr = Process(target=run_dispatcher, args=(dispatch_q,use_sim,is_yellow))
     planner_wkr = Process(target=run_planner, args=(wm,planner_q))
 
-    goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
-    chaser = Process(target=run_rc_process,args=(dispatch_q,wm,1,is_yellow))
+    # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
+    # chaser = Process(target=run_rc_process,args=(dispatch_q,wm,1,is_yellow))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))'
     
     vision_wkr.start()
     gc_wkr.start()
     wmr.start()
-    goalie.start()
+    # goalie.start()
     dispatch_wkr.start()
-    chaser.start()
+    # chaser.start()
     planner_wkr.start()
     # some_other_process2.start()
     
