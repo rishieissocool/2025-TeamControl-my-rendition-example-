@@ -1,11 +1,13 @@
 from TeamControl.voronoi_planner.planner import VoronoiPlanner
 from TeamControl.world.model import WorldModel as wm
+
+import numpy as np
 import time
 
 class PathPlanner():
     # values are from before.
-    CLEARANCE = 200
-    d0 = 250
+    CLEARANCE = 75
+    d0 = 1000
     N = 100
     
     def __init__(self,world_model:wm,planner_q):
@@ -37,6 +39,7 @@ class PathPlanner():
             # follow waypoints here 
             if is_updated is True:
                 target_pos = self.frame.ball.position # or some position
+                print(f"{target_pos=}")
                 waypoints:list = self.pathplanning(robot_id=robot_id,target_pos=target_pos)
                 if isinstance(waypoints, list): # if the waypoint exists
                     # push forward waypoints to output (back to world model / behaviour tree)
@@ -62,24 +65,37 @@ class PathPlanner():
         # obstacles
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
-        obstacles = our_robot_obs + enemy_robot_obs
+        all_obstacles = our_robot_obs + enemy_robot_obs
         # the destination point of these
         goals = [target_pos]
-        print("number of Obstacles:",len(obstacles))
+        print("number of Obstacles:",len(all_obstacles))
 
         start_time = time.time()
         
-        self.p.update_obstacles(obstacles)
+        self.p.update_obstacles(all_obstacles)
 
-        initial_waypoints= self.p.generate_waypoints(our_robot_obs,goals,self.d0)
-        waypoints = [self.p.simplify([s] + w + [g], self.CLEARANCE, [o.unum()]) for s,w,g,o in zip(start,initial_waypoints,goals,obstacles)]
+        waypoints= self.p.generate_waypoints(our_robot_obs,goals,self.d0)
+        print(f"{waypoints=}")
+        simplified_paths = []
+        for i, (start, wp, goal) in enumerate(zip(our_robot_obs, waypoints, goals)):
+            full_path = [start.centre()] + wp
+            simple = self.p.simplify(full_path, self.CLEARANCE, [start.unum()])
+            goal_is_safe = all(
+                not obs.is_point_inside(goal)
+                for obs in all_obstacles
+            )
 
+            if goal_is_safe and not np.allclose(simple[-1], goal):
+                simple.append(goal)
+
+            simplified_paths.append(simple)
+        
         end_time = time.time()
         excution_time = end_time - start_time
         print(f"{excution_time=}")
 
-        print(f"final {waypoints=}")
-        return waypoints
+        print(f"{simplified_paths=}")
+        return simplified_paths
 
 def run_planner(world_model:wm,planner_q):
     planner = PathPlanner(world_model,planner_q)
