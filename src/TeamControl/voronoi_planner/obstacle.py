@@ -97,19 +97,19 @@ class Obstacle:
 
     
 def main():
+    clearance = 1
     # create some obstacle with radius 2
-    obstacle = Obstacle((5, 5), 2)
+    obstacle = Obstacle((5, 5), 2, None, True)
 
     # define a lines that intersects with obstacle
-    line1_start = (3, 3)
-    line1_end = (7, 7)  
+    line1_start = np.array([3, 3])
+    line1_end = np.array([7, 7])  
     # define another one that doesn't
-    line2_start = (1, 1)
-    line2_end = (2, 2)  
-
+    line2_start = np.array([1, 1])
+    line2_end = np.array([2, 2])  
     # do the check if the lines intersect with the obstacle
-    intersects_line1 = obstacle.intersects_line(line1_start, line1_end)
-    intersects_line2 = obstacle.intersects_line(line2_start, line2_end)
+    intersects_line1 = obstacle.intersects_line(line1_start, line1_end,clearance)
+    intersects_line2 = obstacle.intersects_line(line2_start, line2_end,clearance)
 
     print(f"Line from {line1_start} to {line1_end} intersects with obstacle: {intersects_line1}")
     print(f"Line from {line2_start} to {line2_end} intersects with obstacle: {intersects_line2}")
