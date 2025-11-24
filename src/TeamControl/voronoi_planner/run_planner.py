@@ -58,10 +58,10 @@ class PathPlanner():
         # planner = VoronoiPlanner(xsize=x,ysize=y) # not recommended
 
         # the start positions of our robots
-        start = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id)]
+        start = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).xy_pos]
         # obstacles
-        our_robot_obs = [r.obstacle for r in self.frame.get_our_robots(us=True, robot_id=None)]
-        enemy_robot_obs = [r.obstacle for r in self.frame.get_our_robots(us=False, robot_id=None)]
+        our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
+        enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
         obstacles = our_robot_obs + enemy_robot_obs
         # the destination point of these
         goals = [target_pos]
@@ -71,7 +71,7 @@ class PathPlanner():
         
         self.p.update_obstacles(obstacles)
 
-        initial_waypoints= self.p.generate_waypoints(start,goals,self.d0)
+        initial_waypoints= self.p.generate_waypoints(our_robot_obs,goals,self.d0)
         waypoints = [self.p.simplify([s] + w + [g], self.CLEARANCE, [o.unum()]) for s,w,g,o in zip(start,initial_waypoints,goals,obstacles)]
 
         end_time = time.time()
