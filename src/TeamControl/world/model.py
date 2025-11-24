@@ -117,6 +117,13 @@ class WorldModel:
     def get_latest_frame(self):
         return self.frame_list.latest
     
+    def get_last_n_frames(self,n:int):
+        return self.frame_list.get_last_n_frames(n)
+    def get_version(self):
+        return self._version.value
+    
+    
+    # avoid using this. I realised that there's problems here
     # high level
     def get_all_in_team_except(self,us:bool,exclude:list[int]):
         # get the latest frame
@@ -160,14 +167,10 @@ class WorldModel:
         # returns a robot if a valid id is given, otherwise, returns list of robot
         return robots[robot_id] if isinstance(robot_id, int) else robots
 
-    def get_last_n_frames(self,n:int):
-        return self.frame_list.get_last_n_frames(n)
+    
     
     def get_active_robots(self):
         return self.robot_active
-    
-    def get_version(self):
-        return self._version.value
     
 # if __name__ == "__main__":
 #     import time
