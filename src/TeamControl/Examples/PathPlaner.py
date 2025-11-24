@@ -1,4 +1,4 @@
-from TeamControl.voronoi_planner.voronoi_planner import VoronoiPlanner
+from old_stuff.voronoi_planner import VoronoiPlanner
 from TeamControl.world.model import WorldModel as wm
 from TeamControl.SSL.vision.robots import Robot as r
 
