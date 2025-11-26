@@ -100,10 +100,10 @@ class PathPlanner():
         excution_time = end_time - start_time
         print(f"{excution_time=}")
         
-        self.p.plot(our_robot_obs, goals, waypoints)
+        self.p.plot(our_robot_obs, goals, simplified_paths)
 
         print(f"{simplified_paths=}")
-        return simplified_paths[0]  # return waypoints for the specified robot_id
+        return simplified_paths # return waypoints for the specified robot_id
 
 def run_planner(world_model:wm,planner_q):
     planner = PathPlanner(world_model,planner_q)
