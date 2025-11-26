@@ -1,6 +1,9 @@
 from TeamControl.voronoi_planner.planner import VoronoiPlanner
 from TeamControl.world.model import WorldModel as wm
 
+# testing go to target 
+from TeamControl.robot.Movement import RobotMovement
+
 import numpy as np
 import time
 
@@ -41,9 +44,12 @@ class PathPlanner():
                 target_pos = self.frame.ball.position # or some position
                 print(f"{target_pos=}")
                 waypoints:list = self.pathplanning(robot_id=robot_id,target_pos=target_pos)
-                if isinstance(waypoints, list): # if the waypoint exists
-                    # push forward waypoints to output (back to world model / behaviour tree)
-                    self.output_q.put((robot_id,waypoints))  
+                vx,vy = RobotMovement.go_To_Target(waypoints)
+                print(vx,vy)
+                break
+                # if isinstance(waypoints, list): # if the waypoint exists
+                #     # push forward waypoints to output (back to world model / behaviour tree)
+                    #     self.output_q.put((robot_id,waypoints))  
 
 
     ## this is modified from the example, and I turned it into 1 robot only.
@@ -61,7 +67,7 @@ class PathPlanner():
         # planner = VoronoiPlanner(xsize=x,ysize=y) # not recommended
 
         # the start positions of our robots
-        start = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).xy_pos]
+        start_pos = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).xy_pos]
         # obstacles
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
@@ -93,9 +99,11 @@ class PathPlanner():
         end_time = time.time()
         excution_time = end_time - start_time
         print(f"{excution_time=}")
+        
+        self.p.plot(our_robot_obs, goals, waypoints)
 
         print(f"{simplified_paths=}")
-        return simplified_paths
+        return simplified_paths[0]  # return waypoints for the specified robot_id
 
 def run_planner(world_model:wm,planner_q):
     planner = PathPlanner(world_model,planner_q)
