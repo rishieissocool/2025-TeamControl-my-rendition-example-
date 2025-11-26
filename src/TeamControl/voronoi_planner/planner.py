@@ -132,8 +132,8 @@ class VoronoiPlanner:
         if self.voronoi_diagram:
             voronoi_plot_2d(self.voronoi_diagram, ax=ax, show_vertices=False, show_points=False)
 
-        ax.set_xlim(0, self.xsize)
-        ax.set_ylim(0, self.ysize)
+        ax.set_xlim((-self.xsize), self.xsize)
+        ax.set_ylim((-self.ysize), self.ysize)
 
         # Obstacles
         for obs in self.obstacles:
