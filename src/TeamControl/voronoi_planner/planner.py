@@ -5,6 +5,9 @@ Rewritten Voronoi Path Planner with Obstacle Avoidance
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use("TkAgg")
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from scipy.spatial import Voronoi, voronoi_plot_2d
@@ -124,6 +127,39 @@ class VoronoiPlanner:
             waypoints.append(path)
         return waypoints
 
+    def plot(self, starts, goals, waypoints):
+        fig, ax = plt.subplots(figsize=(10, 10))
+        if self.voronoi_diagram:
+            voronoi_plot_2d(self.voronoi_diagram, ax=ax, show_vertices=False, show_points=False)
+
+        ax.set_xlim(0, self.xsize)
+        ax.set_ylim(0, self.ysize)
+
+        # Obstacles
+        for obs in self.obstacles:
+            circle = Circle(obs.centre(), obs.radius, color='b', fill=True)
+            ax.add_patch(circle)
+
+        # Start & Goals
+        print(type(starts),type(goals))
+        for s, g in zip(starts, goals):
+            ax.plot(s.x, s.y, 'go')
+            ax.plot(g[0], g[1], 'ro')
+
+        # Paths
+        cmap = plt.colormaps['tab10']
+        for i, path in enumerate(waypoints):
+            if path:
+                p = add_jitter(np.array([s.centre() for s in [starts[i]]] + path))
+                ax.plot(p[:, 0], p[:, 1], '-', color=cmap(i % 10), linewidth=2)
+
+        ax.set_aspect('equal')
+        plt.title("Voronoi Path Planning with Obstacle Avoidance")
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.grid(True)
+        plt.show()
+
 
 def generate_points(N, dmin, xrange, yrange, existing=[]):
     points = []
@@ -142,38 +178,6 @@ def generate_points(N, dmin, xrange, yrange, existing=[]):
 def add_jitter(path, amount=0.05):
     return path + np.random.uniform(-amount, amount, path.shape)
 
-
-def plot(vp, starts, goals, waypoints, obstacles):
-    fig, ax = plt.subplots(figsize=(10, 10))
-    if vp.voronoi_diagram:
-        voronoi_plot_2d(vp.voronoi_diagram, ax=ax, show_vertices=False, show_points=False)
-
-    ax.set_xlim(0, vp.xsize)
-    ax.set_ylim(0, vp.ysize)
-
-    # Obstacles
-    for obs in obstacles:
-        circle = Circle(obs.centre(), obs.radius, color='b', fill=True)
-        ax.add_patch(circle)
-
-    # Start & Goals
-    for s, g in zip(starts, goals):
-        ax.plot(s.x, s.y, 'go')
-        ax.plot(g[0], g[1], 'ro')
-
-    # Paths
-    cmap = plt.colormaps['tab10']
-    for i, path in enumerate(waypoints):
-        if path:
-            p = add_jitter(np.array([s.centre() for s in [starts[i]]] + path))
-            ax.plot(p[:, 0], p[:, 1], '-', color=cmap(i % 10), linewidth=2)
-
-    ax.set_aspect('equal')
-    plt.title("Voronoi Path Planning with Obstacle Avoidance")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.grid(True)
-    plt.show()
 
 
 if __name__ == "__main__":
@@ -228,4 +232,4 @@ if __name__ == "__main__":
 
         simplified_paths.append(simple)
 
-    plot(vp, our_robots, goals, simplified_paths, all_obstacles)
+    vp.plot(our_robots, goals, simplified_paths)
