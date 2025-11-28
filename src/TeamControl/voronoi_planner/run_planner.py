@@ -3,13 +3,13 @@ from TeamControl.world.model import WorldModel as wm
 
 # testing go to target 
 from TeamControl.robot.Movement import RobotMovement
-
+from TeamControl.network.robot_command import RobotCommand
 import numpy as np
 import time
 
 class PathPlanner():
     # values are from before.
-    CLEARANCE = 75
+    CLEARANCE = 100
     d0 = 1000
     N = 100
     
@@ -28,7 +28,7 @@ class PathPlanner():
         
         # frame version check. 
         new_version = self.wm.get_version() #compares version
-        if self.version < new_version:
+        if self.version <= new_version:
             self.version = new_version
             self.frame = self.wm.get_latest_frame() #updates the frame
             return True
@@ -41,12 +41,22 @@ class PathPlanner():
             is_updated = self.check_wm_update()
             # follow waypoints here 
             if is_updated is True:
+                robot_pos = self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).position
                 target_pos = self.frame.ball.position # or some position
-                print(f"{target_pos=}")
+                # print(f"{target_pos=}")
                 waypoints:list = self.pathplanning(robot_id=robot_id,target_pos=target_pos)
-                vx,vy = RobotMovement.go_To_Target(waypoints)
-                print(vx,vy)
-                break
+                # print(f"{waypoints=}")
+                # keep going to point until we see clear path
+                point = waypoints[0][1] if len(waypoints[0])>1 else None
+                
+                vx,vy,w= RobotMovement.velocity_to_target(robot_pos,point)
+                # print(vx,vy)
+                command = RobotCommand(robot_id, vx, vy, 0,0,0) 
+                runtime = 1 
+                self.output_q.put((command, runtime))
+                # output to dispatcher for prototype 
+                    # # assuming 0 angular velocity
+                # break
                 # if isinstance(waypoints, list): # if the waypoint exists
                 #     # push forward waypoints to output (back to world model / behaviour tree)
                     #     self.output_q.put((robot_id,waypoints))  
@@ -81,7 +91,7 @@ class PathPlanner():
         self.p.update_obstacles(all_obstacles)
 
         waypoints= self.p.generate_waypoints(our_robot_obs,goals,self.d0)
-        print(f"{waypoints=}")
+        # print(f"{waypoints=}")
         simplified_paths = []
         for i, (start, wp, goal) in enumerate(zip(our_robot_obs, waypoints, goals)):
             full_path = [start.centre()] + wp
@@ -100,9 +110,9 @@ class PathPlanner():
         excution_time = end_time - start_time
         print(f"{excution_time=}")
         
-        self.p.plot(our_robot_obs, goals, simplified_paths)
+        # self.p.plot(our_robot_obs, goals, simplified_paths)
 
-        print(f"{simplified_paths=}")
+        # print(f"{simplified_paths=}")
         return simplified_paths # return waypoints for the specified robot_id
 
 def run_planner(world_model:wm,planner_q):

@@ -34,7 +34,7 @@ def main():
     vision_wkr = Process(target=vision_worker, args=(vision_q,use_sim,))
     gc_wkr = Process(target=run_gcfsm, args=(gc_q,))
     dispatch_wkr = Process(target=run_dispatcher, args=(dispatch_q,use_sim,is_yellow))
-    planner_wkr = Process(target=run_planner, args=(wm,planner_q))
+    planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))
 
     # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
     # chaser = Process(target=run_rc_process,args=(dispatch_q,wm,1,is_yellow))

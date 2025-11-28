@@ -17,7 +17,7 @@ import time
 from TeamControl.voronoi_planner.obstacle import Obstacle
 
 THRESHOLD = 300
-CLEARANCE = 75
+CLEARANCE = 100
 
 
 def offset_goal_if_inside_obstacle(start, goal, obstacles, clearance, threshold=150):
@@ -36,8 +36,8 @@ def offset_goal_if_inside_obstacle(start, goal, obstacles, clearance, threshold=
 
 class VoronoiPlanner:
     def __init__(self, xsize, ysize, obstacles=None):
-        self.xsize = xsize
-        self.ysize = ysize
+        self.xsize = xsize//2 # vision field has both + and - 
+        self.ysize = ysize//2
         self.obstacles = []
         self.radius = 75
         self.update_obstacles(obstacles)
@@ -66,7 +66,7 @@ class VoronoiPlanner:
         return G
 
     def is_in_bounds(self, point):
-        return 0 <= point[0] <= self.xsize and 0 <= point[1] <= self.ysize
+        return 0 <= np.abs(point[0]) <= self.xsize and 0 <= np.abs(point[1]) <= self.ysize
 
     def find_nearest_voronoi_vertex(self, point):
         if len(self.voronoi_vertices) == 0:
