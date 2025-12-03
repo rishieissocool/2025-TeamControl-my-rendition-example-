@@ -10,19 +10,6 @@ y = 6000
 # planner = VoronoiPlanner(xsize=x,ysize=y)
 
 def pathplanning(planner:VoronoiPlanner,world_model:wm,target_pos):
-    """
-    This generates waypoints for all of our robots to target and returns as a list
-
-    Args:
-        planner (VoroniPlanner): the initialised Planner.
-        world_model (World): World Model from vision socket
-        target_pos (tuple[float,float]): targeted location e.g. ball_pos 
-
-    Returns:
-        list: list of waypoints (order by robot_id)
-    """
-    # planner = VoronoiPlanner(xsize=x,ysize=y) # not recommended
-
     CLEARANCE = 200
     d0 = 250
     N = 100

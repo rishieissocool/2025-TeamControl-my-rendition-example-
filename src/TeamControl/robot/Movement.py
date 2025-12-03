@@ -1,6 +1,12 @@
 import math
+import numpy as np
 from TeamControl.world.transform_cords import *
+from TeamControl.robot.robot_commands import RobotCommands
+from TeamControl.world.transform_cords import world2robot
+from TeamControl.SSL.grSim.commands import GrSimRobotCommands 
+from typing import Tuple, Union, List, Optional
 
+from TeamControl.world.transform_cords import world2robot
 class RobotMovement():
     
     @classmethod
@@ -106,7 +112,7 @@ class RobotMovement():
     
    
 
-    @staticmethod
+    @staticmethod 
     def calculate_target_position(target, ball, robot_offset):
         '''
             This function returns the target position for a robot. It needs this
@@ -155,3 +161,37 @@ class Follow_path:
                 else: #if we are transiation between paths 
                     return self.path[0]
                 
+class calculateBallVelocity:
+    """
+    step() returns a 2-tuple:
+      (distance, speed)
+    where:
+      - distance : float            # world-frame distance to the ball
+      - speed    : Optional[float]  # chosen speed (m/s), or None if unreachable
+    """
+
+    def __init__(self, time_threshold: float = 1.5): #emma to check threshhold 
+        self.time_threshold = time_threshold
+        self.speed_levels   = [0.02, 0.04, 0.06, 0.08, 0.10] #possible speedds
+
+    def _pick_speed(self, distance: float) -> Optional[float]:
+        # build (speed, time_needed) pairs
+        options = [(v, distance / v) for v in self.speed_levels]
+        # filter those that meet the time threshold
+        valid = [v for v, t in options if t <= self.time_threshold]
+        return min(valid) if valid else None
+
+    def step(
+        self,
+        robot_pose: Tuple[float, float, float],
+        ball_pos:   Tuple[float, float]
+    ) -> Tuple[float, Optional[float]]:
+        # 1) compute world-frame distance
+        dx = ball_pos[0] - robot_pose[0]
+        dy = ball_pos[1] - robot_pose[1]
+        distance = math.hypot(dx, dy)
+
+        # 2) choose a speed (or return  None if unreachable)
+        speed = self._pick_speed(distance)
+
+        return distance, speed
