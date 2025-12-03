@@ -40,7 +40,7 @@ class PathPlanner():
         while True:
             is_updated = self.check_wm_update()
             # follow waypoints here 
-            if is_updated is True:
+            if is_updated is True and self.frame is not None:
                 robot_pos = self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).position
                 target_pos = self.frame.ball.position # or some position
                 # print(f"{target_pos=}")
@@ -48,6 +48,10 @@ class PathPlanner():
                 # print(f"{waypoints=}")
                 # keep going to point until we see clear path
                 point = waypoints[0][1] if len(waypoints[0])>1 else None
+
+                #DEBUG
+                print("Robot pos:", robot_pos, "Next:", point)
+
                 
                 vx,vy,w= RobotMovement.velocity_to_target(robot_pos,point)
                 # print(vx,vy)
@@ -77,13 +81,14 @@ class PathPlanner():
         # planner = VoronoiPlanner(xsize=x,ysize=y) # not recommended
 
         # the start positions of our robots
-        start_pos = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).xy_pos]
+
+        start_pos = [x.xy_pos for x in self.frame.get_yellow_robots(isYellow=self.isYellow)]
         # obstacles
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
         all_obstacles = our_robot_obs + enemy_robot_obs
         # the destination point of these
-        goals = [target_pos]
+        goals = [target_pos,target_pos,target_pos,target_pos,target_pos]
         print("number of Obstacles:",len(all_obstacles))
 
         start_time = time.time()
@@ -110,7 +115,8 @@ class PathPlanner():
         excution_time = end_time - start_time
         print(f"{excution_time=}")
         
-        # self.p.plot(our_robot_obs, goals, simplified_paths)
+        # Print graph
+        self.p.plot(our_robot_obs, goals, simplified_paths)
 
         # print(f"{simplified_paths=}")
         return simplified_paths # return waypoints for the specified robot_id

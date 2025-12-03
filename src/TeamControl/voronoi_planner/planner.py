@@ -42,17 +42,86 @@ class VoronoiPlanner:
         self.radius = 75
         self.update_obstacles(obstacles)
 
+    
+    # Fixes objects being too close or overlapping
+    def cluster_obstacles(self, obstacles, merge_dist=CLEARANCE * 2):
+        """
+        Merge obstacles that are too close (overlapping or nearly overlapping).
+        Produces a single larger obstacle for each cluster.
+        """
+        clusters = []
+        used = set()
+
+        for i, o in enumerate(obstacles):
+            if i in used:
+                continue
+
+            # start a new cluster
+            cluster = [o]
+            used.add(i)
+
+            for j, o2 in enumerate(obstacles):
+                if j in used:
+                    continue
+
+                d = np.linalg.norm(o.centre() - o2.centre())
+
+                if d < merge_dist:
+                    cluster.append(o2)
+                    used.add(j)
+
+            # Merge cluster into one obstacle
+            centers = np.array([c.centre() for c in cluster])
+            centroid = centers.mean(axis=0)
+
+            # new radius = distance to furthest centre + obstacle radius
+            max_r = max(np.linalg.norm(c.centre() - centroid) + c.radius for c in cluster)
+
+            merged = Obstacle(centroid, max_r, cluster[0].unum(), cluster[0].isYellow)
+            clusters.append(merged)
+
+        return clusters
+
+
+
+    # Replaced
+    # def update_obstacles(self, obstacles):
+    #     self.obstacles = obstacles or []
+    #     self.obstacle_points = [o.centre() for o in self.obstacles]
+    #     if len(self.obstacle_points) >= 4:  # Voronoi requires at least 4 points
+    #         self.voronoi_diagram = Voronoi(self.obstacle_points)
+    #         self.voronoi_vertices = self.voronoi_diagram.vertices
+    #         self.graph = self.build_voronoi_graph()
+    #     else:
+    #         self.voronoi_diagram = None
+    #         self.voronoi_vertices = np.empty((0, 2))
+    #         self.graph = nx.Graph()
+
     def update_obstacles(self, obstacles):
+        """
+        Update the list of obstacles, cluster overlapping/close obstacles,
+        and rebuild the Voronoi diagram and graph.
+        """
+        # Step 1: store raw obstacles
         self.obstacles = obstacles or []
+
+        # Step 2: cluster overlapping or close obstacles
+        self.obstacles = self.cluster_obstacles(self.obstacles)
+
+        # Step 3: get obstacle centers for Voronoi seeds
         self.obstacle_points = [o.centre() for o in self.obstacles]
-        if len(self.obstacle_points) >= 4:  # Voronoi requires at least 4 points
+
+        # Step 4: build Voronoi diagram if we have enough points
+        if len(self.obstacle_points) >= 4:
             self.voronoi_diagram = Voronoi(self.obstacle_points)
             self.voronoi_vertices = self.voronoi_diagram.vertices
             self.graph = self.build_voronoi_graph()
         else:
+            # Not enough points for Voronoi, keep empty structures
             self.voronoi_diagram = None
             self.voronoi_vertices = np.empty((0, 2))
             self.graph = nx.Graph()
+
 
     def build_voronoi_graph(self):
         G = nx.Graph()
