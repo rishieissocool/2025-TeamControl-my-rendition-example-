@@ -10,7 +10,11 @@ dependencies = [
     "matplotlib",
     "protobuf",
     "PyYAML",
-    "pytest"
+    "py_trees",
+    "Shapely",
+    "scikit-learn",
+    "networkx",
+    "pytest",
 ]
 
 dynamic = [
@@ -24,11 +28,6 @@ where = ["src"]
 version = {attr = "TeamControl.__version__"}
 
 [project.optional-dependencies]
-pathplanning = [
-    "Shapely",
-    "scikit-learn",
-    "networkx",
-    ]
-trajectory = [
-    "scikit-learn",
+testing = [
+    "pytest",
 ]
