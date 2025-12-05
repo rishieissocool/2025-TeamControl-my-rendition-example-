@@ -2,8 +2,8 @@
 import pygame
 import time
 
-from TeamControl.network import Sender
-from TeamControl.network.robotCommand import RobotCommand
+from TeamControl.network.sender import Sender
+from TeamControl.network.robot_command import RobotCommand
 
 class Remote_robot():
     def __init__(self, robot_id=2, isYellow=True):
@@ -11,13 +11,13 @@ class Remote_robot():
         self.us_yellow = isYellow
 
 
-        robot_ip = "172.20.10.2"
+        robot_ip = "172.20.10.6"
         self.sender = Sender(ip=robot_ip,port=50514)
         
 
 
     def run_remote_control(self):
-        speed = 50
+        speed = 5
         vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
         pygame.init()
