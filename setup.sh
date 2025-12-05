@@ -15,10 +15,11 @@ then
         sudo apt update
         sudo apt-get install -y \
             python3.13 python3.13-venv python3.13-dev python3.13-tk
+        python3.13 -m venv "$VENV_DIR" || { echo "cannot initiate virtual environment."; exit 1; }
 
-    fi 
-    python3.13 -m venv "$VENV_DIR" || { echo "cannot initiate virtual environment."; exit 1; }
-
+    else
+        python3 -m venv "$VENV_DIR" || { echo "cannot initiate virtual environment."; exit 1; }
+    fi
 fi
 if [ -d "$VENV_DIR" ]; then
    # Check OS and use the correct activate script path
