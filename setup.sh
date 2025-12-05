@@ -62,3 +62,6 @@ echo -e "\n - - - Performing Git Pull - - - "
 git pull || { echo "Git pull failed"; exit 1; }
 
 
+## if on windows, powershell is not activating virtual environment do : 
+## Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+## then restart powershell, and it'd work.
