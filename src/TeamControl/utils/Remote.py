@@ -1,12 +1,13 @@
 
 import pygame
+import math
 import time
 
 from TeamControl.network.sender import Sender
 from TeamControl.network.robot_command import RobotCommand
 
 class Remote_robot():
-    def __init__(self, robot_id=2, isYellow=True):
+    def __init__(self, robot_id=2, isYellow=False):
         self.robot_id = robot_id
         self.us_yellow = isYellow
 
@@ -17,8 +18,8 @@ class Remote_robot():
 
 
     def run_remote_control(self):
-        speed = 5
-        vx,vy,vw,k,d = 0,0,0,0,0
+        speed = 50
+        # vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
         pygame.init()
         screen = pygame.display.set_mode((400, 300))
@@ -49,9 +50,9 @@ class Remote_robot():
                     vy += +speed
                 
             if keys[pygame.K_q] or keys[pygame.K_PAGEUP]:
-                vw += +speed
+                vw += +speed/(2*math.pi)
             if keys[pygame.K_e] or keys[pygame.K_PAGEDOWN]:
-                vw += -speed
+                vw += -speed/(2*math.pi)
             
             
             if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
