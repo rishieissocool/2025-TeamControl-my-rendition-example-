@@ -36,7 +36,7 @@ class PathPlanner():
                 
     def running (self):
         ## this is for multi processing usage
-        robot_id = 0  # example for robot 0
+        robot_id = 1  # example for robot 0
         while True:
             is_updated = self.check_wm_update()
             # follow waypoints here 
@@ -82,13 +82,15 @@ class PathPlanner():
 
         # the start positions of our robots
 
-        start_pos = [x.xy_pos for x in self.frame.get_yellow_robots(isYellow=self.isYellow)]
+        # start_pos = [x.xy_pos for x in self.frame.get_yellow_robots(isYellow=self.isYellow)]
+        start_pos = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).xy_pos]
         # obstacles
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
         all_obstacles = our_robot_obs + enemy_robot_obs
         # the destination point of these
-        goals = [target_pos,target_pos,target_pos,target_pos,target_pos]
+        # goals = [target_pos,target_pos,target_pos,target_pos,target_pos]
+        goals = [target_pos]
         print("number of Obstacles:",len(all_obstacles))
 
         start_time = time.time()
@@ -116,7 +118,7 @@ class PathPlanner():
         print(f"{excution_time=}")
         
         # Print graph
-        # self.p.plot(our_robot_obs, goals, simplified_paths)
+        self.p.plot(our_robot_obs, goals, simplified_paths)
 
         # print(f"{simplified_paths=}")
         return simplified_paths # return waypoints for the specified robot_id
