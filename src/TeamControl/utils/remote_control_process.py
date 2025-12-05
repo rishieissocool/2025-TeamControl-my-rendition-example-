@@ -62,7 +62,15 @@ class RCProcess():
         pygame.init()
         screen = pygame.display.set_mode((400, 300))
         
+        import pygame
+        
+        pygame.init()
+        screen = pygame.display.set_mode((400, 300))
+        
         speed = 1
+        while True:
+            vx,vy,vw,k,d = 0,0,0,0,0
+            pygame.event.pump()  # Process internal events
         while True:
             vx,vy,vw,k,d = 0,0,0,0,0
             pygame.event.pump()  # Process internal events

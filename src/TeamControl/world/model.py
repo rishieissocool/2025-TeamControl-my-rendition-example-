@@ -38,6 +38,24 @@ class WorldModel:
         self.geometry:GeometryData = None
         self.field:FieldSize = None
         self._version = mgr.Value('i', 0)  # int counter
+    
+    def update_game_data(self,game_data):
+        if isinstance(game_data,Command):
+            self.ref_data.command = game_data
+        
+        elif isinstance(game_data,Stage):
+            self.ref_data.stage = game_data
+            
+        elif isinstance(game_data,tuple):
+            if isinstance(game_data[0],TeamInfo):
+                self.ref_data.yellow = game_data[0]
+                self.ref_data.blue = game_data[1]
+    
+
+
+    def update_team(self,us_yellow:bool,us_positive:bool):
+        self.us_yellow = us_yellow
+        self.us_positive = us_positive
         self.robot_active = 6 # robots active
         self.game_state = GameState.HALTED
         self.blf_location = None
