@@ -25,7 +25,7 @@ except ImportError as e:
 class YamlSender(BaseSocket):
     def __init__(self):
         path = Path(__file__).resolve()
-        print(path)
+        # print(path)
 
         file = open(path.parent / "ipconfig.yaml", "r")
         self.robot = yaml.load(file, Loader)

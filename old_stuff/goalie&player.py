@@ -5,7 +5,7 @@ from TeamControl.network import *
 from TeamControl.world.model import World
 from TeamControl.world.transform_cords import world2robot
 from TeamControl.world.Trajectory import predict_trajectory
-from TeamControl.voronoi_planner.voronoi_planner import VoronoiPlanner
+from old_stuff.voronoi_planner import VoronoiPlanner
 
 from TeamControl.robot.Movement import RobotMovement
 

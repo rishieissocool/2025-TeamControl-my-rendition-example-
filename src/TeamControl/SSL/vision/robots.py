@@ -39,6 +39,16 @@ class Robot:
         """
         return np.array([self.x, self.y, self.o], dtype=np.float32)
     
+    @property
+    def xy_pos(self) -> np.dtype:
+        """
+        Returns the robot's x,y position as a NumPy array.
+
+        Returns:
+            np.ndarray: [x, y] in float32.
+        """
+        return np.array([self.x, self.y], dtype=np.float32)
+    
     # def __lt__(self,other):
     #     return self.id < other.id
     

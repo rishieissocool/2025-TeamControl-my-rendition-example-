@@ -88,7 +88,7 @@ class Frame():
         self.cameras.add(new_frame_data.camera_id)
 
        
-    def get_all_in_team(self,isYellow:bool,exclude:list[int]=None):
+    def get_all_in_team_except(self,isYellow:bool,exclude:list[int]=None):
         # get the latest frame
         # get the team
         if isYellow is True:
