@@ -18,7 +18,8 @@ then
         python3.13 -m venv "$VENV_DIR" || { echo "cannot initiate virtual environment."; exit 1; }
 
     else
-        python3 -m venv "$VENV_DIR" || { echo "cannot initiate virtual environment."; exit 1; }
+    # for this python do either "python", "python3", or "python3.x" depending on your OS and installation
+        python -m venv "$VENV_DIR" || { echo "cannot initiate virtual environment."; exit 1; }
     fi
 fi
 if [ -d "$VENV_DIR" ]; then
