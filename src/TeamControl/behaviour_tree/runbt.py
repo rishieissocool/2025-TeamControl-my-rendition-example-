@@ -6,7 +6,7 @@ import logging
 import time
 from TeamControl.SSL.game_controller.common import Command
 from TeamControl.world.model import WorldModel
-from TeamControl.robot.robot_commands import RobotCommands
+from TeamControl.network.robot_command import RobotCommand
 
 # Configure logging
 logging.basicConfig(
@@ -156,7 +156,7 @@ class SendHaltCommand(py_trees.behaviour.Behaviour):
         
         for robot_id in self.robot_ids:
             # Create halt command
-            cmd = RobotCommands(
+            cmd = RobotCommand(
                 robot_id=robot_id,
                 vx=0.0,
                 vy=0.0,
@@ -196,7 +196,7 @@ class SendStopCommand(py_trees.behaviour.Behaviour):
         
         for robot_id in self.robot_ids:
             # Create stop command
-            cmd = RobotCommands(
+            cmd = RobotCommand(
                 robot_id=robot_id,
                 vx=0.0,
                 vy=0.0,

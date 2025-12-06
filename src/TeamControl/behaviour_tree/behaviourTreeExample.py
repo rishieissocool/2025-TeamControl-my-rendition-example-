@@ -6,7 +6,7 @@ from TeamControl.SSL.vision.frame import Robot
 from TeamControl.robot.Movement import RobotMovement
 from TeamControl.world.Trajectory import predict_trajectory
 from TeamControl.world.nearest import Nearest
-from TeamControl.robot.robot_commands import RobotCommands
+from TeamControl.network.robot_command import RobotCommand
 
 
 logging.basicConfig(level=logging.INFO)
@@ -79,7 +79,7 @@ class GoShootVelocity(py_trees.behaviour.Behaviour):
         if not (hasattr(bb, "ball_position") and bb.ball_position):
             return py_trees.common.Status.FAILURE
         vx, vy, w = RobotMovement.goShootVelcoity(self.robot.position, bb.ball_position)
-        cmd = RobotCommands(self.robot.id, vx, vy, w, kick=True, dribble=False)
+        cmd = RobotCommand(self.robot.id, vx, vy, w, kick=True, dribble=False)
         logging.info(f"[BT] Robot {self.robot.id} Shooting: {cmd}")
         return py_trees.common.Status.SUCCESS
 
@@ -90,7 +90,7 @@ class MoveToSupportPosition(py_trees.behaviour.Behaviour):
         self.position = position
     def update(self):
         vx, vy, w = RobotMovement.velocity_to_target(self.robot.position, self.position)
-        cmd = RobotCommands(self.robot.id, vx, vy, w, kick=False, dribble=False)
+        cmd = RobotCommand(self.robot.id, vx, vy, w, kick=False, dribble=False)
         logging.info(f"[BT] Robot {self.robot.id} Moving to Support: {cmd}")
         return py_trees.common.Status.SUCCESS
 
@@ -113,7 +113,7 @@ class MoveToDefaultGoalieSpot(py_trees.behaviour.Behaviour):
         self.position = position
     def update(self):
         vx, vy, w = RobotMovement.velocity_to_target(self.robot.position, self.position)
-        cmd = RobotCommands(self.robot.id, vx, vy, w, kick=False, dribble=False)
+        cmd = RobotCommand(self.robot.id, vx, vy, w, kick=False, dribble=False)
         logging.info(f"[BT] Goalie {self.robot.id} Resetting Position: {cmd}")
         return py_trees.common.Status.SUCCESS
 

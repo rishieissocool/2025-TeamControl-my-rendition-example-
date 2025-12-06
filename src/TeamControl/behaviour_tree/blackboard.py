@@ -1,7 +1,8 @@
 import py_trees
 import logging
 import time
-from typing import Optional, List, Tuple
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple
 
 # Configure logging
 logging.basicConfig(
@@ -10,8 +11,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
 
 @dataclass
 class BBState:

@@ -2,7 +2,6 @@ import py_trees
 import logging
 import time
 from typing import Optional, List, Tuple
-from TeamControl.world.model import WorldModel
 from TeamControl.behaviour_tree.blackboardUpdater import create_team_tree  # <-- ADD THIS
 
 # Configure logging
@@ -24,7 +23,6 @@ def make_dummy_robot(robot_id: int, is_yellow: bool = True):
 if __name__ == "__main__":
     logger.info("Creating behavior tree...")
     
-    wm = WorldModel()
     robots = [make_dummy_robot(i, True) for i in range(6)]
     
     # Build and setup tree
