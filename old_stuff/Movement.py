@@ -106,16 +106,14 @@ def calculate_target_position(target, ball, robot_offset):
         This function returns the target position for a robot. It needs this
         to aim and shoot a ball.
     '''
-    # Calculate direction vector from ball to target
-    direction = np.array(target) - np.array(ball)
-    
-    # Normalize direction vector
-    direction = direction.astype(float)  # Ensure direction vector is float
-    direction = np.linalg.norm(direction)
-    
-    # Calculate robot position slightly behind the ball
-    robot_position = np.array(ball) - robot_offset * direction
-    
+    direction = np.array(target, dtype=float) - np.array(ball, dtype=float)
+    norm = np.linalg.norm(direction)
+    if norm == 0:
+        return np.array(ball, dtype=float)
+
+    direction /= norm
+    robot_position = np.array(ball, dtype=float) - robot_offset * direction
     return robot_position
+
 
 
