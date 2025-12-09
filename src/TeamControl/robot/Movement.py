@@ -93,25 +93,24 @@ class RobotMovement():
             return 0,0
 
     @staticmethod
-    def shooting_pos(ball_pos:tuple[float,float],shootingTarget: tuple[float,float], robot_offset = 500):
-        '''
-        This function returns the target position for a robot. It needs this
-        to aim and shoot a ball.
-        shootingTarget: target your aiming to shoot
-        robot_offset: how far in front you want teh robot to be
-        '''
-        # Calculate direction vector from ball to target
-        direction = np.array(shootingTarget) - np.array(ball_pos)
+    def shooting_pos(ball_pos: tuple[float, float],
+                 shootingTarget: tuple[float, float],
+                 robot_offset: float = 500.0) -> tuple[float, float]:
+
+        ball = np.array(ball_pos, dtype=float)
+        target = np.array(shootingTarget, dtype=float)
+
+        direction = target - ball
+        norm = np.linalg.norm(direction)
+        if norm == 0:
+            # Ball and target are the same: just stand on the ball
+            return ball_pos
+
+        direction /= norm  # unit vector from ball → target
+
+        robot_position = ball - robot_offset * direction
+        return (float(robot_position[0]), float(robot_position[1]))
         
-        # Normalize direction vector
-        direction = direction.astype(float)  # Ensure direction vector is float
-        direction = np.linalg.norm(direction)
-        
-        # Calculate robot position slightly behind the ball
-        robot_position = np.array(ball_pos) - robot_offset * direction
-        
-        return robot_position
-    
     
    
 
