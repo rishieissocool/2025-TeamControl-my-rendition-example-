@@ -4,7 +4,7 @@ from TeamControl.SSL.vision.Process import vision_worker
 from TeamControl.SSL.game_controller.fsm import run_gcfsm
 from TeamControl.world.model_manager import WorldModelManager
 from TeamControl.world.model_runner import wm_runner
-from TeamControl.utils.dummy_process import DummyReader
+# from TeamControl.utils.dummy_process import DummyReader
 from TeamControl.utils.follow_ball_dummy import run_follow_ball_dummy
 from TeamControl.robot.goalie import run_goalie
 from TeamControl.network.proto2 import *
@@ -13,7 +13,7 @@ from TeamControl.voronoi_planner.run_planner import run_planner
 # in multiprocessing this can only be a simple process
 
 def main():
-    use_sim = False
+    use_sim = True
     is_yellow = True
     
     # queues
@@ -37,7 +37,7 @@ def main():
     planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))
 
     # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
-    # chaser = Process(target=run_follow_ball_dummy,args=(dispatch_q,wm,1,is_yellow))
+    chaser = Process(target=run_follow_ball_dummy,args=(dispatch_q,wm,1,is_yellow))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))'
     
     vision_wkr.start()
@@ -45,8 +45,8 @@ def main():
     wmr.start()
     # goalie.start()
     dispatch_wkr.start()
-    # chaser.start()
-    planner_wkr.start()
+    chaser.start()
+    # planner_wkr.start()
     # some_other_process2.start()
     
     vision_wkr.join()
@@ -54,8 +54,8 @@ def main():
     wmr.join()
     # goalie.join()
     dispatch_wkr.join()
-    # chaser.join()   
-    planner_wkr.join()
+    chaser.join()   
+    # planner_wkr.join()
     # some_other_process2.join()
 
 if __name__ == "__main__":

@@ -118,7 +118,7 @@ class PathPlanner():
         print(f"{excution_time=}")
         
         # Print graph
-        self.p.plot(our_robot_obs, goals, simplified_paths)
+        # self.p.plot(our_robot_obs, goals, simplified_paths)
 
         # print(f"{simplified_paths=}")
         return simplified_paths # return waypoints for the specified robot_id

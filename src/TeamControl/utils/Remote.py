@@ -12,13 +12,13 @@ class Remote_robot():
         self.us_yellow = isYellow
 
 
-        robot_ip = "172.20.10.6"
+        robot_ip = "172.20.10.2"
         self.sender = Sender(ip=robot_ip,port=50514)
         
 
 
     def run_remote_control(self):
-        speed = 50
+        speed = 0.1
         # vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
         pygame.init()
