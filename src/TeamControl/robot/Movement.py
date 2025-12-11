@@ -95,21 +95,30 @@ class RobotMovement():
     @staticmethod
     def shooting_pos(ball_pos: tuple[float, float],
                  shootingTarget: tuple[float, float],
-                 robot_offset: float = 500.0) -> tuple[float, float]:
-
-        ball = np.array(ball_pos, dtype=float)
-        target = np.array(shootingTarget, dtype=float)
-
-        direction = target - ball
+                 robot_offset: float = 500.0):
+        """
+        Return the position where the robot should stand to shoot.
+        - ball_pos: (x, y) of the ball in world coords
+        - shootingTarget: (x, y) of the goal (or any target)
+        - robot_offset: how far behind the ball (along the ball→target line)
+        """
+        # Vector from ball to target (goal)
+        direction = np.array(shootingTarget, dtype=float) - np.array(ball_pos, dtype=float)
         norm = np.linalg.norm(direction)
+
+        # Edge case: ball and target at same point
         if norm == 0:
-            # Ball and target are the same: just stand on the ball
-            return ball_pos
+            return np.array(ball_pos, dtype=float)
 
-        direction /= norm  # unit vector from ball → target
+        # Unit vector pointing from ball -> target
+        direction /= norm
 
-        robot_position = ball - robot_offset * direction
-        return (float(robot_position[0]), float(robot_position[1]))
+        # Robot should be behind the ball, opposite the goal
+        robot_position = np.array(ball_pos, dtype=float) - robot_offset * direction
+
+        return robot_position
+
+
         
     
    

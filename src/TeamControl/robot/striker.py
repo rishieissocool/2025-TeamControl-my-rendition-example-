@@ -98,12 +98,10 @@ def run_striker(dispatch_q,
         # MODE 2: CLOSE-RANGE ALIGNMENT & SHOOT
         # ==================================================
         if dist_to_ball < APPROACH_RADIUS:
-            # Stop translating, only rotate toward goal
             vx = 0.0
             vy = 0.0
 
             if abs(angle_to_goal) > ALIGN_TOL:
-                # rotate toward goal
                 w = 3.0 * math.copysign(1.0, angle_to_goal)
             else:
                 w = 0.0
@@ -113,6 +111,7 @@ def run_striker(dispatch_q,
                 kick = 1
             else:
                 kick = 0
+
 
             print(
                 f"[STRIKER] CLOSE RANGE: dist={dist_to_ball:.1f}, "
