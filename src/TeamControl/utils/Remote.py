@@ -19,7 +19,7 @@ class Remote_robot():
 
 
     def run_remote_control(self):
-        speed = 50
+        speed = 0.04
         # vx,vy,vw,k,d = 0,0,0,0,0
         # dribbler_on = False
         pygame.init()
