@@ -33,7 +33,7 @@ class RobotMovement():
             transTurningTarget = world2robot(robot_pos, turning_target)
             w = cls.turn_to_target(transTurningTarget)
             
-        return vx, vy, w
+        return -vx, vy, w
     
     @classmethod
     def goShootVelcoity(cls, robot_pos:tuple[float, float,float], target: tuple[float, float]):
