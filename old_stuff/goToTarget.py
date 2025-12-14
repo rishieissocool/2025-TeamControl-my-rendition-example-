@@ -9,28 +9,38 @@ c = time.localtime()
 TIME = time.strftime("%H:%M:%S", c)
 
 
-def turn_to_target(target:tuple[float,float], epsilon: float=0.15, speed: float = 5.0):
-    '''
-        This function returns an agular velocity. The goal is to turn the robot
-        in such a way that it is facing the ball with its kicker side.
+@staticmethod
+def turn_to_target(
+    target: tuple[float, float] | None = None,
+    epsilon: float = 0.15,
+    speed: float = 5.0,
+    robotOmega: float | None = None,
+) -> float:
+    """
+    Returns an angular velocity to rotate the robot so its forward axis
+    points toward 'target' in *robot coordinates*.
 
-        input: 
-            ball_position: ball position in the robot coordinate systen (e.g. (10mm,50mm))
-            epsilon: Threshold for the orientation (orientation does not have to be zero to 
-                     consider it correct -> avoids jitter)
-    '''
+    Robot frame:
+      target[0] = x_forward
+      target[1] = y_left
+    """
     if target is None:
-        return 0
-    orientation_to_ball = np.arctan2(target[0], target[1])-np.pi/2
+        return 0.0
 
-    if abs(orientation_to_ball) < epsilon:
-        # to avoid jitter
-        omega = 0
-    elif abs(orientation_to_ball) > epsilon and abs(orientation_to_ball) < 4*epsilon:
-        omega = -speed*np.sign(orientation_to_ball) * 0.5
+    # ✅ Correct: atan2(y, x)
+    angle = math.atan2(target[1], target[0])
+
+    # Avoid jitter when almost aligned
+    if abs(angle) < epsilon:
+        omega = 0.0
+    elif abs(angle) < 2 * epsilon:
+        omega = speed * math.copysign(0.05, angle)
     else:
-        omega = -speed*np.sign(orientation_to_ball)
-    return omega 
+        omega = speed * math.copysign(0.5, angle)
+
+    print("[turn_to_target] angle =", angle)
+    return omega
+
 
 def go_To_Target(target_pos: tuple[float,float], speed: int=1, stop_threshold:float=150):
     """go To Target Position (in respect to Robot)
