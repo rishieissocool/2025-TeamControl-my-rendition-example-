@@ -1,3 +1,11 @@
+# Read YAML file 
+import yaml
+
+with open("robots_info.yaml", "r") as f: 
+    robot_db = yaml.load(f, Loader = yaml.SafeLoader)
+
+print(robot_db)
+
 
 """ SENDER
 Sender includes :
@@ -10,28 +18,16 @@ Raises:
 import ast
 
 import logging
-
 from pathlib import Path
-from TeamControl.network.robot_command import RobotCommand
-from TeamControl.network.baseUDP import BaseSocket,SocketType
-import yaml
-try:
-    from yaml import CLoader as Loader
-except ImportError as e:
-    from yaml import Loader
+from .robot_command import RobotCommand
+from .baseUDP import BaseSocket,SocketType
 
 
           
 class YamlSender(BaseSocket):
     def __init__(self):
-        path = Path(__file__).resolve()
-        # print(path)
-
-        file = open(path.parent / "ipconfig.yaml", "r")
-        self.robot = yaml.load(file, Loader)
+        self.lookup = robot_db
         super().__init__(type=SocketType.SOCK_UDP,ip='')
-
-        
     
     def send_command(self, command:RobotCommand):
         """
@@ -43,14 +39,18 @@ class YamlSender(BaseSocket):
             
         Params: 
             encoded_Command(bytes): see Command.encode
+        
         Exceptions:
             TypeError : Only Command or byte objects allowed
         """
-        robot_id = str(command.robot_id)
-        destination = self.robot[robot_id]["ip"]
-        port = self.robot[robot_id]["port"]
-        enocded_command:bytes = command.encode()
-        self.sock.sendto(enocded_command, (destination, port))
-        # print(robot_id,destination,port, command, " Message Sent")
+        shell_id = command.robot_id
+        destination = self.lookup[shell_id]["ip"]
+        port = self.lookup[shell_id]["port"]
+        encoded_command:bytes = command.encode()
+        self.sock.sendto(encoded_command, (destination, port))
+        # print(shell_id,destination,port, command, " Message Sent")
 
-            
+
+c = RobotCommand(1)
+sender = YamlSender()
+sender.send_command(c)
