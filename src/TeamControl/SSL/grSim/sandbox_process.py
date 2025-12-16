@@ -9,7 +9,7 @@ class GrSimSandbox:
         self.cmd_listen_port = 20010
         self.is_yellow = True
         self.robot_id = 1
-        self.sender = grSimSender(ip=sim_ip,port=cmd_listen_port,is_yellow=is_yellow)
+        self.sender = grSimSender(ip=self.sim_ip,port=self.cmd_listen_port,is_yellow=self.is_yellow)
         self.version = 0 # vision version
         self.ball_last_known = (0,0)
 
@@ -28,14 +28,14 @@ class GrSimSandbox:
             
             # send the command after
             cmd = RobotCommand(self.robot_id, vx, vy, w, 0, 0)
-            sender.send_command(cmd)
+            self.sender.send_command(cmd)
             
     def get_update(self):
         # get_update
-        if version < wm.get_version():
-            version = wm.get_version()
-            self.frame = wm.get_latest_frame()
-            self.frames = wm.get_last_n_frames(10) # you can pick how many frames to get
+        if self.version < self.wm.get_version():
+            self.version = self.wm.get_version()
+            self.frame = self.wm.get_latest_frame()
+            self.frames =self.wm.get_last_n_frames(10) # you can pick how many frames to get
             if self.frame != None:
                 # verified that you have a frame
                 return True
@@ -43,9 +43,9 @@ class GrSimSandbox:
     
     def get_objects(self):
         # getting a robot object 
-        robot_obj = self.frame.get_yellow_robots(isYellow=is_yellow,robot_id=self.robot) 
+        robot_obj = self.frame.get_yellow_robots(isYellow=self.is_yellow,robot_id=self.robot_id) 
         # getting a team of robots that is yellow
-        robots = self.frame.get_yellow_robots(isYellow=is_yellow,robot_id=None)
+        robots = self.frame.get_yellow_robots(isYellow=self.is_yellow,robot_id=None)
         # accessing the specific robot position
         robot_pos = robot_obj.position
         # use this ball position if the ball position is not None otherwise use the last known position
