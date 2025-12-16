@@ -4,7 +4,7 @@ from TeamControl.SSL.vision.Process import vision_worker
 from TeamControl.world.model_manager import WorldModelManager
 from TeamControl.world.model_runner import wm_runner
 from TeamControl.utils.dummy_process import DummyReader
-from TeamControl.SSL.grSim.sandbox_process import sandbox_process
+from TeamControl.SSL.grSim.sandbox_process import run_grsim_sandbox_process
 
 # in multiprocessing this can only be a simple process
 
@@ -25,7 +25,7 @@ def main():
     wm_manager.start()
     wm = wm_manager.WorldModel()
     wmr = Process(target=wm_runner, args=(wm,vision_q,gc_q,))
-    sandbox = Process(target=sandbox_process, args=(wm,) )
+    sandbox = Process(target=run_grsim_sandbox_process, args=(wm,) )
     vision_wkr.start()
     wmr.start()
     sandbox.start()
