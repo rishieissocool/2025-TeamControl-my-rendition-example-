@@ -80,7 +80,7 @@ class RobotMovement:
         dy = gy - by
 
         # Distance
-        d = math.sqrt(dx2 + dy2)
+        d = math.sqrt(dx**2 + dy**2) # is this dx2/dx**2
         if d == 0:
             raise ValueError("Ball and goal cannot be at the same point")
 
