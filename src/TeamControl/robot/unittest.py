@@ -3,10 +3,18 @@ import time
 import matplotlib.pyplot as plt
 from TeamControl.SSL.vision.field import FieldLines, Vector2f
 from TeamControl.robot.Movement import RobotMovement
-from TeamControl.world.model import WorldModel as wm
-from TeamControl.main import main
-from multiprocessing import Process
 
+
+line_thickness = 1.0              # line thickness
+length= 4500.0
+width = 3000.0    # half field size
+margin = 300.0                     # field margin
+penalty_length = 2000.0
+penalty_width = 1000.0
+center_circle = 500.0
+
+outer_length = length + margin
+outer_width = width + margin
 def run_test(fn):
     try:
         fn()
@@ -21,27 +29,20 @@ def test_if_ball_exist():
     vx, vy, w = RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
 
     assert vx != 0.0 or vy != 0.0 or w != 0.0, f"Ball does not exist printed velocities: vx={vx}, vy={vy}, w={w}"
-
-
-def plot_ball_to_goal(ax):
+def line(x1, y1, x2, y2):
     
+    return FieldLines("", Vector2f(x1, y1), Vector2f(x2, y2), line_thickness)
+
+
+def plot_ball_to_goal(ax,frame):
+    if frame is None:
+        return
 
     # ---- dimensions (mm) ----
     if not hasattr(ax, "field_drawn"):
-        length= 4500.0
-        width = 3000.0    # half field size
-        margin = 300.0                     # field margin
-        line_thickness = 1.0              # line thickness
-        penalty_length = 2000.0
-        penalty_width = 1000.0
-        center_circle = 500.0
+       
 
-        outer_length = length + margin
-        outer_width = width + margin
-
-        def line(x1, y1, x2, y2):
-            return FieldLines("", Vector2f(x1, y1), Vector2f(x2, y2), line_thickness)
-
+        
         # ---- field lines ----
         field = [
             # main field
@@ -96,25 +97,25 @@ def plot_ball_to_goal(ax):
         ax.field_drawn = True  # mark field as drawn
 
           
-    frame = wm.get_latest_frame()
-    if frame is None or frame.ball is None:
+    if frame is not None and frame.ball is not None:
+        ball_pos = (frame.ball.x, frame.ball.y)
+        us_positive = True
+        goal_x = (9000.0 / 2.0) * (1.0 if us_positive else -1.0)
+        goal_pos = (goal_x, 0.0)
+        robot_pos = (frame.robots_yellow[0].x, frame.robots_yellow[0].y)
+
+        buffer_radius = 200
+        behind_pos = RobotMovement.behind_ball_point(ball_pos, goal_pos, buffer_radius)
+    else:
         return
-
-    ball_pos = (frame.ball.x, frame.ball.y)
-    us_positive = wm.us_positive()
-    goal_x = (9000.0 / 2.0) * (1.0 if us_positive else -1.0)
-    goal_pos = (goal_x, 0.0)
-    robot_pos = (frame.robots_yellow[0].x, frame.robots_yellow[0].y)
-
-    buffer_radius = 200
-    behind_pos = RobotMovement.behind_ball_point(ball_pos, goal_pos, buffer_radius)
-    
     
     # ball_pos=(400.0,543.0)
     # goal_pos=(4500.0,0.0)
     # buffer_radius=200.0
     # behind_pos = RobotMovement.behind_ball_point(ball_pos, goal_pos, buffer_radius)
 
+
+# plotting
     ax.scatter(*ball_pos, label="Ball", color='yellow')
     ax.scatter(*goal_pos, label="Goal", color='red')
     ax.scatter(*behind_pos, label="Behind ball", marker="x")
@@ -129,26 +130,27 @@ def plot_ball_to_goal(ax):
     ax.grid(True)
     
 
+def run_test_to_goal(world_model):
+    w = world_model
+    plt.ion()
+    fig, ax = plt.subplots(figsize=(10, 7))
+    plot_ball_to_goal(ax,None)
+    ax.legend()
+    while True:
+        frame = w.get_latest_frame()
+        # ax.collections.clear()
+        # ax.lines.clear()
+        plot_ball_to_goal(ax,frame)
+        plt.pause(0.05)
+        # assert frame is not None, "No frame received from vision system."
+ 
+ 
     
 if __name__ == "__main__":
-    main_process=Process(target=main) # starts all processes
-    main_process.start()
-    time.sleep(1.0)  
-    
-    plt.ion()  # interactive mode
-    fig, ax = plt.subplots(figsize=(10, 7))
-    
-     # Draw the field once
-    plot_ball_to_goal(ax)  # field will be drawn
-    ax.legend()            # create legend once
+    from TeamControl.world.model import WorldModel as wm
 
-    while True:
-        
-    
-        ax.collections.clear()
-        ax.lines.clear() 
-        plot_ball_to_goal(ax)  # modify your function to accept 'ax'
-        plt.pause(0.05)
+    w = wm()
+    run_test_to_goal(w)
 
 
 
