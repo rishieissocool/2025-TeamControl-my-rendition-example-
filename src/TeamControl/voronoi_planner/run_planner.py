@@ -41,8 +41,17 @@ class PathPlanner():
             is_updated = self.check_wm_update()
             # follow waypoints here 
             if is_updated is True and self.frame is not None:
-                robot_pos = self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).position
-                target_pos = self.frame.ball.position # or some position
+                robot = self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id)
+                if not isinstance(robot,int):
+                    robot_pos = robot.position
+                else:
+                    continue # skip this loop
+                target = self.frame.ball # or some position
+                
+                if target is not None:
+                    target_pos = target.position
+                else:    
+                    continue # skip loop
                 # print(f"{target_pos=}")
                 waypoints:list = self.pathplanning(robot_id=robot_id,target_pos=target_pos)
                 # print(f"{waypoints=}")
@@ -83,7 +92,7 @@ class PathPlanner():
         # the start positions of our robots
 
         # start_pos = [x.xy_pos for x in self.frame.get_yellow_robots(isYellow=self.isYellow)]
-        start_pos = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).xy_pos]
+        path_obs = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).obstacle]
         # obstacles
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
@@ -100,7 +109,7 @@ class PathPlanner():
         waypoints= self.p.generate_waypoints(our_robot_obs,goals,self.d0)
         # print(f"{waypoints=}")
         simplified_paths = []
-        for i, (start, wp, goal) in enumerate(zip(our_robot_obs, waypoints, goals)):
+        for i, (start, wp, goal) in enumerate(zip(path_obs, waypoints, goals)):
             full_path = [start.centre()] + wp
             simple = self.p.simplify(full_path, self.CLEARANCE, [start.unum()])
             goal_is_safe = all(
