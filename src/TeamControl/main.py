@@ -13,7 +13,7 @@ from TeamControl.voronoi_planner.run_planner import run_planner
 # in multiprocessing this can only be a simple process
 
 def main():
-    use_sim = True
+    use_sim = False
     is_yellow = True
     
     # queues
@@ -45,8 +45,8 @@ def main():
     wmr.start()
     # goalie.start()
     dispatch_wkr.start()
-    chaser.start()
-    # planner_wkr.start()
+    # chaser.start()
+    planner_wkr.start()
     # some_other_process2.start()
     
     vision_wkr.join()
@@ -54,8 +54,8 @@ def main():
     wmr.join()
     # goalie.join()
     dispatch_wkr.join()
-    chaser.join()   
-    # planner_wkr.join()
+    # chaser.join()   
+    planner_wkr.join()
     # some_other_process2.join()
 
 if __name__ == "__main__":
