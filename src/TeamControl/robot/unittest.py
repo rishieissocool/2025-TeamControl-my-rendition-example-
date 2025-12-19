@@ -1,8 +1,12 @@
 
 import time
+import math
 import matplotlib.pyplot as plt
 from TeamControl.SSL.vision.field import FieldLines, Vector2f
 from TeamControl.robot.Movement import RobotMovement
+from TeamControl.world.transform_cords import world2robot
+from TeamControl.robot.striker import buffer_radius
+from TeamControl.robot.striker import run_striker 
 
 
 line_thickness = 1.0              # line thickness
@@ -12,9 +16,10 @@ margin = 300.0                     # field margin
 penalty_length = 2000.0
 penalty_width = 1000.0
 center_circle = 500.0
-
 outer_length = length + margin
 outer_width = width + margin
+arrow_len = 500.0  # mm
+
 def run_test(fn):
     try:
         fn()
@@ -103,8 +108,11 @@ def plot_ball_to_goal(ax,frame):
         goal_x = (9000.0 / 2.0) * (1.0 if us_positive else -1.0)
         goal_pos = (goal_x, 0.0)
         robot_pos = (frame.robots_yellow[0].x, frame.robots_yellow[0].y)
+        
+        robot_orientation = frame.robots_yellow[0].o
+        dx = math.cos(robot_orientation) * arrow_len
+        dy = math.sin(robot_orientation) * arrow_len
 
-        buffer_radius = 200
         behind_pos = RobotMovement.behind_ball_point(ball_pos, goal_pos, buffer_radius)
     else:
         return
@@ -116,32 +124,50 @@ def plot_ball_to_goal(ax,frame):
 
 
 # plotting
-    ax.scatter(*ball_pos, label="Ball", color='yellow')
+    yellow_ball=ax.scatter(*ball_pos, label="Ball", color='yellow')
     ax.scatter(*goal_pos, label="Goal", color='red')
-    ax.scatter(*behind_pos, label="Behind ball", marker="x")
-    ax.scatter(*robot_pos, label="Robot", color="blue")
+    behind_ball_mark=ax.scatter(*behind_pos, label="Behind ball", marker="x")
+    blue_robot=ax.scatter(*robot_pos, label="Robot", color="blue")
+    
+    blue_arrow=ax.arrow(
+    robot_pos[0],
+    robot_pos[1],
+    dx,
+    dy,
+    head_width=80,
+    length_includes_head=True,
+    color="blue")
 
-    ax.plot(
+
+    red_line,=ax.plot(
         [behind_pos[0], goal_pos[0]],
         [behind_pos[1], goal_pos[1]],
-        "r--",
-    
-    )
+        "r--", )
     ax.grid(True)
+    return red_line, yellow_ball, behind_ball_mark, blue_robot, blue_arrow
     
 
 def run_test_to_goal(world_model):
+    
     w = world_model
     plt.ion()
     fig, ax = plt.subplots(figsize=(10, 7))
     plot_ball_to_goal(ax,None)
-    ax.legend()
+    # ax.legend()
+    dynamic_objs = []
     while True:
         frame = w.get_latest_frame()
-        # ax.collections.clear()
-        # ax.lines.clear()
-        plot_ball_to_goal(ax,frame)
-        plt.pause(0.05)
+        
+    # remove old objects
+        for obj in dynamic_objs:
+            obj.remove()
+        dynamic_objs = []
+        
+        red_line, yellow_ball, behind_ball_mark, blue_robot, blue_arrow = plot_ball_to_goal(ax, frame)
+        dynamic_objs = [red_line, yellow_ball, behind_ball_mark, blue_robot, blue_arrow]
+        
+        plt.pause(0.1)
+        
         # assert frame is not None, "No frame received from vision system."
  
  

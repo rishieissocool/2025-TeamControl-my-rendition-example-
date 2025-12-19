@@ -11,6 +11,7 @@ ALIGN_TOL = 0.15              # rad (~8.5°)
 KICK_DISTANCE = 120.0         # mm
 ROBOT_OFFSET = 700         # mm
 FALLBACK_FIELD_LEN = 9000.0   # mm
+buffer_radius=500.0
 
 
 def run_striker(
@@ -67,7 +68,7 @@ def run_striker(
             float(robot_pose[0]),
             float(robot_pose[1]),
             float(robot_pose[2]),
-        )
+        ) #(x,y,theta)
 
         # 4) Which way are WE attacking?
         try:
@@ -122,15 +123,12 @@ def run_striker(
         # MODE 1: APPROACH BEHIND BALL
         # ==================================================
         else:
-            shooting_pos = RobotMovement.shooting_pos(
-                ball_pos=ball_pos,
-                shootingTarget=goal_pos,
-                robot_offset=ROBOT_OFFSET,
-            )
+            behind_pos = RobotMovement.behind_ball_point(ball_pos, goal_pos, buffer_radius)
+
 
             vx, vy, w = RobotMovement.velocity_to_target(
                 robot_pos=robot_pos_tuple,
-                target=shooting_pos,
+                target=behind_pos,
                 turning_target=goal_pos,
                 stop_threshold=90
             )
@@ -139,7 +137,7 @@ def run_striker(
 
             print(
                 f"[STRIKER] APPROACH: dist={dist_to_ball:.1f}, "
-                f"shooting_pos={shooting_pos}, vx={vx:.2f}, vy={vy:.2f}, w={w:.2f}"
+                f"{behind_pos=}, vx={vx:.2f}, vy={vy:.2f}, w={w:.2f}"
             )
 
         # 7) Send command

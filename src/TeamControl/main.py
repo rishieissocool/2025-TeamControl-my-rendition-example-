@@ -40,7 +40,7 @@ def main():
     wmr.start()
     dispatch_wkr.start()
     # planner_wkr.start()  # enable if you want path planner
-    # striker_wkr.start()
+    striker_wkr.start()
     plot_test.start()
 
     vision_wkr.join()
@@ -48,7 +48,7 @@ def main():
     wmr.join()
     dispatch_wkr.join()
     # planner_wkr.join()
-    # striker_wkr.join()
+    striker_wkr.join()
     plot_test.join()
 
 
