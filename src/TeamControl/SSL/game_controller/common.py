@@ -1,7 +1,4 @@
 
-"""
-The following is obtained from gc_referee_message.proto
-"""
 from enum import Enum, IntEnum,auto
 
 import numpy as np
@@ -30,7 +27,10 @@ class GameState(Enum):
     PENALTY_SHOOT = auto()
     PENALTY_DEFEND = auto()
     
-    
+
+"""
+The following is obtained from gc_referee_message.proto
+"""
 class Command(Enum):
     HALT = 0
     STOP = 1
