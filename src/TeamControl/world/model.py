@@ -8,7 +8,7 @@ from TeamControl.SSL.vision.frame_list import FrameList
 from TeamControl.SSL.vision.field import GeometryData,FieldSize
 from TeamControl.SSL.vision.frame import Frame
 from TeamControl.SSL.game_controller.fsm import PacketType,GameState
-
+from TeamControl.SSL.game_controller.Message import Command, Stage, TeamInfo
 
 from multiprocessing import Queue,Manager
 import numpy as np
@@ -40,6 +40,8 @@ class WorldModel:
         self._version = mgr.Value('i', 0)  # int counter
     
     def update_game_data(self,game_data):
+        if game_data is None:
+            return
         if isinstance(game_data,Command):
             self.ref_data.command = game_data
         
