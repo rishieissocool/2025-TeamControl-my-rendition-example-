@@ -30,7 +30,8 @@ class dispatch():
             #     lap_time = time.time() +0.05
             self.handle_commands()
             self.check_command_timeout()
-            
+        
+        print("dispatcher ended")
 
     # Get the next command from the queue and add it
     def check_new_commands(self):
