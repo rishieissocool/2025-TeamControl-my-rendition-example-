@@ -17,11 +17,11 @@ class VisionProcess():
     GRSIM_CAMERAS = 4
     REAL_LIFE_CAMERAS = 1
     
-    def __init__(self,output_q:Queue,logger,use_grSim:bool=True,vision_port=10006):
+    def __init__(self,is_running,output_q:Queue,logger,use_grSim:bool=True,vision_port=10006):
         self.logger:LogSaver = logger
         self.use_grSim = use_grSim
         self.output_q = output_q
-        self.recv = Vision(port=vision_port)    
+        self.recv = Vision(is_running=is_running,port=vision_port)    
         self.field = None
         self.frame = None
         self.frame_number = -1
@@ -81,7 +81,7 @@ class VisionProcess():
 
 def vision_worker(is_running,output_q:Queue,use_grSim:bool=True,vision_port=10006):
     logger = LogSaver()
-    v = VisionProcess(output_q,logger,use_grSim,vision_port)
+    v = VisionProcess(is_running,output_q,logger,use_grSim,vision_port)
     logger.info("Initialisation completed, now running . . .")
     v.run(is_running)
 
