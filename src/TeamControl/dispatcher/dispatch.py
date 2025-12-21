@@ -22,8 +22,8 @@ class dispatch():
         print("Simulation is active :", self.use_sim)
 
     # Main processing loop
-    def process_q(self):
-        while True:
+    def process_q(self,is_running):
+        while is_running.is_set():
             lap_time = time.time()
             self.check_new_commands()
             # if time.time() > lap_time + 0.05:
@@ -78,6 +78,6 @@ class dispatch():
         if self.use_sim is True:
             self.g_sender.send_command(command)
             
-def run_dispatcher(q,use_sim,is_yellow):
+def run_dispatcher(is_running,q,use_sim,is_yellow):
     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
-    d.process_q()
+    d.process_q(is_running)
