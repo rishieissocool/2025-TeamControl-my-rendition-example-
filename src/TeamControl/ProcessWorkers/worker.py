@@ -8,13 +8,21 @@ class BaseWorker():
         self.logger:LogSaver = logger
         
         
+    def setup(self,*args):
+        """
+        This is where you parse in other variables to continue the setup
+        e.g. world model, queues
+        """
+        time.sleep(1)
+        self.logger.info(f"[{self.__class__.__name__}] : Setup complete")
+        
     def step(self):
         """
         each step in the loop
         replace this for a more functional code :) 
         
         """
-        self.logger.info("working")
+        self.logger.info(f"[{self.__class__.__name__}] : working")
         time.sleep(1)
     
     def run(self):
@@ -34,17 +42,21 @@ class BaseWorker():
         time.sleep(2)
         self.logger.info(f"[{self.__class__.__name__}]: offline")
 
-
-def run_worker(worker, is_running, logger ):
+    
+def run_worker(worker, is_running, logger,*args):
     """
     the Multiprocessing Process initiator
 
     Args:
         worker (BaseWorker): Any worker that is a subclass of this
         is_running (Event): The main Event that controls the running state of the system
+        args(*args) : other optional arguments for setting up 
     """
     w = worker(is_running,logger)
+    w.setup(*args)
     w.run()
+    
+    
 
 if __name__ == "__main__": 
     import sys
@@ -63,10 +75,10 @@ if __name__ == "__main__":
             break
             
         except KeyboardInterrupt:
-            print(f"[main] : Force Quitting workers ")
+            logger.info(f"[main] : Force Quitting workers ")
             is_running.clear()
             sys.exit()
 
-    print("waiting for workers to be shut down")
+    logger.info("[main] : waiting for workers to be shut down")
     worker.join(timeout=4)
     print("All is OFFLINE")
