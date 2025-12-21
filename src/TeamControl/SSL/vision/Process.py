@@ -39,37 +39,40 @@ class VisionProcess():
 
     def run(self,is_running) -> bool:
         while is_running.is_set():
-            new_vision_data = self.recv.listen()
-            if new_vision_data is None: 
-                # if we want to shut it down after trying ? 
-                self.error_loop_count += 1
-                if self.error_loop_count > 5:
-                    self.logger.error("This is None ? ")
-                    self.error_loop_count = 0
-                    # exit()
-                continue
-            
-            if new_vision_data.HasField("detection"):
-                new_detection_data = new_vision_data.detection
-                if self.frame_number < new_detection_data.frame_number:
-                    self.logger.info(f"We get new frame : {new_detection_data.frame_number}")
-                    # generates new frame
-                    self.frame = Frame.from_proto(new_detection_data,self.cameras)
-                    self.frame_number = self.frame.frame_number
+            try:
+                new_vision_data = self.recv.listen()
+                if new_vision_data is None: 
+                    # if we want to shut it down after trying ? 
+                    self.error_loop_count += 1
+                    if self.error_loop_count > 5:
+                        self.logger.error("This is None ? ")
+                        self.error_loop_count = 0
+                        # exit()
+                    continue
                 
-                # if same frame number = it is old frame
-                if self.frame_number == new_detection_data.frame_number:
-                    # we update the original frame
-                    self.frame.update(new_detection_data)
-                    if self.frame.is_completed:
-                        self.logger.info(f"frame: {self.frame_number} has been completed with {self.cameras} cameras , time taken = {time.time() - loop_timer}")
-                        self.send(self.frame)
-            if new_vision_data.HasField("geometry"):
-                geometry = new_vision_data.geometry
-                self.field = GeometryData.from_proto(geometry)
-                self.logger.info(f"frame: {self.frame_number} has geometry")
-                self.send(self.field)
-            loop_timer = time.time()
+                if new_vision_data.HasField("detection"):
+                    new_detection_data = new_vision_data.detection
+                    if self.frame_number < new_detection_data.frame_number:
+                        self.logger.info(f"We get new frame : {new_detection_data.frame_number}")
+                        # generates new frame
+                        self.frame = Frame.from_proto(new_detection_data,self.cameras)
+                        self.frame_number = self.frame.frame_number
+                    
+                    # if same frame number = it is old frame
+                    if self.frame_number == new_detection_data.frame_number:
+                        # we update the original frame
+                        self.frame.update(new_detection_data)
+                        if self.frame.is_completed:
+                            self.logger.info(f"frame: {self.frame_number} has been completed with {self.cameras} cameras , time taken = {time.time() - loop_timer}")
+                            self.send(self.frame)
+                if new_vision_data.HasField("geometry"):
+                    geometry = new_vision_data.geometry
+                    self.field = GeometryData.from_proto(geometry)
+                    self.logger.info(f"frame: {self.frame_number} has geometry")
+                    self.send(self.field)
+                loop_timer = time.time()
+            except KeyboardInterrupt:
+                continue
         
         print("vision_process quit")
     

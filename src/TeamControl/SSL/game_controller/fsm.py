@@ -247,7 +247,10 @@ def run_gcfsm(is_running,output_q,us_yellow=None,us_positive=None): #Process for
     fsm = GCfsm(output_q=output_q,us_yellow=us_yellow,us_positive=us_positive)
     gcl = GameControl(is_running)
     while is_running.is_set(): 
-        raw_ref_msg = gcl.listen() # listens overnetwork
-        new_ref_msg = RefereeMessage.from_proto(raw_ref_msg) # format into class
-        fsm.update(new_ref_msg) # updates state machine
+        try:
+            raw_ref_msg = gcl.listen() # listens overnetwork
+            new_ref_msg = RefereeMessage.from_proto(raw_ref_msg) # format into class
+            fsm.update(new_ref_msg) # updates state machine
+        except KeyboardInterrupt:
+            continue
     print("game controller quit")

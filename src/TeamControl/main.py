@@ -16,6 +16,9 @@ from TeamControl.robot.goalie import run_goalie
 # in multiprocessing this can only be a simple process
 from multiprocessing import Process, Queue,Event
 
+# use this to catch keyboard interrupt
+import sys
+
 import time
 
 def main():
@@ -39,12 +42,12 @@ def main():
     wm_manager = WorldModelManager()
     wm_manager.start()
     wm = wm_manager.WorldModel()
-    wmr = Process(target=wm_runner, args=(is_running,wm,vision_q,gc_q,),)
+    wmr = Process(target=wm_runner, args=(is_running,wm,vision_q,gc_q,),daemon=True)
     
     # processes
-    vision_wkr = Process(target=vision_worker, args=(is_running,vision_q,use_sim,),)
-    gc_wkr = Process(target=run_gcfsm, args=(is_running,gc_q,))
-    dispatch_wkr = Process(target=run_dispatcher, args=(is_running,dispatch_q,use_sim,is_yellow))
+    vision_wkr = Process(target=vision_worker, args=(is_running,vision_q,use_sim,),daemon=True)
+    gc_wkr = Process(target=run_gcfsm, args=(is_running,gc_q,),daemon=True)
+    dispatch_wkr = Process(target=run_dispatcher, args=(is_running,dispatch_q,use_sim,is_yellow,),daemon=True)
     # planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))
 
     # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
@@ -61,22 +64,36 @@ def main():
     # chaser.start()
     # planner_wkr.start()
     # some_other_process2.start()
+
     while is_running.is_set():
-        user_input = input("Type 'exit' to quit: ")
-        if user_input.lower() == 'exit':
-            print("Shutdown signal received...")
+        try:
+
+            print("Type 'exit' to quit: ")
+            user_input = input()
+            if user_input.lower() == 'exit':
+                print("Shutdown signal received...")
+                is_running.clear()
+                break
+        except KeyboardInterrupt:
+            print("\nShutdown signal received...")
             is_running.clear()
-            break
+            # sys.exit()
+
+
+        # Give processes time to see the event change and shut down
+        print("Waiting for processes to shut down...")
+        time.sleep(1)  # or 2 seconds if needed
 
     # Then wait for processes
-    vision_wkr.join()
-    gc_wkr.join()
-    wmr.join()
-    
-    # goalie.join()
-    dispatch_wkr.join()
+    vision_wkr.join(timeout=5)
+    gc_wkr.join(timeout=5)
+    wmr.join(timeout=5)
+    dispatch_wkr.join(timeout=5)
+            
     # bt.join()
     # chaser.join()   
+    # goalie.join()
+
     # planner_wkr.join()
     # some_other_process2.join()
         

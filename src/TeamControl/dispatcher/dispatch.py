@@ -24,13 +24,15 @@ class dispatch():
     # Main processing loop
     def process_q(self,is_running):
         while is_running.is_set():
-            lap_time = time.time()
-            self.check_new_commands()
-            # if time.time() > lap_time + 0.05:
-            #     lap_time = time.time() +0.05
-            self.handle_commands()
-            self.check_command_timeout()
-        
+            try:
+                lap_time = time.time()
+                self.check_new_commands()
+                # if time.time() > lap_time + 0.05:
+                #     lap_time = time.time() +0.05
+                self.handle_commands()
+                self.check_command_timeout()
+            except KeyboardInterrupt:
+                continue
         print("dispatcher ended")
 
     # Get the next command from the queue and add it

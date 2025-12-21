@@ -47,6 +47,8 @@ class Receiver(BaseSocket):
             except socket.timeout:
                 # print("timeout")
                 continue
+            except KeyboardInterrupt:
+                continue
         
         print(f"{self.__class__.__name__} has stopped listening")
         return result
@@ -66,6 +68,8 @@ class Receiver(BaseSocket):
             except socket.timeout:
                 # print("timeout")
                 continue
+            except KeyboardInterrupt:
+                break
         return result
                 
 
