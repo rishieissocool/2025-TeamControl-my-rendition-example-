@@ -14,7 +14,7 @@ except ImportError as e:
     from yaml import Loader
 
 
-class dispatch(BaseWorker):
+class Dispatcher(BaseWorker):
     def __init__(self,is_running:Event ,logger:LogSaver ):
         super().__init__(is_running,logger)
         path = Path(__file__).resolve()
@@ -51,6 +51,8 @@ class dispatch(BaseWorker):
             queue_item = self.q.get_nowait()
             command, runtime = queue_item # this requires a command and runtime
             self.add(command, runtime)
+        else:
+            time.sleep(0.05)
 
     # Add a new command to the running commands and replace exisiting commands for the robot with the same ID
     def add(self, command, run_time):
@@ -99,6 +101,6 @@ class dispatch(BaseWorker):
         if self.send_to_grSim:
             self.y_sender.send_grSim_command(command)
             
-def run_dispatcher(is_running,q,use_sim,is_yellow):
-    d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
-    d.process_q(is_running)
+# def run_dispatcher(is_running,q,use_sim,is_yellow):
+#     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
+#     d.process_q(is_running)

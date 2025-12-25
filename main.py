@@ -5,7 +5,7 @@ from TeamControl.process_workers.wm_runner import WMWorker
 from TeamControl.world.model_manager import WorldModelManager
 
 from TeamControl.utils.Logger import LogSaver
-from TeamControl.dispatcher.dispatch import run_dispatcher
+from TeamControl.dispatcher.dispatch import Dispatcher
 
 from TeamControl.voronoi_planner.run_planner import run_planner
 # from TeamControl.behaviour_tree.run_bt_process import run_bt_process
@@ -59,7 +59,7 @@ def main():
     vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,logger,vision_q,use_grSim_vision,vision_port),)
     gc_wkr = Process(target=GCfsm.run_worker, args=(is_running, logger, gc_q, us_yellow, us_positive ),)
     
-    dispatch_wkr = Process(target=run_dispatcher, args=(is_running,dispatch_q,use_sim,us_yellow,),)
+    dispatch_wkr = Process(target=Dispatcher.run_worker, args=(is_running,logger,dispatch_q,use_sim,),)
     # planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))
 
     # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
