@@ -4,7 +4,7 @@ from TeamControl.SSL.vision.field import GeometryData
 from TeamControl.SSL.vision.frame import Frame
 from TeamControl.world.model import WorldModel
 from TeamControl.utils.Logger import LogSaver
-from TeamControl.ProcessWorkers.worker import BaseWorker
+from TeamControl.process_workers.worker import BaseWorker,run_worker
 import time
 
 
@@ -12,16 +12,23 @@ class WMWorker(BaseWorker):
     def __init__(self,is_running,logger):
         self.is_running:Event = is_running
         self.logger = logger
+        self.delay_time = 0.001 # s
+
         
     def setup(self, *args):
+        """ setup for wm :
+        expected in order : 
+            wm = world model shared object
+            vision_q (Queue): the shared queue between vision and this process
+            gc_q (Queue) : the shared queue between gcfsm and this  process
+        """
         wm,vision_q,gc_q = args
         
         self.wm:WorldModel = wm
         self.vision_q:Queue = vision_q
         self.gc_q:Queue = gc_q
-        self.delay_time = 0.001 # s
-        self.logger.info(f"{self.wm=} \n {self.vision_q=} \n {self.gc_q=} \n {self.delay_time=}")
-    
+        self.logger.info(f"world model runner is now running")
+            
     def step(self):
         if not self.vision_q.empty() :
             item = self.vision_q.get()
@@ -45,43 +52,28 @@ class WMWorker(BaseWorker):
     def shutdown(self):
         print("[wm_runner] : Going Offline")
         
-def run_worker(worker, is_running, logger,*args):
-    """
-    the Multiprocessing Process initiator
 
-    Args:
-        worker (BaseWorker): Any worker that is a subclass of this
-        is_running (Event): The main Event that controls the running state of the system
-        args(*args) : other optional arguments for setting up 
-    """
-    w = worker(is_running,logger)
-    w.setup(*args)
-    w.run()
-    
-    
-
-if __name__ == "__main__": 
-    import sys
-    import time
+if __name__ == "__main__":
     logger = LogSaver()
     is_running = Event()
     is_running.set()
+    
     wm = WorldModel()
-    worker = Process(target=run_worker,args=(WMWorker,is_running,logger,wm,Queue(),Queue(),))
+    gc_q = Queue()
+    vision_q = Queue()
+    
+    worker = Process(target=run_worker,args=(WMWorker,is_running,logger,wm,vision_q,gc_q))
     worker.start()
-    for i in range(10):
-        try:
-            print("[main] : type something to quit")
-            s = input()
-            print("[main] : finishing this loop")
-            is_running.clear()
-            break
-            
-        except KeyboardInterrupt:
-            print(f"[main] : Force Quitting workers ")
-            is_running.clear()
-            sys.exit()
+    try: 
+        print("[main] : type something to quit")
+        s = input()
+        print("[main] : finishing this loop")
+        is_running.clear()
+        
+    
+    except KeyboardInterrupt:
+        logger.info(f"[main] : Force Quitting workers ")
+        is_running.clear()
 
-    print("waiting for workers to be shut down")
+    logger.info("[main] : waiting for workers to be shut down")
     worker.join(timeout=4)
-    print("All is OFFLINE")
