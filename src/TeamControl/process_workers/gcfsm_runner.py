@@ -28,6 +28,7 @@ class GCfsm (BaseWorker):
 
         # last known ball_left_field_location
         self.last_blf_location = None
+        self.recv = GameControl(is_running=is_running)
     
     def setup(self,*args):
         output_q, us_yellow, us_positive = args
@@ -37,10 +38,17 @@ class GCfsm (BaseWorker):
         self.us_positive = us_positive    
         self.logger.info (f"[GCP] : Setup Complete {self.output_q=}, {us_yellow=}, {us_positive=}")
         
-    def step(self,new_ref_msg:RefereeMessage):
+    def step(self):
+        new_data = self.recv.listen()
+        new_ref_msg:RefereeMessage = RefereeMessage.from_proto(new_data)
         # no previous packets
-        if self.last_ref_msg is not None and new_ref_msg.packet_timestamp < self.last_ref_msg.packet_timestamp:
-            return 
+        if self.last_ref_msg is not None:
+            # check if the timestamp is before
+            if new_ref_msg.packet_timestamp < self.last_ref_msg.packet_timestamp:
+                return
+        elif new_ref_msg is None:
+            time.sleep(1) # wait one sec
+            return # if this is none, continue
         # otherwise :
         self.last_ref_msg = new_ref_msg
         # check team color if this changes, basically resets everything
