@@ -1,4 +1,6 @@
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Event
+from TeamControl.utils.Logger import LogSaver
+from TeamControl.process_workers.worker import BaseWorker
 from TeamControl.network.robot_command import RobotCommand
 from TeamControl.network.YamlSender import YamlSender
 from TeamControl.network.ssl_sockets import grSimSender
@@ -12,46 +14,37 @@ except ImportError as e:
     from yaml import Loader
 
 
-class dispatch():
-    def __init__(self, q,use_sim,is_yellow):
+class dispatch(BaseWorker):
+    def __init__(self,is_running:Event ,logger:LogSaver ):
+        super().__init__(is_running,logger)
         path = Path(__file__).resolve()
-
-        self.q = q
-        self.is_yellow = is_yellow 
-        self.use_sim = use_sim
-
         self.running_commands = {}
-        self.announce_initialisation()
-        self.y_sender = YamlSender(send_to_grSim=use_sim) 
 
+    def setup(self,*args):
+        q,use_sim  = args
+        self.q = q
+        self.use_sim = use_sim
+        self.y_sender = YamlSender(send_to_grSim=use_sim) 
+        self.announce_initialisation()
+        
     # Announce that the dispatcher has been created
     def announce_initialisation(self):
         print("Multi-robot dispatcher initialized!")
         print("Simulation is active :", self.use_sim)
-
+    
     # Main processing loop
-    def process_q(self,is_running):
-        while is_running.is_set():
-            lap_time = time.time()
-            self.check_new_commands()
-            # if time.time() > lap_time + 0.05:
-            #     lap_time = time.time() +0.05
-            self.handle_commands()
-            self.check_command_timeout()
-            
-    def process_q(self,is_running):
-        while is_running.is_set():
-            try:
-                lap_time = time.time()
-                self.check_new_commands()
-                # if time.time() > lap_time + 0.05:
-                #     lap_time = time.time() +0.05
-                self.handle_commands()
-                self.check_command_timeout()
-            except KeyboardInterrupt:
-                continue
-        print("dispatcher ended")
-
+    def run(self):
+        return super().run()
+    
+    def step(self,is_running):
+        self.check_new_commands()
+        self.handle_commands()
+        self.check_command_timeout()
+        
+    def shutdown(self):
+        self.reset_all_robots()
+        self.handle_commands()
+        super().shutdown()
     # Get the next command from the queue and add it
     def check_new_commands(self):
         if not self.q.empty():
@@ -62,8 +55,9 @@ class dispatch():
     # Add a new command to the running commands and replace exisiting commands for the robot with the same ID
     def add(self, command, run_time):
         robot_id = command.robot_id
-        self.running_commands[robot_id] = {"command": command, "runtime": run_time, "start_time": time.time()}
-        print(f"[Robot {robot_id}] New command added for {run_time}s , command: {command}")
+        isYellow = command.isYellow
+        self.running_commands[robot_id] = {"isYellow": isYellow,"command": command, "runtime": run_time, "start_time": time.time()}
+        print(f"[{robot_id=},{isYellow=}] New command added for {run_time}s , command: {command}")
         
     # Check if any commands have expired
     def check_command_timeout(self):
@@ -81,11 +75,18 @@ class dispatch():
 
     # Set a do nothing command for the specified robot
     def reset_command(self, robot_id):
-        reset_command = RobotCommand(robot_id=robot_id, vx=0, vy=0, w=0, kick=0, dribble=0)
+        isYellow = self.running_commands[robot_id]["isYellow"]
+        reset_command = RobotCommand(robot_id=robot_id, vx=0, vy=0, w=0, kick=0, dribble=0,isYellow=isYellow)
         print(f"[Robot {robot_id}] Reset to idle command")
         
-        self.running_commands[robot_id] = {"command": reset_command, "runtime": 9999999, "start_time": time.time()}
+        self.running_commands[robot_id] = {"isYellow" : isYellow, "command": reset_command, "runtime": 9999999, "start_time": time.time()}
 
+    def reset_all_robots(self):
+        for i in self.running_commands:
+            robot_id = self.running_commands[i]
+            self.reset_command(robot_id=robot_id)
+            
+                
     # Handle all active commands for all robots
     def handle_commands(self):
         for robot_id, packet in self.running_commands.items():
@@ -95,6 +96,8 @@ class dispatch():
     def send_command(self,command:RobotCommand):
         # this handles how you'd use different senders to send a command.
         self.y_sender.send_command(command)
+        if self.send_to_grSim:
+            self.y_sender.send_grSim_command(command)
             
 def run_dispatcher(is_running,q,use_sim,is_yellow):
     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
