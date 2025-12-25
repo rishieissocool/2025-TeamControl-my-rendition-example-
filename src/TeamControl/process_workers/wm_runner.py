@@ -4,7 +4,7 @@ from TeamControl.SSL.vision.field import GeometryData
 from TeamControl.SSL.vision.frame import Frame
 from TeamControl.world.model import WorldModel
 from TeamControl.utils.Logger import LogSaver
-from TeamControl.process_workers.worker import BaseWorker,run_worker
+from TeamControl.process_workers.worker import BaseWorker
 import time
 
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     gc_q = Queue()
     vision_q = Queue()
     
-    worker = Process(target=run_worker,args=(WMWorker,is_running,logger,wm,vision_q,gc_q))
+    worker = Process(target=WMWorker.run_worker,args=(is_running,logger,wm,vision_q,gc_q,),)
     worker.start()
     try: 
         print("[main] : type something to quit")

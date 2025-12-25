@@ -1,10 +1,10 @@
-from TeamControl.process_workers.worker import run_worker
+# from TeamControl.process_workers.worker import run_worker
 from TeamControl.process_workers.vision_runner import VisionProcess
 from TeamControl.process_workers.gcfsm_runner import GCfsm
 from TeamControl.process_workers.wm_runner import WMWorker
 from TeamControl.world.model_manager import WorldModelManager
 
-
+from TeamControl.utils.Logger import LogSaver
 from TeamControl.dispatcher.dispatch import run_dispatcher
 
 from TeamControl.voronoi_planner.run_planner import run_planner
@@ -12,6 +12,7 @@ from TeamControl.voronoi_planner.run_planner import run_planner
 # from TeamControl.utils.dummy_process import DummyReader
 from TeamControl.utils.follow_ball_dummy import run_follow_ball_dummy
 from TeamControl.robot.goalie import run_goalie
+
 
 
 # in multiprocessing this can only be a simple process
@@ -38,9 +39,8 @@ def main():
     planner_q = Queue()
     
     # robot_feedback_q = Queue()
-    
-    # event : System running ? 
-    is_running = Event()
+
+    logger = LogSaver()
     
     # event : System running ? 
     is_running = Event()
@@ -49,11 +49,12 @@ def main():
     wm_manager = WorldModelManager()
     wm_manager.start()
     wm = wm_manager.WorldModel()
-    wmr = Process(target=run_worker, args=(WMWorker,is_running,logger,wm,vision_q,gc_q),)
+    
     
     # processes
-    vision_wkr = Process(target=run_worker, args=(VisionProcess,is_running,vision_q,use_sim,),)
-    gc_wkr = Process(target=run_worker, args=(GCfsm, is_running, logger, output_q, us_yellow, us_positive ),)
+    wmr = Process(target=WMWorker.run_worker, args=(is_running,logger,wm,vision_q,gc_q),)
+    vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,vision_q,use_sim,),)
+    gc_wkr = Process(target=GCfsm.run_worker, args=(is_running, logger, output_q, us_yellow, us_positive ),)
     
     dispatch_wkr = Process(target=run_dispatcher, args=(is_running,dispatch_q,use_sim,is_yellow,),)
     # planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))

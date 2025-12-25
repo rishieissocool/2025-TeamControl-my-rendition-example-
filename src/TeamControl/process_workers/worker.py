@@ -42,20 +42,20 @@ class BaseWorker():
         time.sleep(2)
         self.logger.info(f"[{self.__class__.__name__}]: offline")
 
-    
-def run_worker(worker, is_running, logger,*args):
-    """
-    the Multiprocessing Process initiator
+    @classmethod
+    def run_worker(cls, is_running, logger,*args):
+        """
+        the Multiprocessing Process initiator
 
-    Args:
-        worker (BaseWorker): Any worker that is a subclass of this
-        is_running (Event): The main Event that controls the running state of the system
-        args(*args) : other optional arguments for setting up 
-    """
-    w = worker(is_running,logger)
-    w.setup(*args)
-    w.run()
-    
+        Args:
+            worker (BaseWorker): Any worker that is a subclass of this
+            is_running (Event): The main Event that controls the running state of the system
+            args(*args) : other optional arguments for setting up 
+        """
+        w = cls(is_running,logger)
+        w.setup(*args)
+        w.run()
+        
     
 
 if __name__ == "__main__": 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     logger = LogSaver()
     is_running = Event()
     is_running.set()
-    worker = Process(target=run_worker,args=(BaseWorker,is_running,logger,))
+    worker = Process(target=BaseWorker.run_worker,args=(is_running,logger,))
     worker.start()
     for i in range(10):
         try:

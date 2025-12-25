@@ -9,7 +9,7 @@ from enum import Enum,auto
 
 
 class GCfsm (BaseWorker):
-    def __init__(self,is_running:Event,logger:LogSaver):
+    def __init__(self,is_running,logger):
         self.super().__init__(is_running,logger)
         
         self.last_ref_msg = None
