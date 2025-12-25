@@ -34,6 +34,7 @@ class RobotCommand():
         self.time_origin: float = float(time_origin)
     
     def __str__(self) -> str:
+        # the string will not include isYellow
         return f"{self.robot_id} {self.vx} {self.vy} {self.w} {self.kick} {self.dribble} {self.time_set}"
 
     def __repr__(self):
@@ -95,11 +96,11 @@ class RobotCommand():
         """
         # step 1 : create robot command protobuff object
         grSim_robot_command = self._grSimRobotCommand_wrapper(self.robot_id,self.vx,self.vy,self.w,self.kick,self.dribble)
-        # step 2 : create commands protobuff object
+        # step 2 : create commands protobuff object * this requires isYellow
         grSim_commands = self._grSimCommand_wrapper(self.isYellow,grSim_robot_command)
         self.grSim_packet = grSim_Packet_pb2.grSim_Packet(commands=grSim_commands)
     
-    def grSim_encode(self) -> bytes:
+    def encode_grSim(self) -> bytes:
         bytes_packet = self.grSim_packet.SerializeToString()
         return bytes_packet
     
