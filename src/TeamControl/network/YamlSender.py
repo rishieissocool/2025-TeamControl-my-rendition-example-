@@ -28,10 +28,19 @@ class YamlSender(BaseSocket):
         # print(path)
 
         file = open(path.parent / "ipconfig.yaml", "r")
-        self.robot = yaml.load(file, Loader)
+        self.set_robot_addr(yaml.load(file, Loader))
         super().__init__(type=SocketType.SOCK_UDP,ip='')
 
+    def set_robot_addr(self,raw):
+        self.blue = {
+                v["shellID"]: (v["ip"], v["port"])
+                for _, v in raw["blue"].items()
+            }
         
+        self.yellow = {
+                v["shellID"]: (v["ip"], v["port"])
+                for _, v in raw["yellow"].items()
+            }
     
     def send_command(self, command:RobotCommand):
         """
@@ -46,11 +55,14 @@ class YamlSender(BaseSocket):
         Exceptions:
             TypeError : Only Command or byte objects allowed
         """
-        robot_id = str(command.robot_id)
-        destination = self.robot[robot_id]["ip"]
-        port = self.robot[robot_id]["port"]
+        robot_id = command.robot_id
+        isYellow = command.isYellow
+        destination:tuple = self.yellow[robot_id] if isYellow is True else self.blue[robot_id]
         enocded_command:bytes = command.encode()
-        self.sock.sendto(enocded_command, (destination, port))
-        # print(robot_id,destination,port, command, " Message Sent")
+        self.sock.sendto(enocded_command, destination)
+        print(robot_id,isYellow,destination, command, " Message Sent")
 
             
+if __name__ == "__main__" :
+    s = YamlSender()
+    s.send_command(RobotCommand(1))

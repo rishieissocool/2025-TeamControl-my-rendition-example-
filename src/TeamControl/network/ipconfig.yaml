@@ -1,29 +1,77 @@
-"0": 
-  ip: "127.0.0.1"
-  port: 50514
-  shell_number: 6
+yellow:
 
-"1": 
-  ip: "127.0.0.1"
-  port: 1234
-  shell_number: 3
+  0:
+    ip: "127.0.0.1"
+    port: 12345
+    shellID: 1
+    has_chip_kick: false
 
-"2": 
-  ip: "127.0.0.1"
-  port: 1234
-  shell_number: 7
-  
-"3": 
-  ip: "127.0.0.1"
-  port: 1234
-  shell_number: 1
+  1:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 2
+    has_chip_kick: false
 
-"4": 
-  ip: "127.0.0.1"
-  port: 1234
-  shell_number: 8
+  2:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 3
+    has_chip_kick: false
 
-"5": 
-  ip: "127.0.0.1"
-  port: 1234
-  shell_number: 2
+  3:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 4 
+    has_chip_kick: false
+
+  4: 
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 5
+    has_chip_kick: false
+
+  5:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 6
+    has_chip_kick: false
+
+
+blue:
+
+  0:
+    ip: "127.0.0.1"
+    port: 12345
+    shellID: 1
+    has_chip_kick: false
+
+  1:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 2
+    has_chip_kick: false
+
+  2:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 3
+    has_chip_kick: false
+
+  3:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 4 
+    has_chip_kick: false
+
+  4: 
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 5
+    has_chip_kick: false
+
+  5:
+    ip: "127.0.0.1"
+    port: 50514
+    shellID: 6
+    has_chip_kick: false
+
