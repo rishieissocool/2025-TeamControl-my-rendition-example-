@@ -31,6 +31,8 @@ def main():
     use_sim = True
     us_yellow = True
     us_positive = us_yellow
+    use_grSim_vision = use_sim
+    vision_port = 10006
     
     # queues
     vision_q = Queue()
@@ -40,8 +42,9 @@ def main():
     
     # robot_feedback_q = Queue()
 
-    logger = LogSaver()
-    
+    # logger = LogSaver()
+    logger = None
+        
     # event : System running ? 
     is_running = Event()
     
@@ -53,10 +56,10 @@ def main():
     
     # processes
     wmr = Process(target=WMWorker.run_worker, args=(is_running,logger,wm,vision_q,gc_q),)
-    vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,vision_q,use_sim,),)
-    gc_wkr = Process(target=GCfsm.run_worker, args=(is_running, logger, output_q, us_yellow, us_positive ),)
+    vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,logger,vision_q,use_grSim_vision,vision_port),)
+    gc_wkr = Process(target=GCfsm.run_worker, args=(is_running, logger, gc_q, us_yellow, us_positive ),)
     
-    dispatch_wkr = Process(target=run_dispatcher, args=(is_running,dispatch_q,use_sim,is_yellow,),)
+    dispatch_wkr = Process(target=run_dispatcher, args=(is_running,dispatch_q,use_sim,us_yellow,),)
     # planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))
 
     # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
