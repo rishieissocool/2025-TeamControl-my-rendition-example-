@@ -1,7 +1,8 @@
 from TeamControl.network.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2
 from TeamControl.network.receiver import SSL_Multicast
 from TeamControl.network.sender import Sender
-from TeamControl.network.grSim_commands import GrSimRobotCommands
+from TeamControl.network.robot_command import RobotCommand
+# from TeamControl.network.grSim_commands import GrSimRobotCommands
 from multiprocessing import Event
 
 # Classes of Vision Wolrd Receivers
@@ -70,35 +71,47 @@ class grSimVision(Vision):
 ### Simulation Control ### 
 
 class grSimSender(Sender):
-    def __init__(self, ip: str = "127.0.0.1", port : int = 20010,is_yellow = True) -> None: #please check and verify this port
-        self.is_yellow = is_yellow 
-        self.GSC = GrSimRobotCommands(isYellow=is_yellow)
+    def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         super().__init__(ip=ip,port=port)
     
     def new_raw_command(self,robot_id,vx=0.0,vy=0.0,w=0.0,k=0,d=0,us=True):
+        raise DeprecationWarning("Please use RobotCommandinstead")
         return GSC.new_command(robot_id=robot_id,vx=vx,vy=vy,w=w,k=k,d=d,us=us)
     
     def send(self,msg) -> None:
         """
-        send GrSimRobotCommands or bytes to grSim
+        send RobotCommand or bytes to grSim
         """
-        if not isinstance(msg,bytes):
+        if isinstance(msg,RobotCommand):
+            msg = msg.encode_grSim()
+
+        elif not isinstance(msg,bytes):
             try:
-                msg = self.GSC.encode(msg)
+                msg = msg.encode()
             except Exception as e:
                 raise(e, "Error with GRSIM message packing")
+            
         self.sock.sendto(msg,self.destination)
     
-    def send_command(self, robot_command,us=True) -> None:
-        """send_command
+
+
+if __name__ == "__main__":
+    sender = grSimSender()
+    cmd = RobotCommand(1)
+    sender.send(cmd)
+    print(f"{cmd.grSim_packet} \n has been sent to {sender.destination}.")
+    
+    
+    # def send_command(self, robot_command,us=True) -> None:
+    #     """send_command
         
-        sending Command over grsim command sender port
+    #     sending Command over grsim command sender port
         
-        converting RobotCommands into grSim commands
-        """
-        packet = self.GSC.convert(robot_command=robot_command,us=us)
-        encoded_msg = self.GSC.encode(packet)
-        self.send(encoded_msg)
+    #     converting RobotCommands into grSim commands
+    #     """
+    #     packet = self.GSC.convert(robot_command=robot_command,us=us)
+    #     encoded_msg = self.GSC.encode(packet)
+    #     self.send(encoded_msg)
         
 
 
@@ -156,9 +169,3 @@ class grSimSender(Sender):
 #     def send(self, packet) -> None:
 #         return super().send(packet)
   
-
-
-# if __name__ == "__main__":
-#     recv = GameControl()
-#     data,addr = recv.listen()
-#     print(f"{data} \n received from {addr}.")
