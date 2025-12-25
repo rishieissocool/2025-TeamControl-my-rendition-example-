@@ -23,6 +23,7 @@ class RobotCommand():
         Params:
             time_set(time.time): time of packet generated
         """
+        self._g_packet = None
         self.time_set: float = time.time()
         self.isYellow: bool = isYellow
         self.robot_id: int = int(robot_id)
@@ -33,10 +34,23 @@ class RobotCommand():
         self.dribble: int = int(dribble)
         self.time_origin: float = float(time_origin)
     
-    def __str__(self) -> str:
-        # the string will not include isYellow
-        return f"{self.robot_id} {self.vx} {self.vy} {self.w} {self.kick} {self.dribble} {self.time_set}"
-
+    @property
+    def grSim_packet(self):
+        if self._g_packet is None:
+            self.create_grSim_packet()
+        return self._g_packet 
+    
+    @grSim_packet.setter
+    def grSim_packet(self,value):
+        self._g_packet = value
+        
+    def create_grSim_packet(self) -> None:
+        # step 1 : create robot command protobuf object
+        grSim_robot_command = self._grSimRobotCommand_wrapper(self.robot_id,self.vx,self.vy,self.w,self.kick,self.dribble)
+        # step 2 : create commands protobuf object * this requires isYellow
+        grSim_commands = self._grSimCommand_wrapper(self.isYellow,grSim_robot_command)
+        self.grSim_packet = grSim_Packet_pb2.grSim_Packet(commands=grSim_commands)
+    
     def __repr__(self):
         """repr 
             This is a magic function
@@ -52,7 +66,10 @@ class RobotCommand():
     Kick? : {self.kick=}
     Dribble? : {self.dribble=}
             '''
-        
+            
+    def __str__(self) -> str:
+        # the string will not include isYellow
+        return f"{self.robot_id} {self.vx} {self.vy} {self.w} {self.kick} {self.dribble} {self.time_set}"
         
     def encode(self) -> bytes:
         """encode
@@ -87,18 +104,7 @@ class RobotCommand():
         args = [int(robot_id), float(vx),float(vy),float(w),int(kick),int(dribble),float(time_origin)]
         
         return RobotCommand(*args) 
-
-    def grSim_robot_command(self) -> object:
-        """convert_grSim
-            Converts RobotCommand into grSim command protobuff object
-        Args:
-            isYellow (bool): is the robot yellow ?
-        """
-        # step 1 : create robot command protobuff object
-        grSim_robot_command = self._grSimRobotCommand_wrapper(self.robot_id,self.vx,self.vy,self.w,self.kick,self.dribble)
-        # step 2 : create commands protobuff object * this requires isYellow
-        grSim_commands = self._grSimCommand_wrapper(self.isYellow,grSim_robot_command)
-        self.grSim_packet = grSim_Packet_pb2.grSim_Packet(commands=grSim_commands)
+    
     
     def encode_grSim(self) -> bytes:
         bytes_packet = self.grSim_packet.SerializeToString()
