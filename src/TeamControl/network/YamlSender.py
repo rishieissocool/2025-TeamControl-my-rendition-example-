@@ -23,25 +23,34 @@ except ImportError as e:
 
           
 class YamlSender(BaseSocket):
-    def __init__(self):
+    def __init__(self,send_to_grSim:bool):
         path = Path(__file__).resolve()
         # print(path)
 
         file = open(path.parent / "ipconfig.yaml", "r")
         self.set_robot_addr(yaml.load(file, Loader))
+        self.send_to_grSim = send_to_grSim
         super().__init__(type=SocketType.SOCK_UDP,ip='')
 
     def set_robot_addr(self,raw):
         self.blue = {
-                v["shellID"]: (v["ip"], v["port"])
-                for _, v in raw["blue"].items()
+            v["shellID"]: {
+                "addr": (v["ip"], v["port"]),
+                "raw": r
             }
+            for r, v in raw["blue"].items()
+        }
         
         self.yellow = {
-                v["shellID"]: (v["ip"], v["port"])
-                for _, v in raw["yellow"].items()
+                
+            v["shellID"]: {
+                "addr": (v["ip"], v["port"]),
+                "raw": r
             }
-        # self.grSim = (raw["grSim"]["ip"], raw["grSim"]["port"])
+            for r, v in raw["blue"].items()
+        }
+        print(self.blue)
+        self.grSim = (raw["grSim"]["ip"], raw["grSim"]["port"])
     
     def send_command(self, command:RobotCommand):
         """
@@ -58,21 +67,30 @@ class YamlSender(BaseSocket):
         """
         robot_id = command.robot_id
         isYellow = command.isYellow
-        destination:tuple = self.yellow[robot_id] if isYellow is True else self.blue[robot_id]
+        destination:tuple = self.yellow[robot_id]["addr"] if isYellow is True else self.blue[robot_id]["addr"]
         enocded_command:bytes = command.encode()
         self.sock.sendto(enocded_command, destination)
         print(robot_id,isYellow,destination, command, " Message Sent")
+        if self.send_to_grSim is True:
+            self.send_grSim_command(command=command)
 
-    # def send_grSim_command(self,command:RobotCommand):
-    #     enocded_command = command.encode_grSim()
-    #     destination = self.grSim
-    #     self.sock.sendto(enocded_command, destination)
-    #     print(command,destination, " Message Sent")
+    def send_grSim_command(self,command:RobotCommand):
+        isYellow = command.isYellow
+        robot_id = command.robot_id
+
+        raw_robotID = self.yellow[robot_id]["raw"] if isYellow is True else self.blue[robot_id]["raw"]
+        if raw_robotID != command.robot_id:
+            print("robotID is different, updating command robot ID ")
+            command.robot_id = raw_robotID
+        enocded_command = command.encode_grSim()
+        destination = self.grSim
+        self.sock.sendto(enocded_command, destination)
+        print(command,destination, " Message Sent to grSim")
 
         
             
 if __name__ == "__main__" :
-    s = YamlSender()
+    s = YamlSender(send_to_grSim=True)
     command = RobotCommand(1)
     s.send_command(command)
     # grSim command 
