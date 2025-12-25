@@ -39,16 +39,21 @@ class GCfsm (BaseWorker):
         self.logger.info (f"[GCP] : Setup Complete {self.output_q=}, {us_yellow=}, {us_positive=}")
         
     def step(self):
+        # listen from GameControl socket
         new_data = self.recv.listen()
+        # if the socket says None
+        if new_data is None:
+            self.logger.error("[GCP] received None from Socket")
+            # time.sleep(1) # wait one sec
+            raise AttributeError("received None from Socket") # if this is none, continue
+        
         new_ref_msg:RefereeMessage = RefereeMessage.from_proto(new_data)
         # no previous packets
         if self.last_ref_msg is not None:
             # check if the timestamp is before
             if new_ref_msg.packet_timestamp < self.last_ref_msg.packet_timestamp:
                 return
-        elif new_ref_msg is None:
-            time.sleep(1) # wait one sec
-            return # if this is none, continue
+        
         # otherwise :
         self.last_ref_msg = new_ref_msg
         # check team color if this changes, basically resets everything
