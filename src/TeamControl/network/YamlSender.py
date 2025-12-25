@@ -41,6 +41,7 @@ class YamlSender(BaseSocket):
                 v["shellID"]: (v["ip"], v["port"])
                 for _, v in raw["yellow"].items()
             }
+        # self.grSim = (raw["grSim"]["ip"], raw["grSim"]["port"])
     
     def send_command(self, command:RobotCommand):
         """
@@ -62,7 +63,17 @@ class YamlSender(BaseSocket):
         self.sock.sendto(enocded_command, destination)
         print(robot_id,isYellow,destination, command, " Message Sent")
 
+    # def send_grSim_command(self,command:RobotCommand):
+    #     enocded_command = command.encode_grSim()
+    #     destination = self.grSim
+    #     self.sock.sendto(enocded_command, destination)
+    #     print(command,destination, " Message Sent")
+
+        
             
 if __name__ == "__main__" :
     s = YamlSender()
-    s.send_command(RobotCommand(1))
+    command = RobotCommand(1)
+    s.send_command(command)
+    # grSim command 
+    # s.send_grSim_command(command)

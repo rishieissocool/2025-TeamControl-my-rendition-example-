@@ -75,3 +75,6 @@ blue:
     shellID: 6
     has_chip_kick: false
 
+grSim:
+  ip: "127.0.0.1"
+  port: 20010
