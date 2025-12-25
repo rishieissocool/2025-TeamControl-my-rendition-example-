@@ -10,7 +10,7 @@ from enum import Enum,auto
 
 class GCfsm (BaseWorker):
     def __init__(self,is_running,logger):
-        self.super().__init__(is_running,logger)
+        super().__init__(is_running,logger)
         
         self.last_ref_msg = None
         # state, command, event, stage
@@ -35,6 +35,7 @@ class GCfsm (BaseWorker):
         self.output_q = output_q
         self.us_yellow = us_yellow
         self.us_positive = us_positive    
+        self.logger.info (f"[GCP] : Setup Complete {self.output_q=}, {us_yellow=}, {us_positive=}")
         
     def step(self,new_ref_msg:RefereeMessage):
         # no previous packets
@@ -223,6 +224,3 @@ class GCfsm (BaseWorker):
                 packet = (PacketType.BLF_LOCATION, location)
                 self.output_q.put_nowait(packet)
                 
-                
-                
-# use run_worker(GCfsm, is_running, logger, output_q, us_yellow, us_positive )
