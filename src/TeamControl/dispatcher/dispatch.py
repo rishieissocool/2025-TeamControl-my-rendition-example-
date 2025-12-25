@@ -52,7 +52,7 @@ class Dispatcher(BaseWorker):
             command, runtime = queue_item # this requires a command and runtime
             self.add(command, runtime)
         else:
-            time.sleep(0.05)
+            time.sleep(0.005)
 
     # Add a new command to the running commands and replace exisiting commands for the robot with the same ID
     def add(self, command, run_time):
