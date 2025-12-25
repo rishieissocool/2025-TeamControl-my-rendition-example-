@@ -92,8 +92,8 @@ class WorldModel:
         self.ball_model = geometry.models
 
     def update_gc_data(self,packet):
-        type, data = packet[0],packet[1]
-        match type:
+        t, data = packet[0],packet[1]
+        match t:
             case PacketType.ROBOTS_ACTIVE:
                 self.update_robots_active(data)
             case PacketType.NEW_STATE:
@@ -104,7 +104,7 @@ class WorldModel:
                 self.update_ball_left_field_location(data)
             
             case _: # if the packet type is unknown 
-                log.exception(f"undefined {type=}, {data=}")
+                log.exception(f"undefined Packet - {t}, {data=}")
             
     def update_robots_active(self,new_active) : 
         self.robot_active = new_active
