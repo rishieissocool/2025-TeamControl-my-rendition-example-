@@ -3,22 +3,30 @@ from TeamControl.network.robot_command import RobotCommand
 from TeamControl.network.YamlSender import YamlSender
 from TeamControl.network.ssl_sockets import grSimSender
 import time
+from pathlib import Path
+
+import yaml
+try:
+    from yaml import CLoader as Loader
+except ImportError as e:
+    from yaml import Loader
+
 
 class dispatch():
     def __init__(self, q,use_sim,is_yellow):
+        path = Path(__file__).resolve()
+
         self.q = q
         self.is_yellow = is_yellow 
         self.use_sim = use_sim
 
         self.running_commands = {}
         self.announce_initialisation()
-        self.y_sender = YamlSender() 
-        self.g_sender = grSimSender(is_yellow=is_yellow)
+        self.y_sender = YamlSender(send_to_grSim=use_sim) 
 
     # Announce that the dispatcher has been created
     def announce_initialisation(self):
         print("Multi-robot dispatcher initialized!")
-        print("socket is yellow :", self.is_yellow)
         print("Simulation is active :", self.use_sim)
 
     # Main processing loop
@@ -87,8 +95,6 @@ class dispatch():
     def send_command(self,command:RobotCommand):
         # this handles how you'd use different senders to send a command.
         self.y_sender.send_command(command)
-        if self.use_sim is True:
-            self.g_sender.send_command(command)
             
 def run_dispatcher(is_running,q,use_sim,is_yellow):
     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
