@@ -122,7 +122,7 @@ class SSL_Multicast(Receiver):
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         self.is_ready = True
         
-    def listen(self) -> obj | ByteString:
+    def listen(self) -> object | bytearray:
         # set to only return the decoded data
         decoded_info,_ = super().listen()
         return decoded_info
