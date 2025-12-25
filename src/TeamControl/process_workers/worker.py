@@ -8,7 +8,8 @@ class BaseWorker():
         self.is_running = is_running
         # use the provided logger
         self.logger:LogSaver = logger if logger is not None else LogSaver(process_name=self.__class__.__name__)
-        
+        self.error_cnt = 0
+        self.last_error_time = 0
         
     def setup(self,*args):
         """
@@ -36,8 +37,19 @@ class BaseWorker():
                 break
             except Exception as e:
                 self.logger.error(f"[{self.__class__.__name__}]: Exception encountered:{e} ")
+                self.error_cnt += 1
+
+                if self.last_error_time - time.time() > 4 or self.last_error_time == 0:
+                    self.last_error_time = time.time()
+                    self.error_cnt = 1
+                
+                if self.error_cnt >= 4: 
+                    self.error_cnt = 0
+                    self.logger.error(f"[{self.__class__.__name__}]: too many errors ")
+                    break
         
         self.shutdown()
+    
     # do shutdown here 
     def shutdown(self):
         self.logger.info(f"[{self.__class__.__name__}]: task complete, shutting down")
