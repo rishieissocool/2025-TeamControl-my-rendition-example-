@@ -36,7 +36,7 @@ class Dispatcher(BaseWorker):
     def run(self):
         return super().run()
     
-    def step(self,is_running):
+    def step(self):
         self.check_new_commands()
         self.handle_commands()
         self.check_command_timeout()
