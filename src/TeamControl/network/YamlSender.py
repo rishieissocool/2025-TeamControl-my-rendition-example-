@@ -68,6 +68,7 @@ class YamlSender(BaseSocket):
         robot_id = command.robot_id
         isYellow = command.isYellow
         destination:tuple = self.yellow[robot_id]["addr"] if isYellow is True else self.blue[robot_id]["addr"]
+        # print(robot_id, isYellow, destination)
         enocded_command:bytes = command.encode()
         self.sock.sendto(enocded_command, destination)
         print(robot_id,isYellow,destination, command, " Message Sent")
@@ -77,11 +78,11 @@ class YamlSender(BaseSocket):
     def send_grSim_command(self,command:RobotCommand):
         isYellow = command.isYellow
         robot_id = command.robot_id
-
-        raw_robotID = self.yellow[robot_id]["raw"] if isYellow is True else self.blue[robot_id]["raw"]
-        if raw_robotID != command.robot_id:
-            print("robotID is different, updating command robot ID ")
-            command.robot_id = raw_robotID
+        # print(isYellow,robot_id)
+        # raw_robotID = self.yellow[robot_id]["raw"] if isYellow is True else self.blue[robot_id]["raw"]
+        # if raw_robotID != command.robot_id:
+        #     print("robotID is different, updating command robot ID ")
+        #     command.robot_id = raw_robotID
         enocded_command = command.encode_grSim()
         destination = self.grSim
         self.sock.sendto(enocded_command, destination)
@@ -92,6 +93,7 @@ class YamlSender(BaseSocket):
 if __name__ == "__main__" :
     s = YamlSender(send_to_grSim=True)
     command = RobotCommand(1)
+    print(s.yellow[1]["addr"])
     s.send_command(command)
     # grSim command 
     # s.send_grSim_command(command)

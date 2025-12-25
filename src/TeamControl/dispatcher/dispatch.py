@@ -30,7 +30,8 @@ class Dispatcher(BaseWorker):
     # Announce that the dispatcher has been created
     def announce_initialisation(self):
         print("Multi-robot dispatcher initialized!")
-        print("Simulation is active :", self.use_sim)
+        print("Sender : ", self.y_sender)
+        print("Sending to GrSim :", self.use_sim)
     
     # Main processing loop
     def run(self):
@@ -42,8 +43,10 @@ class Dispatcher(BaseWorker):
         self.check_command_timeout()
         
     def shutdown(self):
+        print("reseting all robots to 0 ")
         self.reset_all_robots()
         self.handle_commands()
+        print("Dispatcher has been shutdown")
         super().shutdown()
     # Get the next command from the queue and add it
     def check_new_commands(self):
@@ -52,7 +55,7 @@ class Dispatcher(BaseWorker):
             command, runtime = queue_item # this requires a command and runtime
             self.add(command, runtime)
         else:
-            time.sleep(0.005)
+            self.add(RobotCommand(1),1)
 
     # Add a new command to the running commands and replace exisiting commands for the robot with the same ID
     def add(self, command, run_time):
@@ -84,8 +87,7 @@ class Dispatcher(BaseWorker):
         self.running_commands[robot_id] = {"isYellow" : isYellow, "command": reset_command, "runtime": 9999999, "start_time": time.time()}
 
     def reset_all_robots(self):
-        for i in self.running_commands:
-            robot_id = self.running_commands[i]
+        for robot_id in self.running_commands:
             self.reset_command(robot_id=robot_id)
             
                 
@@ -98,8 +100,8 @@ class Dispatcher(BaseWorker):
     def send_command(self,command:RobotCommand):
         # this handles how you'd use different senders to send a command.
         self.y_sender.send_command(command)
-        if self.send_to_grSim:
-            self.y_sender.send_grSim_command(command)
+        # if self.use_sim:
+        #     self.y_sender.send_grSim_command(command)
             
 # def run_dispatcher(is_running,q,use_sim,is_yellow):
 #     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
