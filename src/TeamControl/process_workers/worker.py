@@ -36,7 +36,7 @@ class BaseWorker():
                 self.logger.warning(f"[{self.__class__.__name__}]: Force Quitting")
                 break
             except Exception as e:
-                self.logger.error(f"[{self.__class__.__name__}]: Exception encountered:{e} ")
+                self.logger.error(f"[{self.__class__.__name__}]:Exception {type(e).__name__} encountered :{e} ")
                 self.error_cnt += 1
 
                 if self.last_error_time - time.time() > 4 or self.last_error_time == 0:
