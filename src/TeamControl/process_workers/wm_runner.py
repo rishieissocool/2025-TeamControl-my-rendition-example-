@@ -10,8 +10,7 @@ import time
 
 class WMWorker(BaseWorker):
     def __init__(self,is_running,logger):
-        self.is_running:Event = is_running
-        self.logger = logger
+        super().__init__(is_running=is_running,logger=logger)
         self.delay_time = 0.001 # s
 
         
@@ -27,21 +26,21 @@ class WMWorker(BaseWorker):
         self.wm:WorldModel = wm
         self.vision_q:Queue = vision_q
         self.gc_q:Queue = gc_q
-        self.logger.info(f"world model runner is now running")
+        self.logger.info(f"[wmr] : L setup completed")
             
     def step(self):
         if not self.vision_q.empty() :
             item = self.vision_q.get()
             if isinstance(item,Frame):
-                self.logger.info("Saving new vision Frame")
+                self.logger.info("[wmr] : Updating World Model Frame")
                 self.wm.add_new_frame(item)
             elif isinstance(item,GeometryData):
-                self.logger.info("Updating Geometry")
+                self.logger.info("[wmr] : Updating World Model Geometry")
                 self.wm.update_geometry(item)
                         
         if not self.gc_q.empty():
             new_info = self.gc_q.get_nowait()
-            self.logger.info(f"Saving new Game Info {new_info}")
+            self.logger.info(f"[wmr] : Updating World Model Game Info {new_info[0]}")
             self.wm.update_game_data(new_info)
         
         time.sleep(self.delay_time)
@@ -50,8 +49,7 @@ class WMWorker(BaseWorker):
         return super().run()   
     
     def shutdown(self):
-        print("[wm_runner] : Going Offline")
-        
+        return super().shutdown()        
 
 if __name__ == "__main__":
     logger = LogSaver()
