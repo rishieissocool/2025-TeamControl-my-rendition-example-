@@ -2,16 +2,16 @@ from TeamControl.SSL.game_controller.Message import RefereeMessage,GameEvent
 from TeamControl.SSL.game_controller.common import Command,Stage,GameEventType,Team,PacketType, GameState
 from TeamControl.network.ssl_sockets import GameControl
 
+from TeamControl.process_workers.worker import BaseWorker
 from multiprocessing import Queue
 from enum import Enum,auto
 
 
 
-class GCfsm ():
-    def __init__(self,output_q:Queue,us_positive:bool=None,us_yellow:bool=None):
-        self.output_q = output_q
-        self.us_yellow = us_yellow
-        self.us_positive = us_positive
+class GCfsm (BaseWorker):
+    def __init__(self,is_running:Event,logger:LogSaver):
+        self.super().__init__(is_running,logger)
+        
         self.last_ref_msg = None
         # state, command, event, stage
         self.current_command = None
@@ -28,9 +28,15 @@ class GCfsm ():
 
         # last known ball_left_field_location
         self.last_blf_location = None
+    
+    def setup(self,*args):
+        output_q, us_yellow, us_positive = args
         
-
-    def update(self,new_ref_msg:RefereeMessage):
+        self.output_q = output_q
+        self.us_yellow = us_yellow
+        self.us_positive = us_positive    
+        
+    def step(self,new_ref_msg:RefereeMessage):
         # no previous packets
         if self.last_ref_msg is not None and new_ref_msg.packet_timestamp < self.last_ref_msg.packet_timestamp:
             return 
@@ -219,15 +225,4 @@ class GCfsm ():
                 
                 
                 
-                
-def run_gcfsm(is_running,output_q,us_yellow=None,us_positive=None): #Process for multiprocess
-    fsm = GCfsm(output_q=output_q,us_yellow=us_yellow,us_positive=us_positive)
-    gcl = GameControl(is_running)
-    while is_running.is_set(): 
-        try:
-            raw_ref_msg = gcl.listen() # listens overnetwork
-            new_ref_msg = RefereeMessage.from_proto(raw_ref_msg) # format into class
-            fsm.update(new_ref_msg) # updates state machine
-        except KeyboardInterrupt:
-            continue
-    print("game controller quit")
+# use run_worker(GCfsm, is_running, logger, output_q, us_yellow, us_positive )
