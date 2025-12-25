@@ -13,6 +13,7 @@ from TeamControl.voronoi_planner.run_planner import run_planner
 from TeamControl.utils.follow_ball_dummy import run_follow_ball_dummy
 from TeamControl.robot.goalie import run_goalie
 
+
 # in multiprocessing this can only be a simple process
 from multiprocessing import Process, Queue,Event
 
@@ -22,6 +23,8 @@ import sys
 import time
 
 def main():
+    # add a timer
+    start_time = time.time()
     # add a timer
     start_time = time.time()
     use_sim = True
@@ -38,10 +41,14 @@ def main():
     # event : System running ? 
     is_running = Event()
     
+    # event : System running ? 
+    is_running = Event()
+    
     # world model
     wm_manager = WorldModelManager()
     wm_manager.start()
     wm = wm_manager.WorldModel()
+    wmr = Process(target=wm_runner, args=(is_running,wm,vision_q,gc_q,),daemon=True)
     wmr = Process(target=wm_runner, args=(is_running,wm,vision_q,gc_q,),daemon=True)
     
     # processes
@@ -54,6 +61,7 @@ def main():
     # chaser = Process(target=run_follow_ball_dummy,args=(dispatch_q,wm,1,is_yellow))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))'
     
+    is_running.set()
     is_running.set()
     vision_wkr.start()
     gc_wkr.start()
@@ -96,6 +104,8 @@ def main():
 
     # planner_wkr.join()
     # some_other_process2.join()
+        
+        
         
         
 if __name__ == "__main__":
