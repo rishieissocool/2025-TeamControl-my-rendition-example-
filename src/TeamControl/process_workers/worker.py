@@ -1,11 +1,13 @@
 # typings
 from multiprocessing import Process, Queue, Event
 from TeamControl.utils.Logger import LogSaver
+import time 
 
 class BaseWorker():
     def __init__(self,is_running:Event,logger:LogSaver):
         self.is_running = is_running
-        self.logger:LogSaver = logger
+        # use the provided logger
+        self.logger:LogSaver = logger if logger is not None else LogSaver(process_name=self.__class__.__name__)
         
         
     def setup(self,*args):
