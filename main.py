@@ -6,6 +6,7 @@ from TeamControl.world.model_manager import WorldModelManager
 
 from TeamControl.utils.Logger import LogSaver
 from TeamControl.dispatcher.dispatch import Dispatcher
+from TeamControl.utils.yaml_config import Config
 
 from TeamControl.voronoi_planner.run_planner import run_planner
 # from TeamControl.behaviour_tree.run_bt_process import run_bt_process
@@ -26,13 +27,7 @@ import time
 def main():
     # add a timer
     start_time = time.time()
-    # add a timer
-    start_time = time.time()
-    use_sim = True
-    us_yellow = True
-    us_positive = us_yellow
-    use_grSim_vision = use_sim
-    vision_port = 10006
+    preset = Config()
     
     # queues
     vision_q = Queue()
@@ -56,14 +51,14 @@ def main():
     
     # processes
     wmr = Process(target=WMWorker.run_worker, args=(is_running,logger,wm,vision_q,gc_q),)
-    vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,logger,vision_q,use_grSim_vision,vision_port),)
-    gc_wkr = Process(target=GCfsm.run_worker, args=(is_running, logger, gc_q, us_yellow, us_positive ),)
+    vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,logger,vision_q,preset.use_grSim_vision,preset.vision[1]),)
+    gc_wkr = Process(target=GCfsm.run_worker, args=(is_running, logger, gc_q, preset.us_yellow, preset.us_positive ),)
     
-    dispatch_wkr = Process(target=Dispatcher.run_worker, args=(is_running,logger,dispatch_q,use_sim,),)
+    dispatch_wkr = Process(target=Dispatcher.run_worker, args=(is_running,logger,dispatch_q,preset,),)
     # planner_wkr = Process(target=run_planner, args=(wm,dispatch_q))
 
-    # goalie = Process(target=run_goalie,args=(dispatch_q,wm,0,is_yellow))
-    # chaser = Process(target=run_follow_ball_dummy,args=(dispatch_q,wm,1,is_yellow))
+    goalie = Process(target=run_goalie,args=(dispatch_q,wm,1,preset.us_yellow))
+    # chaser = Process(target=run_follow_ball_dummy,args=(dispatch_q,wm,1,preset.us_yellow))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))'
     
     is_running.set()
@@ -71,7 +66,7 @@ def main():
     vision_wkr.start()
     gc_wkr.start()
     wmr.start()
-    # goalie.start()
+    goalie.start()
     dispatch_wkr.start()
     # bt.start()
     # chaser.start()
@@ -105,7 +100,7 @@ def main():
             
     # bt.join()
     # chaser.join()   
-    # goalie.join()
+    goalie.join()
 
     # planner_wkr.join()
     # some_other_process2.join()
