@@ -1,8 +1,8 @@
-from TeamControl.network.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2
+from TeamControl.network.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2,grSim_Packet_pb2
 from TeamControl.network.receiver import SSL_Multicast
 from TeamControl.network.sender import Sender
 from TeamControl.network.robot_command import RobotCommand
-# from TeamControl.network.grSim_commands import GrSimRobotCommands
+from TeamControl.network.grSimPacketFactory import grSimPacketFactory
 from multiprocessing import Event
 
 # Classes of Vision Wolrd Receivers
@@ -74,32 +74,40 @@ class grSimSender(Sender):
     def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         super().__init__(ip=ip,port=port)
     
-    def new_raw_command(self,robot_id,vx=0.0,vy=0.0,w=0.0,k=0,d=0,us=True):
-        raise DeprecationWarning("Please use RobotCommandinstead")
-        return GSC.new_command(robot_id=robot_id,vx=vx,vy=vy,w=w,k=k,d=d,us=us)
+    def send_robot_command(self,robot_command:RobotCommand):
+        packet = grSimPacketFactory.robot_command(**robot_command.to_dict())
+        self.send_packet(packet)
+        
     
-    def send(self,msg) -> None:
+    def send_packet(self,packet:grSim_Packet_pb2) -> None:
         """
         send RobotCommand or bytes to grSim
+        *see grSimPacketFactory for how to generate packet
         """
-        if isinstance(msg,RobotCommand):
-            msg = msg.encode_grSim()
 
-        elif not isinstance(msg,bytes):
-            try:
-                msg = msg.encode()
-            except Exception as e:
-                raise(e, "Error with GRSIM message packing")
-            
-        self.sock.sendto(msg,self.destination)
+        if not isinstance(packet,grSim_Packet_pb2.grSim_Packet):
+            raise TypeError("Only accept grSim_Packet_pb2 Object")
+        
+        encoded_msg = self.encode(packet)
+        print(f"{packet} \n has been sent to {self.destination}.")
+
+        self.send(encoded_msg)
+
     
-
+    def send(self,byte_string: bytearray)->None:
+        self.sock.sendto(byte_string,self.destination)
+        
+    
+    @staticmethod
+    def encode(packet) -> bytes:
+        bytes_packet = packet.SerializeToString()
+        return bytes_packet
+    
 
 if __name__ == "__main__":
     sender = grSimSender()
     cmd = RobotCommand(1)
-    sender.send(cmd)
-    print(f"{cmd.grSim_packet} \n has been sent to {sender.destination}.")
+    sender.send_robot_command(cmd)
     
     
     # def send_command(self, robot_command,us=True) -> None:
