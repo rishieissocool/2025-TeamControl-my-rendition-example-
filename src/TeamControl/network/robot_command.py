@@ -23,7 +23,6 @@ class RobotCommand():
         Params:
             time_set(time.time): time of packet generated
         """
-        self._g_packet = None
         self.time_set: float = time.time()
         self.isYellow: bool = isYellow
         self.robot_id: int = int(robot_id)
