@@ -1,6 +1,6 @@
 from TeamControl.network.proto2 import ssl_vision_wrapper_pb2,ssl_vision_detection_tracked_pb2,ssl_gc_referee_message_pb2,grSim_Packet_pb2
 from TeamControl.network.receiver import SSL_Multicast
-from TeamControl.network.sender import Sender
+from TeamControl.network.sender import LockedSender
 from TeamControl.network.robot_command import RobotCommand
 from TeamControl.network.grSimPacketFactory import grSimPacketFactory
 from multiprocessing import Event
@@ -36,7 +36,7 @@ class VisionTracker(SSL_Multicast):
         Multicast: the recv socket
     """
     def __init__(self, is_running:Event,port, group, decoder, buffer_size = 6000, timeout = 1):
-        port = 1234
+        port = 10007
         decoder = ssl_vision_detection_tracked_pb2.TrackerWrapperPacket()
         group : str = "224.5.23.2"
         buffer_size : int = 6000
@@ -70,12 +70,16 @@ class grSimVision(Vision):
         
 ### Simulation Control ### 
 
-class grSimSender(Sender):
+class grSimSender(LockedSender):
     def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         super().__init__(ip=ip,port=port)
     
     def send_robot_command(self,robot_command:RobotCommand):
+        if not isinstance(robot_command,RobotCommand):
+            raise TypeError("Expecting RobotCommand Object, got ", type(robot_command))
+        # creates a packet
         packet = grSimPacketFactory.robot_command(**robot_command.to_dict())
+        # send this packet
         self.send_packet(packet)
         
     
@@ -88,13 +92,17 @@ class grSimSender(Sender):
         if not isinstance(packet,grSim_Packet_pb2.grSim_Packet):
             raise TypeError("Only accept grSim_Packet_pb2 Object")
         
+        # encodes the packet
         encoded_msg = self.encode(packet)
-        print(f"{packet} \n has been sent to {self.destination}.")
-
+        # feedback statement ? 
+        # print(f"{packet} \n has been sent to {self.destination}.")
+        # sends the packet
         self.send(encoded_msg)
 
     
     def send(self,byte_string: bytearray)->None:
+        if not isinstance(byte_string,bytes):
+            raise TypeError("expected byte-like object, use send_packet() or send_robot_command instead ?")
         self.sock.sendto(byte_string,self.destination)
         
     
