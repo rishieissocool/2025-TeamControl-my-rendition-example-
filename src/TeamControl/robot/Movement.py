@@ -3,10 +3,6 @@ import numpy as np
 from TeamControl.world.transform_cords import *
 from typing import Tuple, Union, List, Optional
 
-## Commands ? 
-from TeamControl.network.robot_command import RobotCommand
-from TeamControl.network.grSim_commands import GrSimRobotCommands 
-
 
 from typing import Tuple, Union, List, Optional
 
