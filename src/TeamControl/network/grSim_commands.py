@@ -1,4 +1,4 @@
-### DEPECIATED ##
+### DEPRECIATED ##
 
 
 # this is to get us ready to turn the commands to grSim RobotCommands
