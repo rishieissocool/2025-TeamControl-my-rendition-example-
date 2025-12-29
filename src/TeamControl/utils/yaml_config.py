@@ -26,7 +26,12 @@ class Config():
         self.grSim_addr = (raw["grSim"]["ip"], raw["grSim"]["port"])
         self.vision = raw["vision"]["multicast-group"], raw["vision"]["port"] 
         self.game_controller = raw["gc"]["multicast-group"], raw["gc"]["port"]
-                
+        
+        self.use_grSim_vision = raw["use_grSim_vision"]
+        self.us_yellow = raw["us_yellow"]
+        self.us_positive = raw["us_positive"]
+        self.send_to_grSim = raw["send_to_grSim"]
+   
     
 
 if __name__ == "__main__":
