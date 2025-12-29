@@ -23,15 +23,15 @@ class Sender(BaseSocket):
     def send(self, msg, ip:str, port:int):
         # update address as provided, otherwise uses default
         try:
-            addr = tuple(str(ip),int(port)) 
-        
+            addr = tuple((str(ip),int(port))) 
             if not isinstance(msg,bytes):
                 msg = msg.encode()
         except Exception as e:
-            raise(type(e), " check address and msg ", e)
+            raise Exception(type(e), " check address and msg ", e)
         
         self.sock.sendto(msg,addr)
-          
+    
+    
 class LockedSender(BaseSocket):
     def __init__(self, ip: str='127.0.0.1', port: int=0, type=SocketType.SOCK_UDP, binding=False) -> None:
         device_ip = None 
