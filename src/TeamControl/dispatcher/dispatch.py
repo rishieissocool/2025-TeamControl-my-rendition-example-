@@ -2,7 +2,7 @@ from multiprocessing import Process, Queue, Event
 from TeamControl.utils.Logger import LogSaver
 from TeamControl.process_workers.worker import BaseWorker
 from TeamControl.network.robot_command import RobotCommand
-from TeamControl.network.YamlSender import YamlSender
+from TeamControl.network.sender import Sender
 from TeamControl.network.ssl_sockets import grSimSender
 import time
 from pathlib import Path
@@ -15,23 +15,36 @@ except ImportError as e:
 
 
 class Dispatcher(BaseWorker):
-    def __init__(self,is_running:Event ,logger:LogSaver ):
+    def __init__(self,is_running:Event ,logger:LogSaver, ):
         super().__init__(is_running,logger)
-        path = Path(__file__).resolve()
+        
         self.running_commands = {}
-
+        
+    
     def setup(self,*args):
-        q,use_sim  = args
+        """
+        takes dispatcher_q and preset_config
+        """
+        q,config  = args
         self.q = q
-        self.use_sim = use_sim
-        self.y_sender = YamlSender(send_to_grSim=use_sim) 
+        self.send_to_grSim = config.send_to_grSim
+        self.yellow = config.yellow
+        self.blue = config.blue
+        self.r_sender = Sender()
+        if self.send_to_grSim is True:
+            self.g_sender = grSimSender(*config.grSim_addr)
+        else:
+            self.g_sender = None
+        
+         
+        # self.g_sender = grSimSender()
         self.announce_initialisation()
         
     # Announce that the dispatcher has been created
     def announce_initialisation(self):
         print("Multi-robot dispatcher initialized!")
-        print("Sender : ", self.y_sender)
-        print("Sending to GrSim :", self.use_sim)
+        print("Sender : ", self.r_sender)
+        print("Sending to GrSim :", self.send_to_grSim)
     
     # Main processing loop
     def run(self):
@@ -54,8 +67,7 @@ class Dispatcher(BaseWorker):
             queue_item = self.q.get_nowait()
             command, runtime = queue_item # this requires a command and runtime
             self.add(command, runtime)
-        else:
-            self.add(RobotCommand(1),1)
+        
 
     # Add a new command to the running commands and replace exisiting commands for the robot with the same ID
     def add(self, command, run_time):
@@ -82,7 +94,7 @@ class Dispatcher(BaseWorker):
     def reset_command(self, robot_id):
         isYellow = self.running_commands[robot_id]["isYellow"]
         reset_command = RobotCommand(robot_id=robot_id, vx=0, vy=0, w=0, kick=0, dribble=0,isYellow=isYellow)
-        print(f"[Robot {robot_id}] Reset to idle command")
+        print(f"[{isYellow=} {robot_id}] Reset to idle command")
         
         self.running_commands[robot_id] = {"isYellow" : isYellow, "command": reset_command, "runtime": 9999999, "start_time": time.time()}
 
@@ -99,10 +111,22 @@ class Dispatcher(BaseWorker):
             
     def send_command(self,command:RobotCommand):
         # this handles how you'd use different senders to send a command.
-        self.y_sender.send_command(command)
-        # if self.use_sim:
-        #     self.y_sender.send_grSim_command(command)
-            
+        shell_id = command.robot_id
+        isYellow = command.isYellow
+        robot_dict = self.get_dict_from_shell(shell_id,isYellow)
+        self.r_sender.send(command,robot_dict["ip"],robot_dict["port"])
+        if self.send_to_grSim is True:
+            self.g_sender.send_robot_command(command,override_id=robot_dict["grSimID"])
+        self.logger.info(f"RobotCommand has been sent to robot : {robot_dict["shellID"]=} , {robot_dict["grSimID"]=}")
+    
+    def get_dict_from_shell(self,shell_id,isYellow) -> str:
+        team = self.yellow if isYellow is True else self.blue
+        for robot_key, robot_dict in team.items():
+            if robot_dict.get("shellID") == shell_id:
+                return robot_dict
+        raise ValueError (f"No robot with {shell_id=} found ")
+
+    
 # def run_dispatcher(is_running,q,use_sim,is_yellow):
 #     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
 #     d.process_q(is_running)
