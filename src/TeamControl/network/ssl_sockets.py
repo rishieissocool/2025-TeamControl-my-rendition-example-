@@ -74,11 +74,16 @@ class grSimSender(LockedSender):
     def __init__(self, ip: str = "127.0.0.1", port : int = 20010) -> None: #please check and verify this port
         super().__init__(ip=ip,port=port)
     
-    def send_robot_command(self,robot_command:RobotCommand):
+    def send_robot_command(self,robot_command:RobotCommand,override_id=None):
         if not isinstance(robot_command,RobotCommand):
             raise TypeError("Expecting RobotCommand Object, got ", type(robot_command))
         # creates a packet
-        packet = grSimPacketFactory.robot_command(**robot_command.to_dict())
+        cmd_dict = robot_command.to_dict()
+
+        if override_id is not None:
+            cmd_dict["robot_id"] = int(override_id)
+            
+        packet = grSimPacketFactory.robot_command(**cmd_dict)
         # send this packet
         self.send_packet(packet)
         
