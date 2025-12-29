@@ -1,92 +1,100 @@
 yellow:
 
-  0:
+  A:
     ip: "127.0.0.1"
     port: 12345
-    baseID : "A"
-    shellID: 1
+    grSimID : 0
+    shellID : 1
     has_chip_kick: false
 
-  1:
+  B:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "B"
-    shellID: 2
+    grSimID : 1
+    shellID : 2
     has_chip_kick: false
 
-  2:
+  C:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "C"
-    shellID: 3
+    grSimID : 2
+    shellID : 3
     has_chip_kick: false
 
-  3:
+  D:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "D"
-    shellID: 4 
+    grSimID : 3
+    shellID : 4 
     has_chip_kick: false
 
-  4: 
+  E: 
     ip: "127.0.0.1"
     port: 50514
-    baseID : "E"
-    shellID: 5
+    grSimID : 4
+    shellID : 5
     has_chip_kick: false
 
-  5:
+  F:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "F"
-    shellID: 6
+    grSimID : 5
+    shellID : 6
     has_chip_kick: false
 
 
 blue:
 
-  0:
+  A:
     ip: "127.0.0.1"
     port: 12345
-    baseID : "A"
-    shellID: 1
+    grSimID : 0
+    shellID : 1
     has_chip_kick: false
 
-  1:
+  B:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "B"
-    shellID: 2
+    grSimID : 1
+    shellID : 2
     has_chip_kick: false
 
-  2:
+  C:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "C"
-    shellID: 3
+    grSimID : 2
+    shellID : 3
     has_chip_kick: false
 
-  3:
+  D:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "D"
-    shellID: 4 
+    grSimID : 3
+    shellID : 4 
     has_chip_kick: false
 
-  4: 
+  E: 
     ip: "127.0.0.1"
     port: 50514
-    baseID : "E"
-    shellID: 5
+    grSimID : 4
+    shellID : 5
     has_chip_kick: false
 
-  5:
+  F:
     ip: "127.0.0.1"
     port: 50514
-    baseID : "F"
-    shellID: 6
+    grSimID : 5
+    shellID : 6
     has_chip_kick: false
 
 grSim:
   ip: "127.0.0.1"
   port: 20010
+
+vision:
+  multicast-group: "224.5.23.2"
+  port: 10006
+
+gc:
+  multicast-group: '224.5.23.1'
+  port: 10003 
