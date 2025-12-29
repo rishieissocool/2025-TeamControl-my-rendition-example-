@@ -34,22 +34,16 @@ class RobotCommand():
         self.dribble: int = int(dribble)
         self.time_origin: float = float(time_origin)
     
-    @property
-    def grSim_packet(self):
-        if self._g_packet is None:
-            self.create_grSim_packet()
-        return self._g_packet 
-    
-    @grSim_packet.setter
-    def grSim_packet(self,value):
-        self._g_packet = value
-        
-    def create_grSim_packet(self) -> None:
-        # step 1 : create robot command protobuf object
-        grSim_robot_command = self._grSimRobotCommand_wrapper(self.robot_id,self.vx,self.vy,self.w,self.kick,self.dribble)
-        # step 2 : create commands protobuf object * this requires isYellow
-        grSim_commands = self._grSimCommand_wrapper(self.isYellow,grSim_robot_command)
-        self.grSim_packet = grSim_Packet_pb2.grSim_Packet(commands=grSim_commands)
+    def to_dict(self):
+        return {
+            "robot_id": self.robot_id,
+            "vx" : self.vx,
+            "vy" : self.vy,
+            "w" : self.w,
+            "kick" : self.kick,
+            "dribble" : self.dribble,
+            "isYellow" : self.isYellow
+        }
     
     def __repr__(self):
         """repr 
@@ -59,13 +53,7 @@ class RobotCommand():
         return: 
           string : In debuging format of RobotCommand Class objct
         """
-        return f'''
-    Robot Command: 
-    {self.time_set=} , {self.time_origin=} : {self.robot_id=}
-    Velocity : {self.vx=} , {self.vy=}, {self.w=}
-    Kick? : {self.kick=}
-    Dribble? : {self.dribble=}
-            '''
+        return f"{self.time_set=},{self.time_origin=}| {self.robot_id=} | {self.vx=} , {self.vy=}, {self.w=} | {self.kick=} {self.dribble=}"
             
     def __str__(self) -> str:
         # the string will not include isYellow
@@ -105,26 +93,4 @@ class RobotCommand():
         
         return RobotCommand(*args) 
     
-    
-    def encode_grSim(self) -> bytes:
-        bytes_packet = self.grSim_packet.SerializeToString()
-        return bytes_packet
-    
-    def _grSimRobotCommand_wrapper(self,robot_id:int,vx: float,vy: float,w: float,k:bool,d:bool) -> object:
-        # converts into grSim_Robot_Command (protobuff object)
-        kick_speed_x = 10.0
-        kick_speed_z = 0.0
-        grSim_robot_command =  grSim_Commands_pb2.grSim_Robot_Command(id=robot_id, 
-            kickspeedx=(kick_speed_x*k), kickspeedz=(kick_speed_z*k), 
-            veltangent=vx, velnormal=vy, velangular=w, 
-            spinner=d, wheelsspeed=False)
-        return grSim_robot_command
-    
-    def _grSimCommand_wrapper(self,is_yellow,grSim_robot_command) -> object:
-        ## this requires is_yellow input
-        # Converts into grSim_Commands (protobuff object)
-        grSim_commands = grSim_Commands_pb2.grSim_Commands(timestamp=time.time(),
-                                                           isteamyellow=is_yellow,
-                                                           robot_commands=[grSim_robot_command])
-        return grSim_commands
-    
+  
