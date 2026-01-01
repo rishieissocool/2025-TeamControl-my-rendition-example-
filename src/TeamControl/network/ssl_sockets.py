@@ -30,8 +30,8 @@ class Vision(SSL_Multicast):
             
 class VisionTracker(SSL_Multicast):
     """
-    For Tracked Packets
-
+    For Tracked Packets 
+    Default :  224.5.23.2:10010
     Args:
         Multicast: the recv socket
     """
@@ -117,23 +117,14 @@ class grSimSender(LockedSender):
         return bytes_packet
     
 
+
+
 if __name__ == "__main__":
     sender = grSimSender()
     cmd = RobotCommand(1)
     sender.send_robot_command(cmd)
     
     
-    # def send_command(self, robot_command,us=True) -> None:
-    #     """send_command
-        
-    #     sending Command over grsim command sender port
-        
-    #     converting RobotCommands into grSim commands
-    #     """
-    #     packet = self.GSC.convert(robot_command=robot_command,us=us)
-    #     encoded_msg = self.GSC.encode(packet)
-    #     self.send(encoded_msg)
-        
 
 
 
