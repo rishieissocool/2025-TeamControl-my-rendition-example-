@@ -36,22 +36,16 @@ class PathPlanner():
                 
     def running (self):
         ## this is for multi processing usage
-        robot_id = 1  # example for robot 0
+        robot_id = 5  # example for robot 0
         while True:
             is_updated = self.check_wm_update()
             # follow waypoints here 
             if is_updated is True and self.frame is not None:
                 robot = self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id)
-                if not isinstance(robot,int):
-                    robot_pos = robot.position
-                else:
-                    continue # skip this loop
-                target = self.frame.ball # or some position
-                
-                if target is not None:
-                    target_pos = target.position
-                else:    
-                    continue # skip loop
+                target_pos = self.frame.ball.position # or some position
+                if isinstance(robot,int) or target_pos is None:
+                    continue
+                robot_pos = robot.position
                 # print(f"{target_pos=}")
                 waypoints:list = self.pathplanning(robot_id=robot_id,target_pos=target_pos)
                 # print(f"{waypoints=}")
@@ -59,10 +53,10 @@ class PathPlanner():
                 point = waypoints[0][1] if len(waypoints[0])>1 else None
 
                 #DEBUG
-                print("Robot pos:", robot_pos, "Next:", point)
+                # print("Robot pos:", robot_pos, "Next:", point)
 
                 
-                vx,vy,w= RobotMovement.velocity_to_target(robot_pos,point)
+                vx,vy,w= RobotMovement.velocity_to_target(robot_pos=robot_pos,target=point,speed=0.05)
                 # print(vx,vy)
                 command = RobotCommand(robot_id, vx, vy, 0,0,0) 
                 runtime = 1 
@@ -94,8 +88,8 @@ class PathPlanner():
         # start_pos = [x.xy_pos for x in self.frame.get_yellow_robots(isYellow=self.isYellow)]
         path_obs = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).obstacle]
         # obstacles
-        our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[5])]
-        enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[5])]
+        our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[])]
+        enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[])]
         all_obstacles = our_robot_obs + enemy_robot_obs
         # the destination point of these
         # goals = [target_pos,target_pos,target_pos,target_pos,target_pos]

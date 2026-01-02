@@ -7,8 +7,8 @@
 from TeamControl.SSL.vision.frame_list import FrameList
 from TeamControl.SSL.vision.field import GeometryData,FieldSize
 from TeamControl.SSL.vision.frame import Frame
-from TeamControl.SSL.game_controller.fsm import PacketType,GameState
-
+from TeamControl.SSL.game_controller.common import Command,Stage,GameEventType,Team,PacketType, GameState
+from TeamControl.SSL.game_controller.Message import RefereeMessage,TeamInfo
 
 from multiprocessing import Queue,Manager
 import numpy as np
@@ -40,6 +40,8 @@ class WorldModel:
         self._version = mgr.Value('i', 0)  # int counter
     
     def update_game_data(self,game_data):
+        if game_data is None:
+            return
         if isinstance(game_data,Command):
             self.ref_data.command = game_data
         
@@ -90,8 +92,8 @@ class WorldModel:
         self.ball_model = geometry.models
 
     def update_gc_data(self,packet):
-        type, data = packet[0],packet[1]
-        match type:
+        t, data = packet[0],packet[1]
+        match t:
             case PacketType.ROBOTS_ACTIVE:
                 self.update_robots_active(data)
             case PacketType.NEW_STATE:
@@ -102,7 +104,7 @@ class WorldModel:
                 self.update_ball_left_field_location(data)
             
             case _: # if the packet type is unknown 
-                log.exception(f"undefined {type=}, {data=}")
+                log.exception(f"undefined Packet - {t}, {data=}")
             
     def update_robots_active(self,new_active) : 
         self.robot_active = new_active
