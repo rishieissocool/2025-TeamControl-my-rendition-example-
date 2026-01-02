@@ -26,7 +26,8 @@ class Vision(SSL_Multicast):
         super().__init__(is_running=is_running,port=port,group=group,decoder=decoder,buffer_size=buffer_size)
    
     def listen(self) -> bool:
-        return super().listen()
+        vision_data,addr = super().listen()
+        return vision_data
             
 class VisionTracker(SSL_Multicast):
     """
