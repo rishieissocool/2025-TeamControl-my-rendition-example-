@@ -22,8 +22,9 @@ class GrSimSandbox:
             
             if has_update is True:
                 robot_pos, ball = self.get_objects()
-            
-                # calculate velocity to target : ball
+                # do functions here 
+                
+                # Robot : calculate velocity to target : ball
                 vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
             
             # send the command after
@@ -49,13 +50,18 @@ class GrSimSandbox:
         # accessing the specific robot position
         robot_pos = robot_obj.position
         # use this ball position if the ball position is not None otherwise use the last known position
-        ball = self.frame.ball.position if self.frame.ball.position is not None else self.ball_last_known
-        if self.frame.ball.position is not None:
-            # update this
-            self.ball_last_known = self.frame.ball.position
+        # ball = self.frame.ball.position if self.frame.ball.position is not None else self.ball_last_known
+        # if self.frame.ball.position is not None:
+        #     # update this
+        #     self.ball_last_known = self.frame.ball.position
+        # getting ball history
+        ball_hist = []
+        frame = self.frames.get_last_n_frames(10)
+        for f in frame: 
+            ball_hist.append(f.ball.position)
             
         # select what you want to return    
-        return robot_pos, ball
+        return robot_pos, ball_hist
     
 
 ## running as a multiprocessing process
