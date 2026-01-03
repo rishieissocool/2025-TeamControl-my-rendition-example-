@@ -94,8 +94,8 @@ def predict_trajectory(history, num_samples, calculate_velocity=False):
         return None, None, None, None
 
     # extract x and y coordinates from history
-    ball_positions_x = [coord["x"] for coord in history]
-    ball_positions_y = [coord["y"] for coord in history]
+    ball_positions_x = [coord[0] for coord in history]
+    ball_positions_y = [coord[1] for coord in history]
 
     # select last num_samples position for regression
     last_ball_positions_x = ball_positions_x[-num_samples:]
@@ -141,7 +141,13 @@ def predict_trajectory(history, num_samples, calculate_velocity=False):
         velocity = np.sqrt((delta_x / time_elapsed) ** 2 + (delta_y / time_elapsed) ** 2)
 
     # Output predicted trajectory, direction info, y-coordinate at the goalie line, velocity
-    return list(zip(x_values, y_values)), direction_info, trajectory_y_at_goal_line, velocity
+    return {
+        "predicted_trajectory": list(zip(x_values, y_values)),
+        "direction_info":direction_info,
+        "trajectory_y_at_goal":trajectory_y_at_goal_line,
+        "velocity": velocity
+    }
+   
 
 def goal_intersection(trajectory_y_at_goal_line):
     """

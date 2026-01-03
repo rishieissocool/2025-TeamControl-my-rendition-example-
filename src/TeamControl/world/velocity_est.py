@@ -17,7 +17,7 @@ def velocity_est(ball_hist, fps = 60):
     dt = 1.0/fps 
 
     # Time values from 0 to (N-1)dt
-    t = np.arrange(N)*dt
+    t = np.arange(N)*dt
 
     # X and Y coordinates of balls in ball_hist
     xs = np.array([p[0] for p in ball_hist]) 
