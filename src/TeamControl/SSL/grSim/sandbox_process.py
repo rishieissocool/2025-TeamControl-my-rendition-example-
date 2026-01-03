@@ -2,6 +2,8 @@ from TeamControl.network.ssl_sockets import grSimSender
 from TeamControl.network.robot_command import RobotCommand 
 from TeamControl.robot.Movement import RobotMovement
 
+from TeamControl.world.time_to_intercept import time_to_intercept
+
 class GrSimSandbox:
     def __init__(self,wm):
         self.wm = wm
@@ -21,11 +23,11 @@ class GrSimSandbox:
             # This is running
             
             if has_update is True:
-                robot_pos, ball = self.get_objects()
+                robot_pos, ball_hist = self.get_objects()
                 # do functions here 
-                
+                time_to_intercept(ball_pos=self.ball_last_known,target=None, ball_hist=ball_hist)
                 # Robot : calculate velocity to target : ball
-                vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball)
+                vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball_hist[0])
             
             # send the command after
             cmd = RobotCommand(self.robot_id, vx, vy, w, 0, 0)
@@ -56,8 +58,8 @@ class GrSimSandbox:
         #     self.ball_last_known = self.frame.ball.position
         # getting ball history
         ball_hist = []
-        frame = self.frames.get_last_n_frames(10)
-        for f in frame: 
+
+        for f in self.frames: 
             ball_hist.append(f.ball.position)
             
         # select what you want to return    
