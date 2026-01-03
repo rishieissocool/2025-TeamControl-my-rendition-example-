@@ -10,6 +10,7 @@ from TeamControl.dispatcher.dispatch import run_dispatcher
 from TeamControl.voronoi_planner.run_planner import run_planner
 from TeamControl.robot.striker import run_striker
 from TeamControl.robot.unittest import run_test_to_goal
+from TeamControl.plotter.plot import run_plotter
 
 
 def main():
@@ -34,13 +35,16 @@ def main():
     dispatch_wkr = Process(target=run_dispatcher, args=(dispatch_q, use_sim, is_yellow))
     planner_wkr = Process(target=run_planner, args=(wm, dispatch_q))
     striker_wkr = Process(target=run_striker, args=(dispatch_q, wm, 0, is_yellow))
-    plot_test = Process(target=run_test_to_goal, args=(wm,))
+    # plot_test = Process(target=run_test_to_goal, args=(wm,))
+    plot_test = Process(target=run_plotter, args=(wm,))
+    
     vision_wkr.start()
     gc_wkr.start()
     wmr.start()
     dispatch_wkr.start()
     # planner_wkr.start()  # enable if you want path planner
     striker_wkr.start()
+
     plot_test.start()
 
     vision_wkr.join()
