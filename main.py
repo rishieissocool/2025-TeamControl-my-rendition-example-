@@ -14,6 +14,10 @@ from TeamControl.voronoi_planner.run_planner import run_planner
 from TeamControl.utils.follow_ball_dummy import run_follow_ball_dummy
 from TeamControl.robot.goalie import run_goalie
 
+from TeamControl.robot.striker import run_striker
+from TeamControl.robot.unittest import run_test_to_goal
+from TeamControl.plotter.plot import run_plotter
+
 
 
 # in multiprocessing this can only be a simple process
@@ -60,7 +64,8 @@ def main():
     goalie = Process(target=run_goalie,args=(dispatch_q,wm,1,preset.us_yellow))
     # chaser = Process(target=run_follow_ball_dummy,args=(dispatch_q,wm,1,preset.us_yellow))
     # some_other_process2 = Process(target=DummyReader,args=(wm,))'
-    
+    plot_test = Process(target=run_plotter, args=(wm,))
+
     is_running.set()
     is_running.set()
     vision_wkr.start()
@@ -68,6 +73,8 @@ def main():
     wmr.start()
     goalie.start()
     dispatch_wkr.start()
+    plot_test.start()
+
     # bt.start()
     # chaser.start()
     # planner_wkr.start()
@@ -101,6 +108,8 @@ def main():
     # bt.join()
     # chaser.join()   
     goalie.join()
+    plot_test.join()
+
 
     # planner_wkr.join()
     # some_other_process2.join()

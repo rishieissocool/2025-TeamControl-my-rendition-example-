@@ -65,12 +65,13 @@ class Dispatcher(BaseWorker):
     def check_new_commands(self):
         if not self.q.empty():
             queue_item = self.q.get_nowait()
-            command, runtime = queue_item # this requires a command and runtime
+            command, runtime = queue_item
             self.add(command, runtime)
         
 
-    # Add a new command to the running commands and replace exisiting commands for the robot with the same ID
-    def add(self, command, run_time):
+    # Add a new command to the running commands and replace existing commands
+    # for the robot with the same ID
+    def add(self, command: RobotCommand, run_time: float):
         robot_id = command.robot_id
         isYellow = command.isYellow
         self.running_commands[robot_id] = {"isYellow": isYellow,"command": command, "runtime": run_time, "start_time": time.time()}
@@ -79,10 +80,9 @@ class Dispatcher(BaseWorker):
     # Check if any commands have expired
     def check_command_timeout(self):
         expired_commands = []
-        
+
         for robot_id, packet in self.running_commands.items():
             elapsed_time = time.time() - packet["start_time"]
-            
             if elapsed_time >= packet["runtime"]:
                 self.logger.debug(f"[Robot {robot_id}] Command expired after {elapsed_time:.2f}s")
                 expired_commands.append(robot_id)
