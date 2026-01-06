@@ -100,6 +100,12 @@ class PathPlanner:
         end_time = time.time()
         excution_time = end_time - start_time
         print(f"{excution_time=}")
+<<<<<<< HEAD
+=======
+        
+        # Print graph
+        # self.p.plot(our_robot_obs, goals, simplified_paths)
+>>>>>>> main
 
         return simplified_paths
 
