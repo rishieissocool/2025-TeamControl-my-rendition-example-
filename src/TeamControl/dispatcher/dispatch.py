@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-from multiprocessing import Queue
-import time
-
-=======
 from multiprocessing import Process, Queue, Event
 from TeamControl.utils.Logger import LogSaver
 from TeamControl.process_workers.worker import BaseWorker
->>>>>>> main
 from TeamControl.network.robot_command import RobotCommand
 from TeamControl.network.sender import Sender
 from TeamControl.network.ssl_sockets import grSimSender
-<<<<<<< HEAD
-
-
-class dispatch:
-    def __init__(self, q: Queue, use_sim: bool, is_yellow: bool):
-        self.q = q
-        self.is_yellow = is_yellow
-        self.use_sim = use_sim
-
-        self.running_commands: dict[int, dict] = {}
-        self.announce_initialisation()
-        self.y_sender = YamlSender()
-        self.g_sender = grSimSender(is_yellow=is_yellow)
-
-=======
 import time
 from pathlib import Path
 
@@ -61,7 +40,6 @@ class Dispatcher(BaseWorker):
         # self.g_sender = grSimSender()
         self.announce_initialisation()
         
->>>>>>> main
     # Announce that the dispatcher has been created
     def announce_initialisation(self):
         print("Multi-robot dispatcher initialized!")
@@ -69,14 +47,6 @@ class Dispatcher(BaseWorker):
         print("Sending to GrSim :", self.send_to_grSim)
     
     # Main processing loop
-<<<<<<< HEAD
-    def process_q(self):
-        while True:
-            self.check_new_commands()
-            self.handle_commands()
-            self.check_command_timeout()
-
-=======
     def run(self):
         return super().run()
     
@@ -91,7 +61,6 @@ class Dispatcher(BaseWorker):
         self.handle_commands()
         print("Dispatcher has been shutdown")
         super().shutdown()
->>>>>>> main
     # Get the next command from the queue and add it
     def check_new_commands(self):
         if not self.q.empty():
@@ -104,23 +73,10 @@ class Dispatcher(BaseWorker):
     # for the robot with the same ID
     def add(self, command: RobotCommand, run_time: float):
         robot_id = command.robot_id
-<<<<<<< HEAD
-        self.running_commands[robot_id] = {
-            "command": command,
-            "runtime": run_time,
-            "start_time": time.time(),
-        }
-        print(
-            f"[Robot {robot_id}] New command added for {run_time}s , "
-            f"command: {command}"
-        )
-
-=======
         isYellow = command.isYellow
         self.running_commands[robot_id] = {"isYellow": isYellow,"command": command, "runtime": run_time, "start_time": time.time()}
         self.logger.debug(f"[{robot_id=},{isYellow=}] New command added for {run_time}s , command: {command}")
         
->>>>>>> main
     # Check if any commands have expired
     def check_command_timeout(self):
         expired_commands = []
@@ -128,32 +84,12 @@ class Dispatcher(BaseWorker):
         for robot_id, packet in self.running_commands.items():
             elapsed_time = time.time() - packet["start_time"]
             if elapsed_time >= packet["runtime"]:
-<<<<<<< HEAD
-                print(
-                    f"[Robot {robot_id}] Command expired after {elapsed_time:.2f}s"
-                )
-=======
                 self.logger.debug(f"[Robot {robot_id}] Command expired after {elapsed_time:.2f}s")
->>>>>>> main
                 expired_commands.append(robot_id)
 
         for robot_id in expired_commands:
             self.reset_command(robot_id)
 
-<<<<<<< HEAD
-    # Set a do-nothing command for the specified robot
-    def reset_command(self, robot_id: int):
-        reset_command = RobotCommand(
-            robot_id=robot_id, vx=0, vy=0, w=0, kick=0, dribble=0
-        )
-        print(f"[Robot {robot_id}] Reset to idle command")
-
-        self.running_commands[robot_id] = {
-            "command": reset_command,
-            "runtime": 9999999,
-            "start_time": time.time(),
-        }
-=======
     # Set a do nothing command for the specified robot
     def reset_command(self, robot_id):
         isYellow = self.running_commands[robot_id]["isYellow"]
@@ -161,7 +97,6 @@ class Dispatcher(BaseWorker):
         self.logger.debug(f"[{isYellow=} {robot_id}] Reset to idle command")
         
         self.running_commands[robot_id] = {"isYellow" : isYellow, "command": reset_command, "runtime": 9999999, "start_time": time.time()}
->>>>>>> main
 
     def reset_all_robots(self):
         for robot_id in self.running_commands:
@@ -173,18 +108,6 @@ class Dispatcher(BaseWorker):
         for robot_id, packet in self.running_commands.items():
             command = packet["command"]
             self.send_command(command)
-<<<<<<< HEAD
-
-    def send_command(self, command: RobotCommand):
-        self.y_sender.send_command(command)
-        if self.use_sim:
-            self.g_sender.send_command(command)
-
-
-def run_dispatcher(q: Queue, use_sim: bool, is_yellow: bool):
-    d = dispatch(q=q, use_sim=use_sim, is_yellow=is_yellow)
-    d.process_q()
-=======
             
     def send_command(self,command:RobotCommand):
         # this handles how you'd use different senders to send a command.
@@ -207,4 +130,3 @@ def run_dispatcher(q: Queue, use_sim: bool, is_yellow: bool):
 # def run_dispatcher(is_running,q,use_sim,is_yellow):
 #     d = dispatch(q=q,use_sim=use_sim,is_yellow=is_yellow)
 #     d.process_q(is_running)
->>>>>>> main
