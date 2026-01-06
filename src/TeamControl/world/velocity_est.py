@@ -21,7 +21,7 @@ def velocity_est(ball_hist, fps = 60):
 
     # X and Y coordinates of balls in ball_hist
     xs = np.array([p[0] for p in ball_hist]) 
-    ys = np.array([p[1] for p in ball_hist]) 
+    ys = np.array([p[1] for p in ball_hist])    
 
     # Means 
     t_mean = t.mean() 
@@ -43,6 +43,7 @@ def velocity_est(ball_hist, fps = 60):
     vx = num_x/den
     vy = num_y/den
 
+    print (f"Velocity Estimation: f{vx, vy}")
     return vx, vy 
 
 

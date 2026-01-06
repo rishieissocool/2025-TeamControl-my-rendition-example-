@@ -3,15 +3,16 @@ from TeamControl.network.robot_command import RobotCommand
 from TeamControl.robot.Movement import RobotMovement
 
 from TeamControl.world.time_to_intercept import time_to_intercept
+from TeamControl.world.velocity_est import velocity_est
 
 class GrSimSandbox:
     def __init__(self,wm):
         self.wm = wm
         self.sim_ip = "127.0.0.1"
-        self.cmd_listen_port = 20010
+        self.cmd_listen_port = 20011
         self.is_yellow = True
         self.robot_id = 1
-        self.sender = grSimSender(ip=self.sim_ip,port=self.cmd_listen_port,is_yellow=self.is_yellow)
+        self.sender = grSimSender(ip=self.sim_ip,port=self.cmd_listen_port)
         self.version = 0 # vision version
         self.ball_last_known = (0,0)
 
@@ -26,12 +27,13 @@ class GrSimSandbox:
                 robot_pos, ball_hist = self.get_objects()
                 # do functions here 
                 time_to_intercept(ball_pos=self.ball_last_known,target=None, ball_hist=ball_hist)
+                velocity_est(ball_hist = ball_hist)
                 # Robot : calculate velocity to target : ball
                 vx, vy, w= RobotMovement.velocity_to_target(robot_pos=robot_pos, target=ball_hist[0])
             
             # send the command after
-            cmd = RobotCommand(self.robot_id, vx, vy, w, 0, 0)
-            self.sender.send_command(cmd)
+            cmd = RobotCommand(self.robot_id, vx, vy, w, 0, 0) 
+            self.sender.send_robot_command(cmd)
             
     def get_update(self):
         # get_update
@@ -55,7 +57,7 @@ class GrSimSandbox:
         # ball = self.frame.ball.position if self.frame.ball.position is not None else self.ball_last_known
         # if self.frame.ball.position is not None:
         #     # update this
-        #     self.ball_last_known = self.frame.ball.position
+        self.ball_last_known = self.frame.ball.position
         # getting ball history
         ball_hist = []
 
