@@ -4,9 +4,6 @@
 @author - Emma
 '''
 
-<<<<<<< HEAD
-from multiprocessing import Queue, Manager
-=======
 from TeamControl.SSL.vision.frame_list import FrameList
 from TeamControl.SSL.vision.field import GeometryData,FieldSize
 from TeamControl.SSL.vision.frame import Frame
@@ -14,15 +11,10 @@ from TeamControl.SSL.game_controller.common import Command,Stage,GameEventType,T
 from TeamControl.SSL.game_controller.Message import RefereeMessage,TeamInfo
 
 from multiprocessing import Queue,Manager
->>>>>>> main
 import numpy as np
 import numpy.typing as npt
 import logging
 
-from TeamControl.SSL.vision.frame_list import FrameList
-from TeamControl.SSL.vision.field import GeometryData, FieldSize
-from TeamControl.SSL.vision.frame import Frame
-from TeamControl.SSL.game_controller.fsm import PacketType, GameState
 
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
@@ -47,17 +39,6 @@ class WorldModel:
         self._us_yellow = us_yellow
         self._us_positive = us_positive
         self.count = 0
-<<<<<<< HEAD
-        self.update_interval: int = update_interval
-        self.use_sim: bool = use_sim
-        self.frame_list: FrameList[Frame] = FrameList(history=history)
-        self.geometry: GeometryData | None = None
-        self.field: FieldSize | None = None
-        self._version = mgr.Value("i", 0)
-
-    def update_game_data(self, game_data):
-        if isinstance(game_data, Command):
-=======
         self.update_interval:int = update_interval
         self.use_sim:bool = use_sim 
         self.frame_list:FrameList[Frame] = FrameList(history=history)
@@ -69,7 +50,6 @@ class WorldModel:
         if game_data is None:
             return
         if isinstance(game_data,Command):
->>>>>>> main
             self.ref_data.command = game_data
 
         elif isinstance(game_data, Stage):
@@ -99,15 +79,9 @@ class WorldModel:
         self.field = geometry.field
         self.ball_model = geometry.models
 
-<<<<<<< HEAD
-    def update_gc_data(self, packet):
-        type, data = packet[0], packet[1]
-        match type:
-=======
     def update_gc_data(self,packet):
         t, data = packet[0],packet[1]
         match t:
->>>>>>> main
             case PacketType.ROBOTS_ACTIVE:
                 self.update_robots_active(data)
             case PacketType.NEW_STATE:
@@ -116,10 +90,6 @@ class WorldModel:
                 self.update_team(data["YELLOW"], data["POSITIVE"])
             case PacketType.BLF_LOCATION:
                 self.update_ball_left_field_location(data)
-<<<<<<< HEAD
-            case _:
-                log.exception(f"undefined {type=}, {data=}")
-=======
             
             case _: # if the packet type is unknown 
                 log.exception(f"undefined Packet - {t}, {data=}")
@@ -130,7 +100,6 @@ class WorldModel:
     def update_state(self,new_state):
         # when we have a new incoming state, it updates this
         self._state = new_state 
->>>>>>> main
 
     def update_robots_active(self, new_active):
         self.robot_active = new_active
