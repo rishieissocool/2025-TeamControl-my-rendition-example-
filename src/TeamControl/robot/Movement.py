@@ -2,34 +2,13 @@ import math
 import numpy as np
 from typing import Tuple, Optional, List
 
-<<<<<<< HEAD
 from TeamControl.world.transform_cords import world2robot
 from TeamControl.network.robot_command import RobotCommand
 
-=======
->>>>>>> main
 
 class RobotMovement:
 
     @classmethod
-<<<<<<< HEAD
-    def velocity_to_target(
-        cls,
-        robot_pos: tuple[float, float, float],
-        target: tuple[float, float],
-        turning_target: tuple[float, float] | None = None,
-        stop_threshold: float = 150.0
-    ) -> tuple[float, float, float]:
-
-        if robot_pos is None:
-            return 0.0, 0.0, 0.0
-
-        # Convert world target to robot frame
-        trans_target = world2robot(robot_pos, target)
-        vx, vy = cls.go_To_Target(trans_target, stop_threshold=stop_threshold)
-
-        # If we have a turning target, rotate toward it
-=======
     def velocity_to_target(cls,robot_pos: tuple[float, float, float],
                            target: tuple[float,float], 
                            turning_target:tuple[float, float] = None,
@@ -44,7 +23,6 @@ class RobotMovement:
         
         transTarget = world2robot(robot_pos, target)
         vx, vy = cls.go_To_Target(transTarget, stop_threshold = stop_threshold,speed=speed)
->>>>>>> main
         if turning_target is None:
             w = 0.0
         else:
@@ -54,18 +32,7 @@ class RobotMovement:
         return vx, vy, w
 
     @staticmethod
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def turn_to_target(
-        target: tuple[float, float] | None = None,
-        epsilon: float = 0.15,
-        speed: float = 5.0,
-    ) -> float:
-=======
-    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 5, robotOmega = None):
-=======
     def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 0.005, robotOmega = None):
->>>>>>> main
         '''
             This function returns an agular velocity. The goal is to turn the robot
             in such a way that it is facing the ball with its kicker side.
@@ -75,41 +42,6 @@ class RobotMovement:
                 epsilon: Threshold for the orientation (orientation does not have to be zero to 
                         consider it correct -> avoids jitter)
         '''
-        if target is None :
-            return None
-        orientation_to_ball = np.arctan2(target[0], target[1])-np.pi/2
-
-        if abs(orientation_to_ball) < epsilon:
-            # to avoid jitter
-            omega = 0
-        elif abs(orientation_to_ball) > epsilon and abs(orientation_to_ball) < 2 * epsilon:
-            omega = -speed*np.sign(orientation_to_ball) * 0.05
-        else:
-            omega = speed*np.sign(orientation_to_ball)* 0.5
-        
-        print(orientation_to_ball)
-        return omega 
-    
-    @staticmethod
-    def go_To_Target(target_pos: tuple[float,float], speed: int=0.08, stop_threshold:float=150):
-        """go To Target Position (in respect to Robot)
-        if the distance is further away from stop_threshold,
-        it will go to target position with calculated speed.
-
-        Args:
-            target_pos (tuple[float,float]): targeted position relative to robot
-            speed (int, optional): Speed of Robot going to target. Defaults to 5.
-            stop_threshold (float, optional): Distance range for robot to ignore. Defaults to 300.
-
-        Returns:
-            tuple[float,float]: velcocity x , velocity y
->>>>>>> main
-        """
-        Correct rotation controller.
-        Robot frame:
-          x_forward = target[0]
-          y_left    = target[1]
-        """
         if target is None:
             return 0.0
 
