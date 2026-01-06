@@ -111,8 +111,9 @@ class RobotMovement:
                      robot_offset: float = 200.0):
 
         direction = np.array(shootingTarget) - np.array(ball_pos)
+        direction = direction.astype(float)  # Ensure direction vector is float
         norm = np.linalg.norm(direction)
-
+        
         if norm == 0:
             return np.array(ball_pos, dtype=float)
 
