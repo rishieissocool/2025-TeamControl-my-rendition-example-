@@ -2,13 +2,17 @@ import math
 import numpy as np
 from typing import Tuple, Optional, List
 
+<<<<<<< HEAD
 from TeamControl.world.transform_cords import world2robot
 from TeamControl.network.robot_command import RobotCommand
 
+=======
+>>>>>>> main
 
 class RobotMovement:
 
     @classmethod
+<<<<<<< HEAD
     def velocity_to_target(
         cls,
         robot_pos: tuple[float, float, float],
@@ -25,6 +29,22 @@ class RobotMovement:
         vx, vy = cls.go_To_Target(trans_target, stop_threshold=stop_threshold)
 
         # If we have a turning target, rotate toward it
+=======
+    def velocity_to_target(cls,robot_pos: tuple[float, float, float],
+                           target: tuple[float,float], 
+                           turning_target:tuple[float, float] = None,
+                           speed: float = 0.01
+                           , stop_threshold = 150) -> tuple[float, float, float]: 
+        '''
+        Gets the velocity required for the robot go to position and trun to target
+        '''
+        if robot_pos is None:
+            print("Robot pos is none")
+            pass
+        
+        transTarget = world2robot(robot_pos, target)
+        vx, vy = cls.go_To_Target(transTarget, stop_threshold = stop_threshold,speed=speed)
+>>>>>>> main
         if turning_target is None:
             w = 0.0
         else:
@@ -35,6 +55,7 @@ class RobotMovement:
 
     @staticmethod
 <<<<<<< HEAD
+<<<<<<< HEAD
     def turn_to_target(
         target: tuple[float, float] | None = None,
         epsilon: float = 0.15,
@@ -42,6 +63,9 @@ class RobotMovement:
     ) -> float:
 =======
     def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 5, robotOmega = None):
+=======
+    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 0.005, robotOmega = None):
+>>>>>>> main
         '''
             This function returns an agular velocity. The goal is to turn the robot
             in such a way that it is facing the ball with its kicker side.
@@ -67,7 +91,7 @@ class RobotMovement:
         return omega 
     
     @staticmethod
-    def go_To_Target(target_pos: tuple[float,float], speed: int=0.1, stop_threshold:float=150):
+    def go_To_Target(target_pos: tuple[float,float], speed: int=0.08, stop_threshold:float=150):
         """go To Target Position (in respect to Robot)
         if the distance is further away from stop_threshold,
         it will go to target position with calculated speed.

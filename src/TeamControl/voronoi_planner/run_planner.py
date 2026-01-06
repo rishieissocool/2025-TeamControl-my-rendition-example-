@@ -31,6 +31,7 @@ class PathPlanner:
             self.frame = self.wm.get_latest_frame()
             return True
         return False
+<<<<<<< HEAD
 
     def running(self):
         robot_id = 1
@@ -53,6 +54,35 @@ class PathPlanner:
                 vx, vy, w = RobotMovement.velocity_to_target(robot_pos, point)
                 command = RobotCommand(robot_id, vx, vy, 0, 0, 0)
                 runtime = 1
+=======
+                
+    def running (self):
+        ## this is for multi processing usage
+        robot_id = 5  # example for robot 0
+        while True:
+            is_updated = self.check_wm_update()
+            # follow waypoints here 
+            if is_updated is True and self.frame is not None:
+                robot = self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id)
+                target_pos = self.frame.ball.position # or some position
+                if isinstance(robot,int) or target_pos is None:
+                    continue
+                robot_pos = robot.position
+                # print(f"{target_pos=}")
+                waypoints:list = self.pathplanning(robot_id=robot_id,target_pos=target_pos)
+                # print(f"{waypoints=}")
+                # keep going to point until we see clear path
+                point = waypoints[0][1] if len(waypoints[0])>1 else None
+
+                #DEBUG
+                # print("Robot pos:", robot_pos, "Next:", point)
+
+                
+                vx,vy,w= RobotMovement.velocity_to_target(robot_pos=robot_pos,target=point,speed=0.05)
+                # print(vx,vy)
+                command = RobotCommand(robot_id, vx, vy, 0,0,0) 
+                runtime = 1 
+>>>>>>> main
                 self.output_q.put((command, runtime))
 
     def pathplanning(self, robot_id, target_pos):
@@ -62,6 +92,7 @@ class PathPlanner:
             ).xy_pos
         ]
 
+<<<<<<< HEAD
         our_robot_obs = [
             r.obstacle
             for r in self.frame.get_all_in_team_except(
@@ -74,6 +105,29 @@ class PathPlanner:
                 isYellow=not self.isYellow, exclude=[5]
             )
         ]
+=======
+    ## this is modified from the example, and I turned it into 1 robot only.
+    def pathplanning(self,robot_id,target_pos):
+        """
+        This generates waypoints for all of our robots to target and returns as a list
+
+        Args:
+            robot_id (int): id of robot to plan for
+            target_pos (tuple[float,float]): targeted location e.g. ball_pos 
+
+        Returns:
+            list: list of waypoints (for this robot_id)
+        """
+        # planner = VoronoiPlanner(xsize=x,ysize=y) # not recommended
+
+        # the start positions of our robots
+
+        # start_pos = [x.xy_pos for x in self.frame.get_yellow_robots(isYellow=self.isYellow)]
+        path_obs = [self.frame.get_yellow_robots(isYellow=self.isYellow,robot_id=robot_id).obstacle]
+        # obstacles
+        our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[])]
+        enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[])]
+>>>>>>> main
         all_obstacles = our_robot_obs + enemy_robot_obs
 
         goals = [target_pos]
@@ -85,7 +139,7 @@ class PathPlanner:
 
         waypoints = self.p.generate_waypoints(our_robot_obs, goals, self.d0)
         simplified_paths = []
-        for i, (start, wp, goal) in enumerate(zip(our_robot_obs, waypoints, goals)):
+        for i, (start, wp, goal) in enumerate(zip(path_obs, waypoints, goals)):
             full_path = [start.centre()] + wp
             simple = self.p.simplify(full_path, self.CLEARANCE, [start.unum()])
             goal_is_safe = all(
