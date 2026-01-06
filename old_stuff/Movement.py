@@ -99,6 +99,24 @@ def shooting_pos(ball_pos:tuple[float,float],shootingTarget: tuple[float,float],
     return robot_position
 
 
+def old_calculate_target_position(target, ball, robot_offset):
+    '''
+        This function returns the target position for a robot. It needs this
+        to aim and shoot a ball.
+    '''
+    # Calculate direction vector from ball to target
+    direction = np.array(target) - np.array(ball)
+    
+    # Normalize direction vector
+    direction = direction.astype(float)  # Ensure direction vector is float
+    direction = np.linalg.norm(direction)
+    
+    # Calculate robot position slightly behind the ball
+    robot_position = np.array(ball) - robot_offset * direction
+    
+    return robot_position
+
+
 
 
 def calculate_target_position(target, ball, robot_offset):
@@ -117,3 +135,31 @@ def calculate_target_position(target, ball, robot_offset):
 
 
 
+    
+@classmethod
+def goShootVelcoity(cls, robot_pos:tuple[float, float,float], target: tuple[float, float]):
+    shooting_position = cls.shooting_pos(target)
+    vx, vy, w = cls.velocity_to_target(robot_pos, shooting_position, target)
+    return vx, vy, w
+    
+
+
+@staticmethod
+def old_shooting_pos(ball_pos:tuple[float,float],shootingTarget: tuple[float,float], robot_offset = 500):
+    '''
+    This function returns the target position for a robot. It needs this
+    to aim and shoot a ball.
+    shootingTarget: target your aiming to shoot
+    robot_offset: how far in front you want teh robot to be
+    '''
+    # Calculate direction vector from ball to target
+    direction = np.array(shootingTarget) - np.array(ball_pos)
+    
+    # Normalize direction vector
+    direction = direction.astype(float)  # Ensure direction vector is float
+    direction = np.linalg.norm(direction)
+    
+    # Calculate robot position slightly behind the ball
+    robot_position = np.array(ball_pos) - robot_offset * direction
+    
+    return robot_position

@@ -8,6 +8,30 @@ import numpy as np
 c = time.localtime()
 TIME = time.strftime("%H:%M:%S", c)
 
+def old_turn_to_target(target:tuple[float,float], epsilon: float=0.15, speed: float = 5.0):
+    '''
+        This function returns an agular velocity. The goal is to turn the robot
+        in such a way that it is facing the ball with its kicker side.
+
+        input: 
+            ball_position: ball position in the robot coordinate systen (e.g. (10mm,50mm))
+            epsilon: Threshold for the orientation (orientation does not have to be zero to 
+                     consider it correct -> avoids jitter)
+    '''
+    if target is None:
+        return 0
+    orientation_to_ball = np.arctan2(target[0], target[1])-np.pi/2
+
+    if abs(orientation_to_ball) < epsilon:
+        # to avoid jitter
+        omega = 0
+    elif abs(orientation_to_ball) > epsilon and abs(orientation_to_ball) < 4*epsilon:
+        omega = -speed*np.sign(orientation_to_ball) * 0.5
+    else:
+        omega = -speed*np.sign(orientation_to_ball)
+    return omega 
+
+
 
 @staticmethod
 def turn_to_target(
