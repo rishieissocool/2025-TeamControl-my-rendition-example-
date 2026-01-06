@@ -17,18 +17,17 @@ class PathPlanner:
         self.version = 0
         self.wm = world_model
         field_x, field_y = (9000, 6000)
-        self.p = VoronoiPlanner(xsize=field_x, ysize=field_y)
-        self.output_q = planner_q
+        self.p = VoronoiPlanner(xsize=field_x, ysize=field_y) #initialise planner
+        self.output_q = planner_q # output 
 
     def check_wm_update(self):
-        self.isYellow = (
-            self.wm.us_yellow() if hasattr(self.wm, "us_yellow") else self.isYellow
-        )
-
-        new_version = self.wm.get_version()
+        # checks if world model has is_yellow otherwise use default here
+        self.isYellow = self.wm.us_yellow() if hasattr(self.wm, "us_yellow") else self.isYellow
+        # frame version check. 
+        new_version = self.wm.get_version() #compares version
         if self.version <= new_version:
             self.version = new_version
-            self.frame = self.wm.get_latest_frame()
+            self.frame = self.wm.get_latest_frame() #updates the frame
             return True
         return False
                 
@@ -82,12 +81,10 @@ class PathPlanner:
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[])]
         all_obstacles = our_robot_obs + enemy_robot_obs
-
         goals = [target_pos]
         print("number of Obstacles:", len(all_obstacles))
 
         start_time = time.time()
-
         self.p.update_obstacles(all_obstacles)
 
         waypoints = self.p.generate_waypoints(our_robot_obs, goals, self.d0)
@@ -110,8 +107,8 @@ class PathPlanner:
         
         # Print graph
         # self.p.plot(our_robot_obs, goals, simplified_paths)
-
-        return simplified_paths
+        # print(f"{simplified_paths=}")
+        return simplified_paths # return waypoints for the specified robot_id
 
 
 def run_planner(world_model: wm, planner_q):
