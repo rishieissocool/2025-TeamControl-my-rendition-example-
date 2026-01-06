@@ -31,30 +31,6 @@ class PathPlanner:
             self.frame = self.wm.get_latest_frame()
             return True
         return False
-<<<<<<< HEAD
-
-    def running(self):
-        robot_id = 1
-        while True:
-            is_updated = self.check_wm_update()
-            if is_updated and self.frame is not None:
-                robot_pos = self.frame.get_yellow_robots(
-                    isYellow=self.isYellow, robot_id=robot_id
-                ).position
-                target_pos = self.frame.ball.position
-
-                waypoints: list = self.pathplanning(
-                    robot_id=robot_id, target_pos=target_pos
-                )
-
-                point = waypoints[0][1] if len(waypoints[0]) > 1 else None
-
-                print("Robot pos:", robot_pos, "Next:", point)
-
-                vx, vy, w = RobotMovement.velocity_to_target(robot_pos, point)
-                command = RobotCommand(robot_id, vx, vy, 0, 0, 0)
-                runtime = 1
-=======
                 
     def running (self):
         ## this is for multi processing usage
@@ -82,30 +58,8 @@ class PathPlanner:
                 # print(vx,vy)
                 command = RobotCommand(robot_id, vx, vy, 0,0,0) 
                 runtime = 1 
->>>>>>> main
                 self.output_q.put((command, runtime))
 
-    def pathplanning(self, robot_id, target_pos):
-        start_pos = [
-            self.frame.get_yellow_robots(
-                isYellow=self.isYellow, robot_id=robot_id
-            ).xy_pos
-        ]
-
-<<<<<<< HEAD
-        our_robot_obs = [
-            r.obstacle
-            for r in self.frame.get_all_in_team_except(
-                isYellow=self.isYellow, exclude=[5]
-            )
-        ]
-        enemy_robot_obs = [
-            r.obstacle
-            for r in self.frame.get_all_in_team_except(
-                isYellow=not self.isYellow, exclude=[5]
-            )
-        ]
-=======
     ## this is modified from the example, and I turned it into 1 robot only.
     def pathplanning(self,robot_id,target_pos):
         """
@@ -127,7 +81,6 @@ class PathPlanner:
         # obstacles
         our_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=self.isYellow, exclude=[])]
         enemy_robot_obs = [r.obstacle for r in self.frame.get_all_in_team_except(isYellow=not self.isYellow, exclude=[])]
->>>>>>> main
         all_obstacles = our_robot_obs + enemy_robot_obs
 
         goals = [target_pos]
@@ -154,12 +107,9 @@ class PathPlanner:
         end_time = time.time()
         excution_time = end_time - start_time
         print(f"{excution_time=}")
-<<<<<<< HEAD
-=======
         
         # Print graph
         # self.p.plot(our_robot_obs, goals, simplified_paths)
->>>>>>> main
 
         return simplified_paths
 
