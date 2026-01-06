@@ -3,8 +3,6 @@ import numpy as np
 from typing import Tuple, Optional, List
 
 from TeamControl.world.transform_cords import world2robot
-from TeamControl.network.robot_command import RobotCommand
-
 
 class RobotMovement:
 
