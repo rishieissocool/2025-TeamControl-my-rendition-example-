@@ -141,7 +141,7 @@ class WorldModel:
         isYellow = self._us_yellow if us is True else not self._us_yellow
         frame = self.frame_list.latest
 
-        if isYellow:
+        if isYellow is True:
             team = frame.robots_yellow
         else:
             team = frame.robots_blue
@@ -156,20 +156,24 @@ class WorldModel:
 
     # lower level
     def get_yellow_robots(self, isYellow, robot_id=None) -> object | list:
-        if isYellow:
+        if isYellow is True:
             if isinstance(robot_id, int):
                 return self.frame_list.latest.robots_yellow[robot_id]
             return self.frame_list.latest.robots_yellow
-        else:
+        elif isYellow is False:
             if isinstance(robot_id, int):
                 return self.frame_list.latest.robots_blue[robot_id]
             return self.frame_list.latest.robots_blue
 
     # higher level
     def get_our_robots(self, us=True, robot_id=None) -> object | list:
+        # from the latest frame
         frame = self.frame_list.latest
+        # set our team or enemy team color
         is_yellow = self._us_yellow if us else not self._us_yellow
+        # get the team specified
         robots = frame.robots_yellow if is_yellow else frame.robots_blue
+        # return the specific robot or team. 
         return robots[robot_id] if isinstance(robot_id, int) else robots
 
     def get_active_robots(self):
