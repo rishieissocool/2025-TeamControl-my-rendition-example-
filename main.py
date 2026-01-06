@@ -14,6 +14,10 @@ from TeamControl.voronoi_planner.run_planner import run_planner
 from TeamControl.utils.follow_ball_dummy import run_follow_ball_dummy
 from TeamControl.robot.goalie import run_goalie
 
+from TeamControl.robot.striker import run_striker
+from TeamControl.robot.unittest import run_test_to_goal
+from TeamControl.plotter.plot import run_plotter
+
 
 
 # in multiprocessing this can only be a simple process
