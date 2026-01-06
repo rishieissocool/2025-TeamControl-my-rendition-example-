@@ -1,9 +1,11 @@
-import math
-from time import time
-import matplotlib.pyplot as plt
-import numpy as np
-
 from TeamControl.SSL.vision.field import FieldLines, Vector2f
+import matplotlib.pyplot as plt
+from time import time
+import numpy as np
+import math
+
+# typing : 
+from multiprocessing.synchronize import Event
 
 
 # ================= FIELD CONSTANTS (mm) =================
@@ -274,32 +276,37 @@ class Plotter:
     import time
 
 
-def run_plotter(world_model):
+def run_plotter(is_running:Event, world_model):
     """
     This will run inside its own process.
     Continuously fetch data from the world model and update the plot.
     """
-    w= world_model
+    w = world_model
     plotter = Plotter(enable=True)
     
     plt.show(block=False) 
 
-    while True:
-        frame = w.get_latest_frame()  # fetch live data
+    while is_running.is_set():
+        try:
+            frame = w.get_latest_frame()  # fetch live data
 
-        if frame is None:
-            time.sleep(0.05)
-            continue
+            if frame is None:
+                time.sleep(0.05)
+                continue
 
-        # prepare robot lists
-        robots_yellow = [(r.x, r.y, r.o, r.id) for r in frame.robots_yellow] if frame.robots_yellow else []
-        robots_blue   = [(r.x, r.y, r.o, r.id) for r in frame.robots_blue] if frame.robots_blue else []
+            # prepare robot lists
+            robots_yellow = [(r.x, r.y, r.o, r.id) for r in frame.robots_yellow] if frame.robots_yellow else []
+            robots_blue   = [(r.x, r.y, r.o, r.id) for r in frame.robots_blue] if frame.robots_blue else []
 
-        # ball
-        ball = (frame.ball.x, frame.ball.y) if frame.ball else None
+            # ball
+            ball = (frame.ball.x, frame.ball.y) if frame.ball else None
 
-        # update the plot
-        plotter.update(robots_yellow, robots_blue, ball)
+            # update the plot
+            plotter.update(robots_yellow, robots_blue, ball)
 
-        plt.pause(0.01)  # small delay to reduce CPU usage
+            plt.pause(0.01)  # small delay to reduce CPU usage
+        except KeyboardInterrupt:
+            break
+    print("Plotter exited")
 
+    

@@ -1,5 +1,6 @@
 # typings
-from multiprocessing import Process, Queue, Event
+from multiprocessing import Process, Queue
+from multiprocessing.synchronize import Event
 from TeamControl.utils.Logger import LogSaver
 import time 
 
