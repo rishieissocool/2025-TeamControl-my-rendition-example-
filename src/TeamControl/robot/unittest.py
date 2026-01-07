@@ -149,19 +149,22 @@ def plot_ball_to_goal(ax,frame):
 
 def run_test_to_goal(world_model):
     
-    w = world_model
+    
     plt.ion()
     fig, ax = plt.subplots(figsize=(10, 7))
     plot_ball_to_goal(ax,None)
     # ax.legend()
     dynamic_objs = []
     while True:
-        frame = w.get_latest_frame()
-        
+        frame = world_model.get_latest_frame()
+        print(frame)
+        if frame is None:
+            time.sleep(0.01)
+            continue
     # remove old objects
         for obj in dynamic_objs:
             obj.remove()
-        dynamic_objs = []
+        # dynamic_objs = []
         
         red_line, yellow_ball, behind_ball_mark, blue_robot, blue_arrow = plot_ball_to_goal(ax, frame)
         dynamic_objs = [red_line, yellow_ball, behind_ball_mark, blue_robot, blue_arrow]
@@ -173,10 +176,52 @@ def run_test_to_goal(world_model):
  
     
 if __name__ == "__main__":
-    from TeamControl.world.model import WorldModel as wm
+    from TeamControl.process_workers.wm_runner import WMWorker
+    from TeamControl.process_workers.vision_runner import VisionProcess
+    from TeamControl.world.model_manager import WorldModelManager,WorldModel
+    from TeamControl.utils.Logger import LogSaver
+    
+    # from multiprocessing.synchronize import Event
+    from multiprocessing import Queue, Process,Event
+    
+    logger = LogSaver()
+    vision_q = Queue()
+    gc_q = Queue()
+    use_grSim = True
+    vision_port = 10006
+    
+    # event : System running ? 
+    is_running = Event()
+    is_running.set()
 
-    w = wm()
-    run_test_to_goal(w)
+    # world model
+    wm_manager = WorldModelManager()
+    wm_manager.start()
+    wm:WorldModel = wm_manager.WorldModel()
+    # processes 
+    wmr = Process(target=WMWorker.run_worker, args=(is_running,logger,wm,vision_q,gc_q),)
+    vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,logger,vision_q,use_grSim,vision_port),)
+    test = Process(target=run_test_to_goal,args=(wm,))
+    
+    
+    vision_wkr.start()
+    wmr.start()
+    test.start()
+    
+    while is_running.is_set():
+        try:
 
-
-
+            print("Type 'exit' to quit: ")
+            user_input = input()
+            if user_input.lower() == 'exit':
+                print("Shutdown signal received...")
+                is_running.clear()
+                break
+        except KeyboardInterrupt:
+            print("\nShutdown signal received...")
+            is_running.clear()
+            # sys.exit()
+            
+    vision_wkr.join(timeout=5)
+    wmr.join(timeout=5)
+    test.join(timeout=5)
