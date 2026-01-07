@@ -15,7 +15,7 @@ class RobotMovement:
                            target: tuple[float,float], 
                            turning_target:tuple[float, float] = None,
                            speed: float = 0.01
-                           , stop_threshold = 100) -> tuple[float, float, float]: 
+                           , stop_threshold = 150) -> tuple[float, float, float]: 
         '''
         Gets the velocity required for the robot go to position and trun to target
         '''
