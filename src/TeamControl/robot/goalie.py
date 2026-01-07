@@ -41,9 +41,11 @@ class Goalie():
                 self.ball_hist = self.update_ball_history(5)
                 # maybe attribute error here 
                 
-                goalie_points = predict_trajectory(self.ball_hist, 3, isPostive=self.is_positive, feild_size=(self.field_x,self.field_y))
+                goalie_points = predict_trajectory(self.ball_hist, 10, isPostive=self.is_positive, feild_size=(self.field_x,self.field_y))
             
                 goalie_pos = robot.position
+                ball_pos = frame.ball.position
+                relative_ball_target = world2robot(robot_position=goalie_pos,target_position=ball_pos)
                 
                 if goalie_points[1] == True:   
                     # if there's a point go block           
@@ -53,9 +55,8 @@ class Goalie():
                     
                 # print("Relative Target : ", target_pos1)
                 vx1,vy1 = RobotMovement.go_To_Target(target_pos=target_pos1, stop_threshold=50)
-            
-        
-                command1 = RobotCommand(robot_id=self.id,vx=vx1,vy=vy1)
+                w = RobotMovement.turn_to_target(target=relative_ball_target)
+                command1 = RobotCommand(robot_id=self.id,vx=vx1,vy=vy1,w=w)
                 # puts command into queue
                 self.dispatch_q.put((command1, 0.01)) # 0.1 seconds runtime
                 
