@@ -4,14 +4,18 @@ from typing import Tuple, Optional, List
 
 from TeamControl.world.transform_cords import world2robot
 
+def wrap_to_pi(a) -> float:
+    return (a + np.pi) % (2*np.pi) - np.pi
+    
 class RobotMovement:
-
+    
+    
     @classmethod
     def velocity_to_target(cls,robot_pos: tuple[float, float, float],
                            target: tuple[float,float], 
                            turning_target:tuple[float, float] = None,
                            speed: float = 0.01
-                           , stop_threshold = 150) -> tuple[float, float, float]: 
+                           , stop_threshold = 100) -> tuple[float, float, float]: 
         '''
         Gets the velocity required for the robot go to position and trun to target
         '''
@@ -30,29 +34,30 @@ class RobotMovement:
         return vx, vy, w
 
     @staticmethod
-    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 0.005, robotOmega = None):
+    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.1, speed: float = 1, d_time:float = 1):
         '''
             This function returns an agular velocity. The goal is to turn the robot
             in such a way that it is facing the ball with its kicker side.
 
             input: 
-                ball_position: ball position in the robot coordinate systen (e.g. (10mm,50mm))
+                target: the relative target postition format: (x,y)
                 epsilon: Threshold for the orientation (orientation does not have to be zero to 
                         consider it correct -> avoids jitter)
+                speed: the average default speed 
+                d_time : the time scaler for how fast we want to turn while going
         '''
         if target is None:
             return 0.0
 
-        # Correct orientation for robot coordinate frame
-        angle = math.atan2(target[1], target[0])
-
-        # Avoid jitter
-        if abs(angle) < epsilon:
+        new_orientation = wrap_to_pi(np.arctan2(target[1],target[0]))    
+        if abs(new_orientation) < epsilon: #smaller than threshold
+            # print("Already looking at target")
             omega = 0.0
-        elif abs(angle) < 2 * epsilon:
-            omega = speed * math.copysign(0.05, angle)
+
+        elif abs(new_orientation) < 2 * epsilon:
+            omega = new_orientation/d_time * speed * 0.05
         else:
-            omega = speed * math.copysign(0.5, angle)
+            omega = new_orientation/d_time * speed * 1
 
         return omega
     
