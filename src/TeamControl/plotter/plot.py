@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from time import time
 import numpy as np
 import math
+import time
 
 # typing : 
 from multiprocessing.synchronize import Event
@@ -273,7 +274,6 @@ class Plotter:
     def set_enable(self, enable: bool):
         """Start / stop ongoing graphing"""
         self.enable = enable
-    import time
 
 
 def run_plotter(is_running:Event, world_model):
@@ -291,7 +291,7 @@ def run_plotter(is_running:Event, world_model):
             frame = w.get_latest_frame()  # fetch live data
 
             if frame is None:
-                time.sleep(0.05)
+                # time.sleep(0.05)
                 continue
 
             # prepare robot lists
