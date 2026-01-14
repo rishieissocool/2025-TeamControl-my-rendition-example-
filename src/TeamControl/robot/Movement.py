@@ -4,12 +4,8 @@ from typing import Tuple, Optional, List
 
 from TeamControl.world.transform_cords import world2robot
 
-def wrap_to_pi(a) -> float:
-    return (a + np.pi) % (2*np.pi) - np.pi
-    
 class RobotMovement:
-    
-    
+
     @classmethod
     def velocity_to_target(cls,robot_pos: tuple[float, float, float],
                            target: tuple[float,float], 
@@ -34,30 +30,29 @@ class RobotMovement:
         return vx, vy, w
 
     @staticmethod
-    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.1, speed: float = 1, d_time:float = 1):
+    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 0.005, robotOmega = None):
         '''
             This function returns an agular velocity. The goal is to turn the robot
             in such a way that it is facing the ball with its kicker side.
 
             input: 
-                target: the relative target postition format: (x,y)
+                ball_position: ball position in the robot coordinate systen (e.g. (10mm,50mm))
                 epsilon: Threshold for the orientation (orientation does not have to be zero to 
                         consider it correct -> avoids jitter)
-                speed: the average default speed 
-                d_time : the time scaler for how fast we want to turn while going
         '''
         if target is None:
             return 0.0
 
-        new_orientation = wrap_to_pi(np.arctan2(target[1],target[0]))    
-        if abs(new_orientation) < epsilon: #smaller than threshold
-            # print("Already looking at target")
-            omega = 0.0
+        # Correct orientation for robot coordinate frame
+        angle = math.atan2(target[1], target[0])
 
-        elif abs(new_orientation) < 2 * epsilon:
-            omega = new_orientation/d_time * speed * 0.05
+        # Avoid jitter
+        if abs(angle) < epsilon:
+            omega = 0.0
+        elif abs(angle) < 2 * epsilon:
+            omega = speed * math.copysign(0.05, angle)
         else:
-            omega = new_orientation/d_time * speed * 1
+            omega = speed * math.copysign(0.5, angle)
 
         return omega
     
@@ -93,6 +88,19 @@ class RobotMovement:
         behind_y = by - dy * buffer_radius
 
         return behind_x, behind_y
+    
+    @staticmethod
+    def threshold_zone(distance:float)-> float:
+        # return max speed allowed in that zone
+        
+        if distance < 1: #kicker zone
+            return 0.0
+        if distance < 300: #dribble zone
+            return 0.04
+        if distance < 500: #normal zone
+            return 0.08
+        return 0.1 #fast zone
+
 
     @staticmethod
     def go_To_Target(target_pos: tuple[float, float],
@@ -101,14 +109,21 @@ class RobotMovement:
 
         if target_pos is None:
             return 0.0, 0.0
+        
+        
 
         dist = math.hypot(target_pos[0], target_pos[1])
-        if dist > stop_threshold:
-            vx = (target_pos[0] / dist) * speed
-            vy = (target_pos[1] / dist) * speed
-            return vx, vy
+        speed = RobotMovement.threshold_zone(dist)
+        
+        
+        if dist<=0.0:
+            return 0.0, 0.0
+        
+        vx = (target_pos[0] / dist) * speed
+        vy = (target_pos[1] / dist) * speed
+        
+        return vx, vy
 
-        return 0.0, 0.0
 
     @staticmethod
     def shooting_pos(ball_pos: tuple[float, float],
