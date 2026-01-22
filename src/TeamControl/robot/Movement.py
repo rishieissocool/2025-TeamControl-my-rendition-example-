@@ -28,6 +28,8 @@ class RobotMovement:
             w = cls.turn_to_target(trans_turn_target)
 
         return vx, vy, w
+    
+    
 
     @staticmethod
     def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 0.005, robotOmega = None):
@@ -45,17 +47,21 @@ class RobotMovement:
 
         # Correct orientation for robot coordinate frame
         angle = math.atan2(target[1], target[0])
-
-        # Avoid jitter
-        if abs(angle) < epsilon:
-            omega = 0.0
-        elif abs(angle) < 2 * epsilon:
-            omega = speed * math.copysign(0.05, angle)
+        
+        if abs(angle)<epsilon:
+            omega=0.0
+        elif abs(angle)<0.18:
+            omega=speed*math.copysign(1, angle)
+        elif abs(angle)<0.7:
+            omega=speed*2*math.copysign(1, angle)
+        elif abs(angle)<1.57:
+            omega=speed*3*math.copysign(1, angle)
         else:
-            omega = speed * math.copysign(0.5, angle)
-
+            omega=speed*4*math.copysign(1, angle)
+            
         return omega
-    
+
+        
     
     @staticmethod
     def behind_ball_point(ball, goal, buffer_radius):
