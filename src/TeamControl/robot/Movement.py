@@ -4,8 +4,12 @@ from typing import Tuple, Optional, List
 
 from TeamControl.world.transform_cords import world2robot
 
+def wrap_to_pi(a) -> float:
+    return (a + np.pi) % (2*np.pi) - np.pi
+    
 class RobotMovement:
-
+    
+    
     @classmethod
     def velocity_to_target(cls,robot_pos: tuple[float, float, float],
                            target: tuple[float,float], 
@@ -28,19 +32,19 @@ class RobotMovement:
             w = cls.turn_to_target(trans_turn_target)
 
         return vx, vy, w
-    
-    
 
     @staticmethod
-    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.15, speed: float = 0.005, robotOmega = None):
+    def turn_to_target(target:tuple[float,float] =None, epsilon: float=0.1, speed: float = 1, d_time:float = 1):
         '''
             This function returns an agular velocity. The goal is to turn the robot
             in such a way that it is facing the ball with its kicker side.
 
             input: 
-                ball_position: ball position in the robot coordinate systen (e.g. (10mm,50mm))
+                target: the relative target postition format: (x,y)
                 epsilon: Threshold for the orientation (orientation does not have to be zero to 
                         consider it correct -> avoids jitter)
+                speed: the average default speed 
+                d_time : the time scaler for how fast we want to turn while going
         '''
         if target is None:
             return 0.0
