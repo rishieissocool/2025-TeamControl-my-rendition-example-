@@ -9,7 +9,7 @@ except ModuleNotFoundError as e:
     raise ModuleNotFoundError ("please install scikit-learn for running trajectory")
 
 
-def predict_trajectory(history: list, num_samples, isPostive:bool, feild_size ):
+def predict_trajectory(history: list, num_samples, isPostive:bool, field_size ):
     '''
         This function takes are input a list of ball positions and uses the last num_samples ball positions
         to fit a ball trajectory by applying a linear regression model. We then check whether this
@@ -24,37 +24,27 @@ def predict_trajectory(history: list, num_samples, isPostive:bool, feild_size ):
         output:
             the position the the golie depending on the state of the ball 
     '''
-    feild_x, feild_y =feild_size
+    field_x, field_y =field_size
             # PARAMETERS
     #GOALIE_LINE = -FIELD_LENGTH/2 + 200 #mm #On the other side of the field if we are the other team
     if isPostive == True:
-        goal_pos = feild_x/2 - 200
+        goal_pos = field_x/2 - 200
     else:
-        goal_pos = -feild_x/2 + 200
+        goal_pos = -field_x/2 + 200
 
-    goal_width = 2000
+    goal_width = 1000
     goal_line = goal_pos # the goal line is the x coordinates of the goals line 
     num_samples = 5
     #print(ball_pos)
-    ball_pos_x = []
-    ball_pos_y = []
+    ball_pos_x = [pos[0] for pos in history]
+    ball_pos_y = [pos[1] for pos in history]
     if len(history) <= 0:
         return
-    for ball_pos in history:
-        ball_pos_x.append(ball_pos[0])
-        ball_pos_y.append(ball_pos[1])
-    if len(ball_pos) <= num_samples:
-        # use all available ball positions
-        last_ball_positions_x = ball_pos_x
-        last_ball_positions_y = ball_pos_y
     
-        # print(ball_pos_x)
-        # print(ball_pos_y)
-    else:
-        # use last num_samples ball positions
-        last_ball_positions_x = ball_pos_x[-num_samples:]
-        last_ball_positions_y = ball_pos_y[-num_samples:]
-    
+    # use all available ball positions
+    last_ball_positions_x = ball_pos_x
+    last_ball_positions_y = ball_pos_y
+
     # print(last_ball_positions_x)1
     # print(last_ball_positions_y)
     if True:
@@ -63,9 +53,9 @@ def predict_trajectory(history: list, num_samples, isPostive:bool, feild_size ):
         model.fit(np.array(last_ball_positions_x).reshape(-1, 1), last_ball_positions_y)
 
         # Generate trajectory points
-        x_values = np.linspace(-feild_x/2, feild_x/2, 20) 
+        x_values = np.linspace(-field_x/2, field_x/2, 20) 
 
-        current_ball_position_x = ball_pos_x[-1]  # Current ball position
+        current_ball_position_x = ball_pos_x[0]  # Current ball position
 
         trajectory_y_at_goal_line = model.predict(np.array([goal_line]).reshape(-1, 1))
 

@@ -15,7 +15,7 @@ def main():
     vision_q = Queue()
     # no game controller 
     gc_q = Queue()
-
+    dispatcher_q = Queue()
     
     # inputs
     vision_wkr = Process(target=VisionProcess.run_worker, args=(is_running,None,vision_q,True,vision_port,))
@@ -26,14 +26,19 @@ def main():
     wm = wm_manager.WorldModel()
     wmr = Process(target=WMWorker.run_worker, args=(is_running,None,wm,vision_q,gc_q,))
     sandbox = Process(target=run_grsim_sandbox_process, args=(wm,) )
+    bt = Process(target=run_bt_process, args=(wm,dispatcher_q,) )
+
     vision_wkr.start()
     wmr.start()
-    sandbox.start()
+    # sandbox.start()
+    bt.start()
     # some_other_process2.start()
     
     vision_wkr.join()
     wmr.join()
-    sandbox.join()
+    # sandbox.join()
+    bt.join()
+
     # some_other_process2.join()
 
 if __name__ == "__main__":

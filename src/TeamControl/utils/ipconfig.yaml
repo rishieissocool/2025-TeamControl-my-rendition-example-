@@ -2,13 +2,13 @@ yellow:
 
   A:
     ip: "127.0.0.1"
-    port: 12345
+    port: 50514
     grSimID : 0
     shellID : 0
     has_chip_kick: false
 
   B:
-    ip: "127.0.0.1"
+    ip: "192.168.1.11"
     port: 50514
     grSimID : 1
     shellID : 1
@@ -25,18 +25,18 @@ yellow:
     ip: "127.0.0.1"
     port: 50514
     grSimID : 3
-    shellID : 3
+    shellID : 3 
     has_chip_kick: false
 
   E: 
-    ip: "127.0.0.1"
+    ip: "192.168.1.8"
     port: 50514
     grSimID : 4
     shellID : 4
     has_chip_kick: false
 
   F:
-    ip: "127.0.0.1"
+    ip: "192.168.1.15"
     port: 50514
     grSimID : 5
     shellID : 5
@@ -70,7 +70,7 @@ blue:
     ip: "127.0.0.1"
     port: 50514
     grSimID : 3
-    shellID : 3
+    shellID : 3 
     has_chip_kick: false
 
   E: 
@@ -89,7 +89,7 @@ blue:
 
     
 grSim:
-  ip: "192.168.1.4"
+  ip: "192.168.1.6"
   port: 20010
 
 vision:

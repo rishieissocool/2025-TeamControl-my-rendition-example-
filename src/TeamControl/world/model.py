@@ -44,7 +44,10 @@ class WorldModel:
         self.frame_list:FrameList[Frame] = FrameList(history=history)
         self.geometry:GeometryData = None
         self.field:FieldSize = None
-        self._version = mgr.Value('i', 0)  # int counter
+        self._version = mgr.Value('i', 0)   # int counter
+        self._state = None # current state from GC
+        self.robot_active = 6 # robots active
+        self.blf_location = None # ball left field location
     
     def update_game_data(self,game_data):
         if game_data is None:
@@ -63,8 +66,7 @@ class WorldModel:
     def update_team(self, us_yellow: bool, us_positive: bool):
         self.us_yellow = us_yellow
         self.us_positive = us_positive
-        self.robot_active = 6
-        self.game_state = GameState.HALTED
+        self.robot_active = 6 # robots active
         self.blf_location = None
 
     def add_new_frame(self, frame: Frame):
@@ -110,8 +112,8 @@ class WorldModel:
 
     def get_ball_left_field_location(self):
         return self.blf_location
-
-    def get_current_state(self):
+    
+    def get_game_state(self):
         return self._state
 
     def us_yellow(self):
@@ -142,14 +144,16 @@ class WorldModel:
 
         if exclude is None or len(exclude) == 0:
             return team
-
-        for e in list(exclude):
-            if e in team:
-                team.remove(e)
-        return team
-
-    # lower level
-    def get_yellow_robots(self, isYellow, robot_id=None) -> object | list:
+        # now check the list of wanting to be excluded.  
+        else: # returning except robot with excluded id
+            for e in list(exclude):
+                if e in team:
+                    team.remove(e)
+            return team
+        
+    # depeciated
+    def get_yellow_robots(self,isYellow, robot_id=None) -> object | list:
+        raise DeprecationWarning("use frame.get_yellow_robots() instead")
         if isYellow is True:
             if isinstance(robot_id, int):
                 return self.frame_list.latest.robots_yellow[robot_id]
@@ -158,10 +162,10 @@ class WorldModel:
             if isinstance(robot_id, int):
                 return self.frame_list.latest.robots_blue[robot_id]
             return self.frame_list.latest.robots_blue
-
-    # higher level
+        
+    # Depeciated
     def get_our_robots(self, us=True, robot_id=None) -> object | list:
-        # from the latest frame
+        raise DeprecationWarning("use frame.get_yellow_robots() instead")
         frame = self.frame_list.latest
         # set our team or enemy team color
         is_yellow = self._us_yellow if us else not self._us_yellow

@@ -4,12 +4,8 @@ from typing import Tuple, Optional, List
 
 from TeamControl.world.transform_cords import world2robot
 
-def wrap_to_pi(a) -> float:
-    return (a + np.pi) % (2*np.pi) - np.pi
-    
 class RobotMovement:
-    
-    
+
     @classmethod
     def velocity_to_target(cls,robot_pos: tuple[float, float, float],
                            target: tuple[float,float], 
@@ -19,9 +15,9 @@ class RobotMovement:
         '''
         Gets the velocity required for the robot go to position and trun to target
         '''
-        if robot_pos is None:
-            print("Robot pos is none")
-            pass
+        if robot_pos is None or target is None:
+            raise ValueError ("Robot pos or Target is None")
+            # pass
         
         transTarget = world2robot(robot_pos, target)
         vx, vy = cls.go_To_Target(transTarget, stop_threshold = stop_threshold,speed=speed)
@@ -100,16 +96,16 @@ class RobotMovement:
         return behind_x, behind_y
     
     @staticmethod
-    def threshold_zone(distance:float)-> float:
+    def threshold_zone(distance:float,max_speed:float)-> float:
         # return max speed allowed in that zone
         
-        if distance < 1: #kicker zone
+        if distance < 70: #kicker zone
             return 0.0
-        if distance < 300: #dribble zone
-            return 0.04
-        if distance < 500: #normal zone
-            return 0.08
-        return 0.1 #fast zone
+        if distance < 400: #dribble zone
+            return max_speed * 0.2
+        # if distance < 500: #normal zone
+        #     return max_speed * 0.75
+        return max_speed #fast zone
 
 
     @staticmethod
@@ -123,7 +119,7 @@ class RobotMovement:
         
 
         dist = math.hypot(target_pos[0], target_pos[1])
-        speed = RobotMovement.threshold_zone(dist)
+        speed = RobotMovement.threshold_zone(dist,max_speed=speed)
         
         
         if dist<=0.0:

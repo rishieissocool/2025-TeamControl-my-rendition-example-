@@ -17,7 +17,7 @@ except ImportError as e:
 class Dispatcher(BaseWorker):
     def __init__(self,is_running:Event ,logger:LogSaver, ):
         super().__init__(is_running,logger)
-        
+        self.last_sent_time = time.time()
         self.running_commands = {}
         
     
@@ -39,7 +39,8 @@ class Dispatcher(BaseWorker):
          
         # self.g_sender = grSimSender()
         self.announce_initialisation()
-        
+
+
     # Announce that the dispatcher has been created
     def announce_initialisation(self):
         print("Multi-robot dispatcher initialized!")
@@ -54,6 +55,7 @@ class Dispatcher(BaseWorker):
         self.check_new_commands()
         self.handle_commands()
         self.check_command_timeout()
+    
         
     def shutdown(self):
         print("reseting all robots to 0 ")
@@ -107,6 +109,7 @@ class Dispatcher(BaseWorker):
     def handle_commands(self):
         for robot_id, packet in self.running_commands.items():
             command = packet["command"]
+            # if time.time() >= self.last_sent_time + 0.01:
             self.send_command(command)
             
     def send_command(self,command:RobotCommand):
@@ -114,10 +117,18 @@ class Dispatcher(BaseWorker):
         shell_id = command.robot_id
         isYellow = command.isYellow
         robot_dict = self.get_dict_from_shell(shell_id,isYellow)
-        self.r_sender.send(command,robot_dict["ip"],robot_dict["port"])
+        # print(robot_dict["ip"],robot_dict["port"])
         if self.send_to_grSim is True:
             self.g_sender.send_robot_command(command,override_id=robot_dict["grSimID"])
-        self.logger.info(f"RobotCommand has been sent to robot : {robot_dict["shellID"]=} , {robot_dict["grSimID"]=}")
+            # print(f" RobotCommand has been sent to grSim : {robot_dict['grSimID']=} " )
+        # print (f"diff {self.last_sent_time + 0.001} < {str(time.time())}")
+
+        if self.last_sent_time + 0.05 < time.time():
+            self.r_sender.send(command,robot_dict["ip"],robot_dict["port"])
+
+            # print(f"Robot Command {shell_id} sent to  @ {robot_dict['ip'],robot_dict['port']}")
+            self.last_sent_time = time.time()
+
     
     def get_dict_from_shell(self,shell_id,isYellow) -> str:
         team = self.yellow if isYellow is True else self.blue
