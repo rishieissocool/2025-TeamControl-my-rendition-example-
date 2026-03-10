@@ -15,6 +15,7 @@ dependencies = [
     "scikit-learn",
     "networkx",
     "pygame",
+    "behaviour-tree @ git+https://github.com/WSU-TurtleRabbit/TurtleRabbit-Behaviour-Tree.git",
 ]
 
 dynamic = [
