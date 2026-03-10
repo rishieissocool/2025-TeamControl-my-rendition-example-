@@ -12,7 +12,7 @@ from TeamControl.dispatcher.dispatch import Dispatcher
 from TeamControl.utils.yaml_config import Config
 
 from TeamControl.voronoi_planner.run_planner import run_planner
-from TeamControl.behaviour_tree.run_bt_process import run_bt_process
+from behaviour_tree import run_bt_process
 # from TeamControl.utils.dummy_process import DummyReader
 from TeamControl.utils.follow_ball_dummy import run_follow_ball_dummy
 from TeamControl.robot.goalie import run_goalie
