@@ -5,23 +5,27 @@ Created on Sun Jun  2 18:27:43 2024
 
 @author: oliver
 """
+import math
 import numpy as np
 
 class Obstacle:
+    __slots__ = ('x', 'y', 'radius', 'radius2', 'id', 'isYellow', '_centre')
+
     def __init__(self, point:tuple[float,float], radius: float, unum:int, isYellow:bool):
         """
         RoboCup obstacles are disks.
-        
+
         :param point: The centre coordinate (array with x, y).
         :param radius: The radius.
         :param unum: The uniform number (object id)
-        :param isYellow: bool 
+        :param isYellow: bool
         """
         self.x, self.y = point
         self.radius = radius
         self.radius2 = radius * radius
         self.id = unum
         self.isYellow = isYellow
+        self._centre = np.array((self.x, self.y))
         
     @classmethod
     def from_numpy_array(cls, points, radius, unums, isYellow):
@@ -54,36 +58,39 @@ class Obstacle:
         return self.id
     
     def centre(self):
-        return np.array((self.x, self.y))
+        return self._centre
     
     def intersects_line(self, start, goal, buffer):
-        start = np.asarray(start, dtype=float).reshape(2,)
-        goal  = np.asarray(goal,  dtype=float).reshape(2,)
-        c     = np.asarray(self.centre(), dtype=float).reshape(2,)
+        sx, sy = float(start[0]), float(start[1])
+        gx, gy = float(goal[0]), float(goal[1])
+        cx, cy = self.x, self.y
 
-        r = float(self.radius + buffer)
+        r = self.radius + buffer
 
-        line_vec = goal - start
-        line_len = float(np.linalg.norm(line_vec))
+        lvx = gx - sx
+        lvy = gy - sy
+        line_len = math.hypot(lvx, lvy)
 
         # zero-length segment: treat as point vs circle
         if line_len < 1e-9:
-            return float(np.linalg.norm(c - start)) <= r
+            return math.hypot(cx - sx, cy - sy) <= r
 
-        line_dir = line_vec / line_len
+        ldx = lvx / line_len
+        ldy = lvy / line_len
 
-        to_centre = c - start
-        proj_len = float(np.dot(to_centre, line_dir))
+        tcx = cx - sx
+        tcy = cy - sy
+        proj_len = tcx * ldx + tcy * ldy
 
         if proj_len <= 0.0:
-            closest_point = start
+            cpx, cpy = sx, sy
         elif proj_len >= line_len:
-            closest_point = goal
+            cpx, cpy = gx, gy
         else:
-            closest_point = start + proj_len * line_dir
+            cpx = sx + proj_len * ldx
+            cpy = sy + proj_len * ldy
 
-        distance_to_centre = float(np.linalg.norm(c - closest_point))
-        return distance_to_centre <= r
+        return math.hypot(cx - cpx, cy - cpy) <= r
     
     def __repr__(self):
         return f"Obstacle(ID={self.id} ({self.x}, {self.y}), radius={self.radius})"

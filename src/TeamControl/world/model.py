@@ -63,12 +63,6 @@ class WorldModel:
                 self.ref_data.yellow = game_data[0]
                 self.ref_data.blue = game_data[1]
 
-    def update_team(self, us_yellow: bool, us_positive: bool):
-        self.us_yellow = us_yellow
-        self.us_positive = us_positive
-        self.robot_active = 6 # robots active
-        self.blf_location = None
-
     def add_new_frame(self, frame: Frame):
         self.count += 1
         if self.count >= self.update_interval:
@@ -146,10 +140,7 @@ class WorldModel:
             return team
         # now check the list of wanting to be excluded.  
         else: # returning except robot with excluded id
-            for e in list(exclude):
-                if e in team:
-                    team.remove(e)
-            return team
+            return [r for r in team if r not in exclude]
         
     # depeciated
     def get_yellow_robots(self,isYellow, robot_id=None) -> object | list:

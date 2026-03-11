@@ -15,13 +15,23 @@ class grSimPacketFactory():
     
     @classmethod
     def robot_command(cls,robot_id,vx=0.0,vy=0.0,w=0.0,kick=False,dribble=False,isYellow=True):
-        # create a grSim robot command
-        robot_command =  cls._grSimRobotCommand_wrapper(robot_id=robot_id,vx=vx,vy=vy,w=w,kick=kick,dribble=dribble)
-        # wrap it with grSim command
-        command = cls._grSimCommand_wrapper(is_yellow=isYellow,robot_commands=[robot_command])
-        # wrap it into a packet
-        packet = cls._grSim_packet_wrapper(commands=command)
-        return packet
+        # Inlined protobuf creation for hot path performance
+        robot_cmd = grSim_Commands_pb2.grSim_Robot_Command(
+            id=int(robot_id),
+            kickspeedx=float(cls.KICK_SPEED_X * kick),
+            kickspeedz=float(cls.KICK_SPEED_Z * kick),
+            veltangent=float(vx),
+            velnormal=float(vy),
+            velangular=float(w),
+            spinner=bool(dribble),
+            wheelsspeed=False
+        )
+        command = grSim_Commands_pb2.grSim_Commands(
+            timestamp=time.time(),
+            isteamyellow=bool(isYellow),
+            robot_commands=[robot_cmd]
+        )
+        return grSim_Packet_pb2.grSim_Packet(commands=command)
     
     @classmethod
     def robot_replacement_command(cls,x:float,y:float,orientation:float,
@@ -81,14 +91,11 @@ class grSimPacketFactory():
         if len(robot_commands) == 0:
             raise ValueError("robot_commands must be non-empty.")
                 
-        fields = {
-            "timestamp" : time.time(),
-            "isteamyellow" : bool(is_yellow),
-            "robot_commands" : robot_commands
-        }
-        
-        clean = {k: v for k, v in fields.items() if v is not None}
-        return grSim_Commands_pb2.grSim_Commands(**clean)
+        return grSim_Commands_pb2.grSim_Commands(
+            timestamp=time.time(),
+            isteamyellow=bool(is_yellow),
+            robot_commands=robot_commands
+        )
     
     
     @staticmethod

@@ -79,12 +79,15 @@ class grSimSender(LockedSender):
         if not isinstance(robot_command,RobotCommand):
             raise TypeError("Expecting RobotCommand Object, got ", type(robot_command))
         # creates a packet
-        cmd_dict = robot_command.to_dict()
-
-        if override_id is not None:
-            cmd_dict["robot_id"] = int(override_id)
-            
-        packet = grSimPacketFactory.robot_command(**cmd_dict)
+        packet = grSimPacketFactory.robot_command(
+            robot_id=int(override_id) if override_id is not None else robot_command.robot_id,
+            vx=robot_command.vx,
+            vy=robot_command.vy,
+            w=robot_command.w,
+            kick=robot_command.kick,
+            dribble=robot_command.dribble,
+            isYellow=robot_command.isYellow
+        )
         # send this packet
         self.send_packet(packet)
         

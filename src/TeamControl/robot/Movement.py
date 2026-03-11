@@ -1,5 +1,4 @@
 import math
-import numpy as np
 from typing import Tuple, Optional, List
 
 from TeamControl.world.transform_cords import world2robot
@@ -136,33 +135,36 @@ class RobotMovement:
                      shootingTarget: tuple[float, float],
                      robot_offset: float = 200.0):
 
-        direction = np.array(shootingTarget) - np.array(ball_pos)
-        direction = direction.astype(float)  # Ensure direction vector is float
-        norm = np.linalg.norm(direction)
-        
-        if norm == 0:
-            return np.array(ball_pos, dtype=float)
+        dx = float(shootingTarget[0]) - float(ball_pos[0])
+        dy = float(shootingTarget[1]) - float(ball_pos[1])
+        norm = math.hypot(dx, dy)
 
-        direction /= norm
-        return np.array(ball_pos) - robot_offset * direction
+        if norm == 0:
+            return (float(ball_pos[0]), float(ball_pos[1]))
+
+        dx /= norm
+        dy /= norm
+        return (float(ball_pos[0]) - robot_offset * dx,
+                float(ball_pos[1]) - robot_offset * dy)
     
-    @staticmethod 
+    @staticmethod
     def calculate_target_position(target, ball, robot_offset):
         '''
             This function returns the target position for a robot. It needs this
             to aim and shoot a ball.
         '''
         # Calculate direction vector from ball to target
-        direction = np.array(target) - np.array(ball)
-        
+        dx = float(target[0]) - float(ball[0])
+        dy = float(target[1]) - float(ball[1])
+
         # Normalize direction vector
-        direction = direction.astype(float)  # Ensure direction vector is float
-        direction = np.linalg.norm(direction)
-        
+        norm = math.hypot(dx, dy)
+
         # Calculate robot position slightly behind the ball
-        robot_position = np.array(ball) - robot_offset * direction
-        
-        return robot_position
+        bx = float(ball[0]) - robot_offset * norm
+        by = float(ball[1]) - robot_offset * norm
+
+        return (bx, by)
         
 
 class Follow_path:
@@ -177,15 +179,14 @@ class Follow_path:
         
         def get_point(self, robot_pos:tuple[float, float]):
             '''
-            Gets the fist point of a given path, will remove the first point once reached  
+            Gets the fist point of a given path, will remove the first point once reached
             Prams --> the robot position [x position , y position]
             '''
             if self.path == None:
                 print("Please update the path before you call this function")
             else:
-                x_y_diff = np.array(self.path[0]) - np.array(robot_pos)
-
-                diff = np.sqrt(np.power(x_y_diff[0], 2) + np.power(x_y_diff[1], 2))
+                diff = math.hypot(self.path[0][0] - robot_pos[0],
+                                  self.path[0][1] - robot_pos[1])
 
                 if len(self.path) == 1:   # Checks if the path length is 1 
                     return self.path # paths become a singular point 
@@ -209,11 +210,12 @@ class calculateBallVelocity:
         self.speed_levels   = [0.02, 0.04, 0.06, 0.08, 0.10] #possible speedds
 
     def _pick_speed(self, distance: float) -> Optional[float]:
-        # build (speed, time_needed) pairs
-        options = [(v, distance / v) for v in self.speed_levels]
-        # filter those that meet the time threshold
-        valid = [v for v, t in options if t <= self.time_threshold]
-        return min(valid) if valid else None
+        best = None
+        for v in self.speed_levels:
+            if distance / v <= self.time_threshold:
+                if best is None or v < best:
+                    best = v
+        return best
 
     def step(
         self,

@@ -59,7 +59,7 @@ class VisionProcess(BaseWorker):
     def update_geometry(self,new_geometry):
         # replace variable for simplicity
         self.field = GeometryData.from_proto(new_geometry)
-        self.logger.info(f"[VP] : frame: {self.frame_number} has geometry")
+        self.logger.debug(f"[VP] : frame: {self.frame_number} has geometry")
         self.send(self.field)
     
     def update_detection(self,new_detection_data):
@@ -68,25 +68,25 @@ class VisionProcess(BaseWorker):
             # generates new frame
             self.frame_number = new_detection_data.frame_number
             self.frame = Frame.from_proto(new_detection_data,self.cameras)
-            self.logger.info(f"[VP] :We get new frame : {new_detection_data.frame_number}")
+            self.logger.debug(f"[VP] :We get new frame : {new_detection_data.frame_number}")
         
         
         # if same frame number = it is old frame
         elif self.frame_number == new_detection_data.frame_number:
             # we update the original frame
-            self.logger.info(f"[VP] : Updating old frame : {new_detection_data.frame_number}")
+            self.logger.debug(f"[VP] : Updating old frame : {new_detection_data.frame_number}")
             self.frame.update(new_detection_data)
         # if the frame is now completed 
-        self.logger.info(f"hi me here {self.frame.is_completed is True}")
+        self.logger.debug(f"hi me here {self.frame.is_completed is True}")
 
         if self.frame.is_completed is True:
-            self.logger.info(f"[VP] : frame: {self.frame_number} has been completed with {self.cameras} cameras , time taken = {time.time() - self.loop_timer}")
+            self.logger.debug(f"[VP] : frame: {self.frame_number} has been completed with {self.cameras} cameras , time taken = {time.time() - self.loop_timer}")
             self.send(self.frame)
             self.frame = None
             self.loop_timer = time.time()
     
     def send(self,data):
-        self.logger.info("Sending data")
+        self.logger.debug("Sending data")
 
         if not self.output_q.full():
             self.output_q.put(data)

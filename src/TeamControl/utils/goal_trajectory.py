@@ -1,6 +1,6 @@
+import math
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from enum import Enum,auto
 # PARAMETERSAG
 GOAL_WIDTH = 2760  # mm - Update this value based on actual goal width
@@ -101,13 +101,13 @@ def predict_trajectory(history, num_samples, calculate_velocity=False):
     last_ball_positions_x = ball_positions_x[-num_samples:]
     last_ball_positions_y = ball_positions_y[-num_samples:]
 
-    # Fit a linear regression model to selected positions
-    model = LinearRegression()
-    model.fit(np.array(last_ball_positions_x).reshape(-1, 1), last_ball_positions_y)
-    
+    # Fit a linear regression using np.polyfit (degree 1)
+    coeffs = np.polyfit(last_ball_positions_x, last_ball_positions_y, 1)
+    poly = np.poly1d(coeffs)
+
     # generate set of x values to predict trajectory
     x_values = np.linspace(-FIELD_LENGTH/2, FIELD_LENGTH/2, 20)
-    y_values = model.predict(x_values.reshape(-1, 1))
+    y_values = poly(x_values)
 
     # determine current and previous x positions
     current_x = ball_positions_x[-1]
@@ -130,7 +130,7 @@ def predict_trajectory(history, num_samples, calculate_velocity=False):
             direction_info = TrajectoryType.NO_MOVEMENT_DETECTED
 
     # predict y coordinates of the ball at the goalie line
-    trajectory_y_at_goal_line = model.predict(np.array([GOALIE_LINE]).reshape(-1, 1))[0]
+    trajectory_y_at_goal_line = poly(GOALIE_LINE)
     
     # calculate velocity if requested
     velocity = None
@@ -138,7 +138,7 @@ def predict_trajectory(history, num_samples, calculate_velocity=False):
         delta_x = current_x - previous_x
         delta_y = ball_positions_y[-1] - ball_positions_y[-2]
         time_elapsed = 1 / FRAME_RATE
-        velocity = np.sqrt((delta_x / time_elapsed) ** 2 + (delta_y / time_elapsed) ** 2)
+        velocity = math.hypot(delta_x / time_elapsed, delta_y / time_elapsed)
 
     # Output predicted trajectory, direction info, y-coordinate at the goalie line, velocity
     return {

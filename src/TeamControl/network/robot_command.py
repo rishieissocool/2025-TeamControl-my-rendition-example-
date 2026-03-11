@@ -1,13 +1,9 @@
 # Robot Commands
-import logging
-import datetime
 import time
-from TeamControl.network.proto2 import grSim_Commands_pb2
-from TeamControl.network.proto2 import grSim_Packet_pb2
-
 
 
 class RobotCommand():
+    __slots__ = ('time_set', 'isYellow', 'robot_id', 'vx', 'vy', 'w', 'kick', 'dribble', 'time_origin')
     def __init__(self, robot_id : int, vx : float=0.0, vy: float=0.0, w : float=0.0, kick : int=0, dribble : int=0, time_origin : float= 0.0, isYellow: bool = True):
         """Robot Command (Previously know as Command)
             Object for initialise commands, encode / decode strings for UDP transportation.
@@ -66,8 +62,7 @@ class RobotCommand():
             bytes: byte data for sending
         
         """
-        self.encoded = bytes(str(self).encode('utf-8'))
-        return self.encoded
+        return str(self).encode('utf-8')
     
     @classmethod
     def decode(cls,command_msg:str|bytes) -> object:
@@ -87,9 +82,7 @@ class RobotCommand():
             command_msg = command_msg.decode()
 
         robot_id, vx, vy, w, kick, dribble, time_origin = command_msg.split(" ")
-        
-        args = [int(robot_id), float(vx),float(vy),float(w),int(kick),int(dribble),float(time_origin)]
-        
-        return RobotCommand(*args) 
+
+        return RobotCommand(int(robot_id), float(vx), float(vy), float(w), int(kick), int(dribble), float(time_origin))
     
   

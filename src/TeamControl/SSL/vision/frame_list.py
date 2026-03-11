@@ -44,7 +44,9 @@ class FrameList ():
         return self._frame_lookup.get(frame_id)
 
     def get_last_n_frames(self, n: int) -> list[Frame]:
-        return list(self._frames)[-n:]
+        if n >= len(self._frames):
+            return list(self._frames)
+        return [self._frames[-n + i] for i in range(n)]
 
     
     def clear(self):
