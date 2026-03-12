@@ -1,32 +1,7 @@
-import numpy as np
-from numpy import pi
-from numpy.linalg import inv
+import math
 
 
-def transformation_matrix(p):
-    '''
-        input:
-            p: robot pose (x, y, theta)
-        output:
-            transformation matrix (rotation and translation)
-    '''
-    is_grsim = True
-    if is_grsim:
-        angle = p[2]
-    else:
-        angle = p[2] - np.pi/2
-    c = np.cos(angle)
-    s = np.sin(angle)
-
-    transformation_matrix = np.array([
-        [c, -s, p[0]],
-        [s,  c, p[1]],
-        [0,  0,    1]
-    ])
-
-    return transformation_matrix
-
-def world2robot(robot_position,target_position):
+def world2robot(robot_position, target_position):
     '''
         input:
             Target_position: position in the world coordinate system (x,y)
@@ -35,15 +10,22 @@ def world2robot(robot_position,target_position):
             t: targeted position in respect to robot coordinate system (x,y)
     '''
     if robot_position is None or target_position is None:
-        print(f"Value is None: {robot_position=}, {target_position=}")
         return
-    
-    trans_matrix = inv(transformation_matrix(robot_position))
-    target_position = np.append(target_position, 1) # (x,y,1)
 
-    t = np.dot(trans_matrix, target_position)[:2]
+    angle = robot_position[2]
+    c = math.cos(angle)
+    s = math.sin(angle)
+    tx = robot_position[0]
+    ty = robot_position[1]
 
-    return t
+    # Analytical inverse of the transformation matrix:
+    # R^T * (target - translation)
+    dx = target_position[0] - tx
+    dy = target_position[1] - ty
+    x =  c * dx + s * dy
+    y = -s * dx + c * dy
+
+    return (x, y)
 
 def robot2world(r, p):
     '''
@@ -53,9 +35,11 @@ def robot2world(r, p):
         output:
             w: position in the robot coordinate system (x,y)
     '''
-    trans_matrix = transformation_matrix(p)
-    r = np.append(r, 1) # (x,y,1)
+    angle = p[2]
+    c = math.cos(angle)
+    s = math.sin(angle)
 
-    w = np.dot(trans_matrix, r)[:2]
+    x = c * r[0] - s * r[1] + p[0]
+    y = s * r[0] + c * r[1] + p[1]
 
-    return w
+    return (x, y)

@@ -50,7 +50,7 @@ class Goalie():
         
             goalie_pos = robot.position
             ball_pos = frame.ball.position
-            if goalie_points[1] == True:   
+            if goalie_points[1] is True:
                 # if there's a point go block           
                 target_pos1 = world2robot(robot_position=goalie_pos,target_position=goalie_points[0])
             elif abs(ball_pos[0]) > abs(self.neutral_x_pos):
@@ -69,15 +69,12 @@ class Goalie():
             time.sleep(0.1)
         
     def update_ball_history(self,n:int):
-        self.ball_hist = list()
         frames = self.wm.get_last_n_frames(n)
-        l = len(frames)
-        for i in range(l):
-            ball_data = frames[i].ball
-            if ball_data != None:
-                # print(ball_data)
-                self.ball_hist.append([ball_data.x,ball_data.y])
-        # print(len(self.ball_hist))
+        self.ball_hist = [
+            (bd.x, bd.y)
+            for f in frames
+            if (bd := f.ball) is not None
+        ]
         return self.ball_hist
         
     

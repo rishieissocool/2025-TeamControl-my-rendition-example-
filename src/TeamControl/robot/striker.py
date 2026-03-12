@@ -113,8 +113,6 @@ def run_simple_striker(dispatch_q, wm: WorldModel, robot_id=0, is_yellow=True):
         # 2) CAPTURE / DRIBBLE
         # =========================
         else:
-            # DEBUG
-            print("Capturing ball...")
             # keep ball centered first
             if not ball_centered:
                 vx = 0.3

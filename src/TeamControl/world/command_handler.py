@@ -7,7 +7,6 @@ class STATE(Enum):
     TIMEOUT = 3
 
     def update_stage(self,stage):
-        print(stage)
         match stage:
             # prepare for game
             case Stage.NORMAL_FIRST_HALF_PRE | Stage.EXTRA_FIRST_HALF_PRE :
@@ -41,7 +40,6 @@ class STATE(Enum):
 
     
     def update_state(self,command):
-        print(command) 
         match command:
             # basic
             case Command.HALT:

@@ -40,8 +40,9 @@ class BaseWorker():
                 self.logger.error(f"[{self.__class__.__name__}]:Exception {type(e).__name__} encountered :{e} ")
                 self.error_cnt += 1
 
-                if self.last_error_time - time.time() > 4 or self.last_error_time == 0:
-                    self.last_error_time = time.time()
+                now = time.time()
+                if now - self.last_error_time > 4 or self.last_error_time == 0:
+                    self.last_error_time = now
                     self.error_cnt = 1
                 
                 if self.error_cnt >= 4: 
@@ -54,7 +55,7 @@ class BaseWorker():
     # do shutdown here 
     def shutdown(self):
         self.logger.info(f"[{self.__class__.__name__}]: task complete, shutting down")
-        time.sleep(2)
+        time.sleep(0.1)
         self.logger.info(f"[{self.__class__.__name__}]: offline")
 
     @classmethod

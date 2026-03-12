@@ -35,8 +35,21 @@ class Dispatcher(BaseWorker):
             self.g_sender = grSimSender(*config.grSim_addr)
         else:
             self.g_sender = None
-        
-         
+
+        # Build shell ID lookup caches for O(1) lookups
+        self._yellow_shell_cache = {}
+        if self.yellow:
+            for robot_key, robot_dict in self.yellow.items():
+                sid = robot_dict.get("shellID")
+                if sid is not None:
+                    self._yellow_shell_cache[sid] = robot_dict
+        self._blue_shell_cache = {}
+        if self.blue:
+            for robot_key, robot_dict in self.blue.items():
+                sid = robot_dict.get("shellID")
+                if sid is not None:
+                    self._blue_shell_cache[sid] = robot_dict
+
         # self.g_sender = grSimSender()
         self.announce_initialisation()
 
@@ -53,8 +66,9 @@ class Dispatcher(BaseWorker):
     
     def step(self):
         self.check_new_commands()
-        self.handle_commands()
-        self.check_command_timeout()
+        now = time.time()
+        self.handle_commands(now)
+        self.check_command_timeout(now)
     
         
     def shutdown(self):
@@ -65,7 +79,7 @@ class Dispatcher(BaseWorker):
         super().shutdown()
     # Get the next command from the queue and add it
     def check_new_commands(self):
-        if not self.q.empty():
+        while not self.q.empty():
             queue_item = self.q.get_nowait()
             command, runtime = queue_item
             self.add(command, runtime)
@@ -80,11 +94,13 @@ class Dispatcher(BaseWorker):
         self.logger.debug(f"[{robot_id=},{isYellow=}] New command added for {run_time}s , command: {command}")
         
     # Check if any commands have expired
-    def check_command_timeout(self):
+    def check_command_timeout(self, now=None):
+        if now is None:
+            now = time.time()
         expired_commands = []
 
         for robot_id, packet in self.running_commands.items():
-            elapsed_time = time.time() - packet["start_time"]
+            elapsed_time = now - packet["start_time"]
             if elapsed_time >= packet["runtime"]:
                 self.logger.debug(f"[Robot {robot_id}] Command expired after {elapsed_time:.2f}s")
                 expired_commands.append(robot_id)
@@ -106,14 +122,18 @@ class Dispatcher(BaseWorker):
             
                 
     # Handle all active commands for all robots
-    def handle_commands(self):
+    def handle_commands(self, now=None):
+        if now is None:
+            now = time.time()
         for robot_id, packet in self.running_commands.items():
             command = packet["command"]
             # if time.time() >= self.last_sent_time + 0.01:
-            self.send_command(command)
-            
-    def send_command(self,command:RobotCommand):
+            self.send_command(command, now)
+
+    def send_command(self, command:RobotCommand, now=None):
         # this handles how you'd use different senders to send a command.
+        if now is None:
+            now = time.time()
         shell_id = command.robot_id
         isYellow = command.isYellow
         robot_dict = self.get_dict_from_shell(shell_id,isYellow)
@@ -123,19 +143,19 @@ class Dispatcher(BaseWorker):
             # print(f" RobotCommand has been sent to grSim : {robot_dict['grSimID']=} " )
         # print (f"diff {self.last_sent_time + 0.001} < {str(time.time())}")
 
-        if self.last_sent_time + 0.05 < time.time():
+        if self.last_sent_time + 0.05 < now:
             self.r_sender.send(command,robot_dict["ip"],robot_dict["port"])
 
             # print(f"Robot Command {shell_id} sent to  @ {robot_dict['ip'],robot_dict['port']}")
-            self.last_sent_time = time.time()
+            self.last_sent_time = now
 
     
     def get_dict_from_shell(self,shell_id,isYellow) -> str:
-        team = self.yellow if isYellow is True else self.blue
-        for robot_key, robot_dict in team.items():
-            if robot_dict.get("shellID") == shell_id:
-                return robot_dict
-        raise ValueError (f"No robot with {shell_id=} found ")
+        cache = self._yellow_shell_cache if isYellow is True else self._blue_shell_cache
+        try:
+            return cache[shell_id]
+        except KeyError:
+            raise ValueError(f"No robot with {shell_id=} found ")
 
     
 # def run_dispatcher(is_running,q,use_sim,is_yellow):
